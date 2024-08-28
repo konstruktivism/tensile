@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('name');
             $table->text('description');
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
-            // create e date column when tasks is done
             $table->date('completed_at')->nullable();
+            $table->integer('hours')->default(0);
         });
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Project;
+use Carbon\Carbon;
 
 class ProjectController extends Controller
 {
@@ -15,12 +16,9 @@ class ProjectController extends Controller
      */
     public function index()
     {
-// Fetch the projects linked to the authenticated user's organisation
-        $projects = Auth::user()->organisation->projects;
+        $projects = Auth::user()->organisation?->projects;
 
-// Return the view with the projects
         return view('projects', compact('projects'));
-
     }
 
     /**
@@ -31,14 +29,21 @@ class ProjectController extends Controller
      */
     public function read(Project $project)
     {
+        // Group tasks by the week number of the completed_at date
+        $tasksByWeek = $project->tasks->groupBy(function ($task) {
+            return Carbon::parse($task->completed_at)->format('W');
+        });
 
-        // Ensure the authenticated user belongs to the same organisation as the project
-        if (Auth::user()->organisation_id !== $project->organisation_id || Auth::user()->organisation_id === null) {
-            abort(403, 'Unauthorized action.');
-        }
+        $tasksByWeekWithHours = $tasksByWeek->map(function ($tasks, $week) {
+            $totalHours = $tasks->sum('hours');
+            return [
+                'tasks' => $tasks,
+                'total_hours' => $totalHours
+            ];
+        });
 
         // Return the view with the project
-        return view('project', compact('project'));
+        return view('project', compact('project', 'tasksByWeekWithHours'));
     }
 
 }

@@ -29,17 +29,17 @@ class ProjectResource extends Resource
                 Forms\Components\Select::make('organisation_id')
                     ->relationship('organisation', 'name')
                     ->required(),
-                Forms\Components\Repeater::make('tasks')
-                    ->relationship('tasks')
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\Textarea::make('description')
-                            ->required(),
-                        Forms\Components\DatePicker::make('completed_at')
-                            ->nullable(),
-                    ]),
+//                Forms\Components\Repeater::make('tasks')
+//                    ->relationship('tasks')
+//                    ->schema([
+//                        Forms\Components\TextInput::make('name')
+//                            ->required()
+//                            ->maxLength(255),
+//                        Forms\Components\Textarea::make('description')
+//                            ->required(),
+//                        Forms\Components\DatePicker::make('completed_at')
+//                            ->nullable(),
+//                    ]),
             ]);
     }
 
@@ -70,7 +70,7 @@ class ProjectResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\TasksRelationManager::class,
         ];
     }
 
