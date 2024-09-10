@@ -13,6 +13,11 @@ class OrganisationSeeder extends Seeder
      */
     public function run()
     {
-        Organisation::factory()->count(10)->create();
+        // Truncate the users table
+        Organisation::truncate();
+
+        Organisation::factory()->create([
+            'name' => 'Fynders',
+        ]);
     }
 }

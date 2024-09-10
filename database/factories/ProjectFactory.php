@@ -19,8 +19,8 @@ class ProjectFactory extends Factory
         return [
             'name' => ucfirst($this->faker->word()), // Generates a random project name
             'description' => $this->faker->paragraph(), // Generates a random description
-            'created_at' => now(),
-            'updated_at' => now(),
+            'created_at' => $this->faker->dateTimeBetween('2024-09-01', '2024-09-01'),
+            'updated_at' => $this->faker->dateTimeBetween('2024-09-01', '2024-09-01'),
         ];
     }
 }
