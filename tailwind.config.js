@@ -8,11 +8,15 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
     ],
+    darkMode: 'media', // or 'media'
 
     theme: {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+            },
+            backgroundColor: {
+                dark: '#1b1b1b', // or any color you prefer
             },
         },
     },

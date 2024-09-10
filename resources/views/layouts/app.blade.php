@@ -16,7 +16,7 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="antialiased h-full">
+<body class="antialiased h-full dark:bg-dark dark:text-gray-300">
 <div id="app" class="h-full flex flex-col justify-between">
     @include('layouts.header')
 
