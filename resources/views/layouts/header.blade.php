@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md navbar-light dark:bg-dark bg-white shadow-sm p-6">
+<nav class="navbar navbar-expand-md navbar-light dark:bg-dark bg-white drop-shadow dark:drop-shadow-lg dark:shadow-neutral-950 p-6">
     <div class="flex justify-between">
         <div class="flex items-center gap-3">
             <a class="font-bold tracking-tight text-2xl lowercase" href="{{ url('/') }}">
@@ -9,9 +9,11 @@
 
             <a href="{{ route('projects') }}" class="dark:text-gray-50 hover:underline">Projecten</a>
 
-            /
+            @if(isset($project))
+                /
 
-            <a href="{{ route('projects') }}" class="dark:text-gray-50 hover:underline">V2</a>
+                <a href="{{ route('project', ['project' => $project->id]) }}" class="dark:text-gray-50 hover:underline">{{ $project->name }}</a>
+            @endif
         </div>
 
         @guest

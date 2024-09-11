@@ -17,6 +17,7 @@ class Project extends Model
     protected $fillable = [
         'name',
         'description',
+        'hour_tariff',
     ];
 
     // create relationships so that multiple tasks can be associated with a project

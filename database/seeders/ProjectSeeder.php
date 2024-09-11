@@ -30,6 +30,7 @@ class ProjectSeeder extends Seeder
                 'name' => 'V2',
                 'description' => 'A new version based on Living and Jobs',
                 'organisation_id' => Organisation::where('name', 'Fynders')->first()->id ?? null,
+                'hour_tariff' => 75
             ]
         );
 

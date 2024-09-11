@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->foreignId('organisation_id')->onDelete('cascade')->nullable();
             $table->text('description')->nullable();
+            $table->integer('hour_tariff')->nullable();
             $table->timestamps();
         });
     }

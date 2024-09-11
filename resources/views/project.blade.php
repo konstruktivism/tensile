@@ -1,5 +1,4 @@
 <!-- resources/views/projects/read.blade.php -->
-
 @extends('layouts.app')
 
 @section('content')
@@ -35,73 +34,38 @@
                     </svg>
                 </div>
             </div>
-
         </div>
 
-        <h1 class="text-6xl font-bold tracking-tight mb-4">Week 36</h1>
+        <h1 class="text-3xl font-bold tracking-tight mb-4">Summary</h1>
 
         <div class="flex justify-between p-3 uppercase opacity-50 font-light">
-            <h2 class="w-1/4">Datum</h2>
+            <h2 class="w-1/4">Week</h2>
 
-            <div class="w-1/2">Deliverables</div>
-
-            <div class="w-1/5 text-right">Uren</div>
+            <div class="w-1/2 text-right">Uren</div>
 
             <div class="w-1/5 text-right">Prijs</div>
         </div>
 
-        <div class="border-b dark:border-white dark:border-opacity-25 flex justify-between p-3 pt-0">
-            <h2 class="w-1/4 text-sm">02-09-2024</h2>
+        @foreach ($tasksByMonthAndWeekWithHours as $month => $weeks)
+            <h2 class="text-xl font-bold mt-4">{{ \Carbon\Carbon::parse($month . '-01')->format('F Y') }}</h2>
+            @foreach ($weeks as $week => $data)
+                <a href="{{ route('project.viewWeek', ['project' => $project->id, 'week' => $week]) }}" class="border-b dark:border-white dark:border-opacity-25 flex justify-between p-3 pt-0">
+                    <h2 class="w-1/4 text-sm">{{ $week }}</h2>
 
-            <div class="w-1/2">E-mailnotificaties</div>
+                    <div class="w-1/2 text-right">{{ $data['total_hours'] }}</div>
 
-            <div class="w-1/5 text-right">2</div>
-
-            <div class="w-1/5 text-right">&euro; {{ 2 * 65 }}</div>
-        </div>
-
-        <div class="border-b dark:border-white dark:border-opacity-25  flex justify-between p-3 pt-0">
-            <h2 class="w-1/4 text-sm">03-09-2024</h2>
-
-            <div class="w-1/2">
-                Design Landingspagina
-
-                Support items
-
-                Projectmanagement
-            </div>
-
-            <div class="w-1/5 text-right">2</div>
-
-            <div class="w-1/5 text-right">&euro; {{ 2 * 65 }}</div>
-        </div>
+                    <div class="w-1/5 text-right">&euro; {{ $data['total_hours'] * $project->hour_tariff }}</div>
+                </a>
+            @endforeach
+        @endforeach
 
         <div class="flex justify-between p-3 font-bold border-yellow-400 pb-3 border-b">
             <h2 class="w-1/4"></h2>
 
-            <div class="w-1/2"></div>
+            <div class="w-1/2 text-right">{{ $tasksByMonthAndWeekWithHours->flatten(1)->sum('total_hours') }}</div>
 
-            <div class="w-1/5 text-right">4</div>
-
-            <div class="w-1/5 text-right">&euro; {{ 4 * 65 }}</div>
+            <div class="w-1/5 text-right">&euro; {{ $tasksByMonthAndWeekWithHours->flatten(1)->sum('total_hours') * $project->hour_tariff }}</div>
         </div>
 
-        <div class="my-3">
-            <div class="mt-12">
-                <h2 class="text-md font-bold mb-4 text-center uppercase">September 2024</h2>
-                <div class="w-full bg-gradient-to-r from-yellow-100 to-blue-500 rounded-full h-2 overflow-hidden">
-                    <div class="bg-gradient-to-r from-yellow-300 to-yellow-500 h-full striped" style="width: 25%;"></div>
-                </div>
-                <div class="w-full text-white flex py-2">
-                    <div class="opacity-50" style="width: 25%;">
-                        7 days
-                    </div>
-
-                    <div class=" text-right" style="width: 75%;">
-                        24 days left for a new release with impact
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 @endsection
