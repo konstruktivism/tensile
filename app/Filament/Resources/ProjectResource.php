@@ -5,13 +5,15 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProjectResource\Pages;
 use App\Filament\Resources\ProjectResource\RelationManagers;
 use App\Models\Project;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\Action;
+use App\Mail\WeeklyTasksMail;
+use Illuminate\Support\Facades\Mail;
 
 class ProjectResource extends Resource
 {
@@ -29,17 +31,6 @@ class ProjectResource extends Resource
                 Forms\Components\Select::make('organisation_id')
                     ->relationship('organisation', 'name')
                     ->required(),
-//                Forms\Components\Repeater::make('tasks')
-//                    ->relationship('tasks')
-//                    ->schema([
-//                        Forms\Components\TextInput::make('name')
-//                            ->required()
-//                            ->maxLength(255),
-//                        Forms\Components\Textarea::make('description')
-//                            ->required(),
-//                        Forms\Components\DatePicker::make('completed_at')
-//                            ->nullable(),
-//                    ]),
             ]);
     }
 
@@ -59,6 +50,22 @@ class ProjectResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('sendWeeklyTasks')
+                    ->label('Send Weekly Tasks')
+                    ->action(function (Project $record) {
+                        $week = now()->weekOfYear;
+
+                        $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $week)->startOfWeek();
+                        $endOfWeek = $startOfWeek->copy()->endOfWeek();
+
+                        $tasks = $record->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->get();
+
+                        $users = $record->organisation->users;
+
+                        foreach ($users as $user) {
+                            Mail::to($user->email)->send(new WeeklyTasksMail($record, $tasks, $week));
+                        }
+                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

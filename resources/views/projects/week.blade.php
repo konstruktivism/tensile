@@ -17,7 +17,7 @@
                     <path d="M10 30 C 20 10, 40 10, 50 30 S 80 50, 90 30 S 120 10, 130 30 S 160 50, 170 30 S 200 10, 210 50" stroke="currentColor" fill="transparent"/>
                 </svg>
 
-                <div class="text-black top-0 z-0 blur-sm left-2 absolute">
+                <div class="dark:text-black top-0 z-0 blur-sm left-2 absolute">
                     <svg width="100" height="50" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg" class="fill-current stroke-2">
                         <path d="M10 30 C 20 10, 40 10, 50 30 S 80 50, 90 30 S 120 10, 130 30 S 160 50, 170 30 S 200 10, 210 50" stroke="currentColor" fill="transparent"/>
                     </svg>
@@ -57,7 +57,6 @@
                     <div class="font-bold">{{ $day['name'] }}</div>
 
                     {{ $day['description'] }}
-
                 </div>
 
                 <div class="w-1/5 text-right">{{ $day['hours'] }}</div>
@@ -66,7 +65,7 @@
             </div>
         @endforeach
 
-        <div class="flex justify-between p-3 font-bold dark:bg-dark bg-white drop-shadow dark:drop-shadow-md dark:drop-shadow-neutral-950 border-t border-neutral-800 rounded-lg">
+        <div class="flex justify-between p-3 font-bold dark:bg-dark bg-white drop-shadow dark:drop-shadow-md dark:drop-shadow-neutral-950 border-t  border-neutral-100 dark:border-neutral-800 rounded-lg">
             <h2 class="w-1/4"></h2>
 
             <div class="w-1/2 flex flex-col"></div>
@@ -82,7 +81,7 @@
                 <div class="w-full bg-gradient-to-r from-blue-50 to-blue-500 rounded-full h-2 overflow-hidden">
                     <div class="bg-gradient-to-r from-yellow-300 to-yellow-500 h-full relative" id="progress-bar"></div>
                 </div>
-                <div class="w-full text-white flex py-2">
+                <div class="w-full text-black/70 dark:text-white flex py-2">
                     <div class="opacity-50" style="width: 50%;" id="days-passed">
                         <!-- JavaScript will update this -->
                     </div>
