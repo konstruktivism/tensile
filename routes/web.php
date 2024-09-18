@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\MagicLinkController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -24,5 +25,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/project/{project}', [ProjectController::class, 'read'])->name('project');
     Route::get('/project/{project}/{week}', [ProjectController::class, 'viewWeek'])->name('project.viewWeek');
 });
+
+Route::get('/login/magic', [MagicLinkController::class, 'showMagicLinkForm'])->name('login.magic');
+Route::post('/login/magic', [MagicLinkController::class, 'sendMagicLink'])->name('login.magic.send');
+Route::get('/magic-login', [MagicLinkController::class, 'login'])->name('magic.login');
 
 require __DIR__.'/auth.php';

@@ -20,6 +20,8 @@ class User extends Authenticatable
         'email',
         'password',
         'organisation_id',
+        'magic_link_token',
+        'magic_link_expires_at',
     ];
 
     /**
@@ -30,6 +32,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'magic_link_token',
+        'magic_link_expires_at',
     ];
 
     /**
