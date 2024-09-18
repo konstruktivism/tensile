@@ -18,6 +18,7 @@ class Project extends Model
         'name',
         'description',
         'hour_tariff',
+        'is_fixed'
     ];
 
     // create relationships so that multiple tasks can be associated with a project
@@ -32,5 +33,10 @@ class Project extends Model
     public function organisation(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Organisation::class);
+    }
+
+    public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class);
     }
 }

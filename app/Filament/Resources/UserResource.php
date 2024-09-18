@@ -32,6 +32,10 @@ class UserResource extends Resource
                     ->password()
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Select::make('projects')
+                    ->multiple()
+                    ->relationship('projects', 'name')
+                    ->required(),
             ]);
     }
 
@@ -43,6 +47,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
+                Tables\Columns\TextColumn::make('projects.name')->label('Projects')
             ])
             ->filters([
                 //

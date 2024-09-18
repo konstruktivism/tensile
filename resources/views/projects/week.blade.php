@@ -46,7 +46,9 @@
 
             <div class="w-1/5 text-right">Uren</div>
 
-            <div class="w-1/5 text-right">Prijs</div>
+            @if ($project->is_fixed == 0)
+                <div class="w-1/5 text-right">Prijs</div>
+            @endif
         </div>
 
         @foreach($tasks as $index => $day)
@@ -61,7 +63,9 @@
 
                 <div class="w-1/5 text-right">{{ $day['hours'] }}</div>
 
-                <div class="w-1/5 text-right">&euro; {{ $day['hours'] * 65 }}</div>
+                @if ($project->is_fixed == 0)
+                    <div class="w-1/5 text-right">&euro; {{ $day['hours'] * 65 }}</div>
+                @endif
             </div>
         @endforeach
 
@@ -72,7 +76,9 @@
 
             <div class="w-1/5 text-right">{{ $tasks->sum('hours') }}</div>
 
-            <div class="w-1/5 text-right">&euro; {{ $tasks->sum('hours') * $project->hour_tariff }}</div>
+            @if ($project->is_fixed == 0)
+                <div class="w-1/5 text-right">&euro; {{ $tasks->sum('hours') * $project->hour_tariff }}</div>
+            @endif
         </div>
 
         <div class="my-3">

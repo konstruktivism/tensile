@@ -44,9 +44,11 @@
                 <a href="{{ route('project.viewWeek', ['project' => $project->id, 'week' => $week]) }}" class="border-b dark:border-white dark:border-opacity-25 flex justify-between p-3 pt-0">
                     <h2 class="w-1/4 text-sm">Week {{ $week }}</h2>
 
-                    <div class="w-1/2 text-right">{{ $data['total_hours'] }} uren</div>
+                    <div class="w-1/2 text-right">{{ $data['total_hours'] }} {{ $data['total_hours'] == 1 ? 'uur' : 'uren' }}</div>
 
-                    <div class="w-1/5 text-right">&euro; {{ $data['total_hours'] * $project->hour_tariff }}</div>
+                    @if ($project->is_fixed == 0)
+                        <div class="w-1/5 text-right">&euro; {{ $data['total_hours'] * $project->hour_tariff }}</div>
+                    @endif
                 </a>
             @endforeach
         @endforeach
@@ -54,9 +56,11 @@
         <div class="flex justify-between p-3 font-bold border-yellow-400 pb-3 border-b">
             <h2 class="w-1/4"></h2>
 
-            <div class="w-1/2 text-right">{{ $tasksByMonthAndWeekWithHours->flatten(1)->sum('total_hours') }}</div>
+            <div class="w-1/2 text-right">{{ $tasksByMonthAndWeekWithHours->flatten(1)->sum('total_hours') }} {{ $tasksByMonthAndWeekWithHours->flatten(1)->sum('total_hours') == 1 ? 'uur' : 'uren' }}</div>
 
-            <div class="w-1/5 text-right">&euro; {{ $tasksByMonthAndWeekWithHours->flatten(1)->sum('total_hours') * $project->hour_tariff }}</div>
+            @if ($project->is_fixed == 0)
+                <div class="w-1/5 text-right">&euro; {{ $tasksByMonthAndWeekWithHours->flatten(1)->sum('total_hours') * $project->hour_tariff }}</div>
+            @endif
         </div>
 
     </div>

@@ -5,15 +5,17 @@
                 {{ config('app.name', 'Laravel') }}
             </a>
 
-            /
-
-            <a href="{{ route('projects') }}" class="dark:text-gray-50 hover:underline">Projecten</a>
-
-            @if(request()->routeIs('project'))
+            @auth()
                 /
 
-                <a href="{{ route('project', ['project' => $project->id]) }}" class="dark:text-gray-50 hover:underline">{{ $project->name }}</a>
-            @endif
+                <a href="{{ route('projects') }}" class="dark:text-gray-50 hover:underline">Projecten</a>
+
+                @if(request()->routeIs('project'))
+                    /
+
+                    <a href="{{ route('project', ['project' => $project->id]) }}" class="dark:text-gray-50 hover:underline">{{ $project->name }}</a>
+                @endif
+            @endauth
         </div>
 
         @guest

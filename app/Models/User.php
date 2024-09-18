@@ -52,4 +52,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Organisation::class);
     }
+
+    public function projects(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Project::class);
+    }
 }

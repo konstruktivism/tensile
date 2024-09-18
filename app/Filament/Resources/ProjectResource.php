@@ -31,6 +31,12 @@ class ProjectResource extends Resource
                 Forms\Components\Select::make('organisation_id')
                     ->relationship('organisation', 'name')
                     ->required(),
+                Forms\Components\Select::make('users')
+                    ->multiple()
+                    ->relationship('users', 'name')
+                    ->required(),
+                Forms\Components\Toggle::make('is_fixed')
+                    ->default(false),
             ]);
     }
 
@@ -39,11 +45,10 @@ class ProjectResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->sortable(),
+                Tables\Columns\TextColumn::make('organisation.name')->label('Organisation')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('name')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('description')->limit(50),
-                Tables\Columns\TextColumn::make('organisation.name')->label('Organisation')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable(),
+                Tables\Columns\TextColumn::make('users.name')->label('Users'),
             ])
             ->filters([
                 // Add any table filters here if needed

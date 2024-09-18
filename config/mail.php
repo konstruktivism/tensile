@@ -95,6 +95,12 @@ return [
             ],
         ],
 
+        'mailcoach' => [
+            'transport' => 'mailcoach',
+            'domain' => 'konstruktiv.mailcoach.app',
+            'token' => env('MAILCOACH_TOKEN', ''),
+        ],
+
     ],
 
     /*

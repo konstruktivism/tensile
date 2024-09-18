@@ -16,7 +16,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Auth::user()->organisation?->projects;
+        $projects = Auth::user()->projects;
 
         return view('projects', compact('projects'));
     }
@@ -29,6 +29,10 @@ class ProjectController extends Controller
      */
     public function read(Project $project)
     {
+        if (!Auth::user()->projects->contains($project)) {
+            abort(403, 'Unauthorized action.');
+        }
+
         // Group tasks by the month and week number of the completed_at date
         $tasksByMonth = $project->tasks->groupBy(function ($task) {
             $date = Carbon::parse($task->completed_at);
@@ -39,15 +43,15 @@ class ProjectController extends Controller
             $tasksByWeek = $tasks->groupBy(function ($task) {
                 $date = Carbon::parse($task->completed_at);
                 return $date->format('W');
-        });
+            });
 
             return $tasksByWeek->map(function ($tasks, $week) {
-            $totalHours = $tasks->sum('hours');
-            return [
-                'tasks' => $tasks,
-                'total_hours' => $totalHours
-            ];
-        })->sortKeys();
+                $totalHours = $tasks->sum('hours');
+                return [
+                    'tasks' => $tasks,
+                    'total_hours' => $totalHours
+                ];
+            })->sortKeys();
         })->sortKeys();
 
         // Return the view with the project
@@ -63,6 +67,10 @@ class ProjectController extends Controller
      */
     public function viewWeek(Project $project, $week)
     {
+        if (!Auth::user()->projects->contains($project)) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $week)->startOfWeek();
         $endOfWeek = $startOfWeek->copy()->endOfWeek();
 
@@ -70,5 +78,4 @@ class ProjectController extends Controller
 
         return view('projects.week', compact('project', 'tasks', 'week'));
     }
-
 }

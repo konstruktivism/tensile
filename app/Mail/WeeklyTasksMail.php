@@ -26,7 +26,7 @@ class WeeklyTasksMail extends Mailable
 
     public function build()
     {
-        return $this->view('emails.weekly-tasks')
+        return $this->view('mail.weekly-tasks')
             ->subject('Weekly Tasks for ' . $this->project->name)
             ->with([
                 'project' => $this->project,
