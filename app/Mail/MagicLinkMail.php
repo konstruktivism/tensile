@@ -34,6 +34,6 @@ class MagicLinkMail extends Mailable
 
         // Return the rendered HTML
         return $this->view('mail.raw', ['htmlContent' => $htmlContent])
-            ->subject(config('app_name') . ' - ' .  __('Login via email'));
+            ->subject(config('app.name') . ' · ' .  __('Login via e-mail'));
     }
 }
