@@ -123,4 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'slogan' => env('APP_SLOGAN', ''),
+
 ];

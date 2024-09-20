@@ -1,11 +1,11 @@
 @extends('mail.base')
 
 @section('header')
-    {{ __('Verify Email Address') }}
+    {{ __('Login via e-mail') }}
 @endsection
 
 @section('body')
-    {{ __('Please click the button below to verify your email address.') }}
+    {{ __('Please click the button below to login in to your account.') }}
 @endsection
 
 @section('button_url')
@@ -13,13 +13,5 @@
 @endsection
 
 @section('button_text')
-    {{ __('Verify Account') }}
-@endsection
-
-@section('footer_image')
-    {{ asset('images/icon-alert.png') }}
-@endsection
-
-@section('footer')
-    {{ __('If you did not create an account, no further action is required.') }}
+    {{ __('Login') }}
 @endsection

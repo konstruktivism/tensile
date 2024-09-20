@@ -19,7 +19,7 @@
         </div>
 
         @guest
-            <a href="/login" class="underline">Login</a>
+            <x-link url="{{ route('login') }}" class="bg-white text-neutral-600 font-normal border border-neutral-200 hover:bg-neutral-100 active:bg-neutral-200 ring-0 focus:bg-transparent">Login</x-link>
         @endguest
         @auth
             <div class="relative" x-data="{ open: false }">

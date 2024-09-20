@@ -36,7 +36,7 @@ class MagicLinkController extends Controller
 
         Mail::to($user->email)->send(new \App\Mail\MagicLinkMail($url));
 
-        return back()->with('status', 'Magic link sent!');
+        return back()->with('status', 'Magic link sent! Please check your email and close this window.');
     }
 
     public function login(Request $request)
