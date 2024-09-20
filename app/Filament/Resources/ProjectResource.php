@@ -65,10 +65,10 @@ class ProjectResource extends Resource
 
                         $tasks = $record->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->get();
 
-                        $users = $record->organisation->users;
+                        $users = $record->users;
 
                         foreach ($users as $user) {
-                            Mail::to($user->email)->send(new WeeklyTasksMail($record, $tasks, $week));
+                           Mail::to($user->email)->send(new WeeklyTasksMail($record, $tasks, $week));
                         }
                     })
             ])
