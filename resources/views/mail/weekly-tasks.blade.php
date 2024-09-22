@@ -11,7 +11,7 @@
         {{ $project->description }}
     </div>
 
-    <table>
+    <table style="width: 100%;">
         <thead>
         <tr>
             <th style="width: 125px; border-bottom: 1px solid #e5e7eb; padding-bottom: 1em; font-weight: normal;">Datum</th>
@@ -29,7 +29,7 @@
         @endforeach
             <tr>
                 <td colspan="3" style="text-align: right;">
-                    Total aantal uren: {{ $tasks->sum('hours') }}
+                    Total aantal uren: {{ $tasks->sum('minutes') }}
                 </td>
             </tr>
         </tbody>

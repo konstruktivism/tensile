@@ -20,7 +20,8 @@ class Task extends Model
         'description',
         'project_id',
         'completed_at',
-        'hours',
+        'minutes',
+        'icalUID',
     ];
 
     // create relationships so that a task can be associated with a project

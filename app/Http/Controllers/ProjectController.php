@@ -39,23 +39,23 @@ class ProjectController extends Controller
             return $date->format('Y-m');
         });
 
-        $tasksByMonthAndWeekWithHours = $tasksByMonth->map(function ($tasks, $month) {
+        $tasksByMonthAndWeekWithMinutes = $tasksByMonth->map(function ($tasks, $month) {
             $tasksByWeek = $tasks->groupBy(function ($task) {
                 $date = Carbon::parse($task->completed_at);
                 return $date->format('W');
             });
 
             return $tasksByWeek->map(function ($tasks, $week) {
-                $totalHours = $tasks->sum('hours');
+                $totalMinutes = $tasks->sum('minutes');
                 return [
                     'tasks' => $tasks,
-                    'total_hours' => $totalHours
+                    'total_minutes' => $totalMinutes
                 ];
             })->sortKeys();
         })->sortKeys();
 
         // Return the view with the project
-        return view('project', compact('project', 'tasksByMonthAndWeekWithHours'));
+        return view('project', compact('project', 'tasksByMonthAndWeekWithMinutes'));
     }
 
     /**

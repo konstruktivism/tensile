@@ -1,15 +1,14 @@
 <footer class="mb-3 text-center text-lg-start rounded-full">
-    <div class="w-full h-8 shadow-inner relative">
-        <div class="absolute inset-y-0 left-0 bg-gradient-to-r from-white to-transparent w-1/4 h-full z-10"></div>
+    <div class="w-full h-8 shadow-inner dark:shadow-neutral-800 relative">
+        <div class="absolute inset-y-0 left-0 bg-gradient-to-r from-white dark:from-dark to-transparent w-1/4 h-full z-10"></div>
 
-        <div class="absolute inset-y-0 right-0 bg-gradient-to-l from-white to-transparent w-1/4 h-full z-10"></div>
-
+        <div class="absolute inset-y-0 right-0 bg-gradient-to-l from-white dark:from-dark to-transparent w-1/4 h-full z-10"></div>
     </div>
 
-    <div class="flex flex-col items-center gap-6 md:gap-0 md:flex-row justify-between px-6 pb-3 text-gray-500">
+    <div class="flex flex-col items-center gap-6 md:gap-0 md:flex-row justify-between px-6 pb-3 text-neutral-500">
         {{ config('app.slogan') }}
 
-        <div class="flex items-center gap-2 text-md text-dark">
+        <div class="flex items-center gap-2 text-md text-dark dark:text-neutral-500">
             <a class="text-black font-bold rounded-br-lg px-2 bg-yellow-400 lowercase" href="{{ url('/') }}">{{ config('app.name') }}</a>
 
             <a href="https://konstruktiv.nl" target="_blank" class="flex gap-2">

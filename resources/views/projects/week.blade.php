@@ -2,7 +2,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mx-auto p-4 flex flex-col gap-3 dark:text-gray-300">
+    <div class="mx-auto p-4 flex flex-col gap-3 dark:text-gray-300 w-full max-w-3xl">
         <div class="mb-12 flex flex-col items-center">
             <h1 class="text-lg font-bold text-center uppercase">
                 {{ $project->organisation->name }}
@@ -61,10 +61,12 @@
                     {{ $day['description'] }}
                 </div>
 
-                <div class="w-1/5 text-right">{{ $day['hours'] }}</div>
+                <div class="w-1/5 text-right">{{ $day['minutes']/60 }}</div>
 
                 @if ($project->is_fixed == 0)
-                    <div class="w-1/5 text-right">&euro; {{ $day['hours'] * 65 }}</div>
+                    <div class="w-1/5 text-right">
+                        {{ \App\Helpers\CurrencyHelper::formatCurrency($day['minutes']/60 * 65) }}
+                    </div>
                 @endif
             </div>
         @endforeach
@@ -74,10 +76,10 @@
 
             <div class="w-1/2 flex flex-col"></div>
 
-            <div class="w-1/5 text-right">{{ $tasks->sum('hours') }}</div>
+            <div class="w-1/5 text-right">{{ $tasks->sum('minutes')/60 }}</div>
 
             @if ($project->is_fixed == 0)
-                <div class="w-1/5 text-right">&euro; {{ $tasks->sum('hours') * $project->hour_tariff }}</div>
+                <div class="w-1/5 text-right">{{ \App\Helpers\CurrencyHelper::formatCurrency($tasks->sum('minutes')/60 * $project->hour_tariff) }}</div>
             @endif
         </div>
 

@@ -31,8 +31,8 @@ class TaskResource extends Resource
                     ->required(),
                 Forms\Components\DatePicker::make('completed_at')
                     ->nullable(),
-                Forms\Components\TextInput::make('hours')
-                    ->label('Hours')
+                Forms\Components\TextInput::make('minutes')
+                    ->label('Minutes')
                     ->nullable()
                     ->numeric(),
             ]);
