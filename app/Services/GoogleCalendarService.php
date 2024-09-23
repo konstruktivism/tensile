@@ -49,11 +49,12 @@ class GoogleCalendarService
         }
     }
 
-public function getEvents($calendarId = null, $maxResults = 10)
+    public function getEvents($calendarId = null, $maxResults = 32)
     {
         $calendarId = $calendarId ?? config('services.google_calendar.calendar_id');
 
         $service = new Calendar($this->client);
+
         $optParams = [
             'maxResults' => $maxResults,
             'orderBy' => 'startTime',
@@ -61,6 +62,25 @@ public function getEvents($calendarId = null, $maxResults = 10)
             'timeMin' => date('c', strtotime('00:00 -1 day')),
             'timeMax' => date('c'),
         ];
+        $results = $service->events->listEvents($calendarId, $optParams);
+
+        return $results->getItems();
+    }
+
+    public function getEventsLast30Days($calendarId = null)
+    {
+        $calendarId = $calendarId ?? config('services.google_calendar.calendar_id');
+
+        $service = new Calendar($this->client);
+
+        $optParams = [
+            'maxResults' => 1000, // Adjust as needed
+            'orderBy' => 'startTime',
+            'singleEvents' => true,
+            'timeMin' => date('c', strtotime('-30 days')),
+            'timeMax' => date('c'),
+        ];
+
         $results = $service->events->listEvents($calendarId, $optParams);
         return $results->getItems();
     }

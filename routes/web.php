@@ -34,4 +34,6 @@ Route::get('/magic-login', [MagicLinkController::class, 'login'])->name('magic.l
 
 Route::get('/import', [GoogleCalendarController::class, 'importEvents']);
 
+Route::get('/import-30days', [GoogleCalendarController::class, 'importEvents30Days']);
+
 require __DIR__.'/auth.php';

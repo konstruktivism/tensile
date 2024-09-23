@@ -16,9 +16,22 @@ class GoogleCalendarController extends Controller
         $this->googleCalendarService = $googleCalendarService;
     }
 
-    public function importEvents()
+    public function importEvents(): void
     {
         $events = $this->googleCalendarService->getEvents();
+
+        $this->runImport($events);
+    }
+
+    public function importEvents30Days(): void
+    {
+        $events = $this->googleCalendarService->getEvents();
+
+        $this->runImport($events);
+    }
+
+    public function runImport($events): \Illuminate\Http\JsonResponse
+    {
         if (empty($events)) {
             return response()->json(['message' => 'No upcoming events found.']);
         }
@@ -32,20 +45,21 @@ class GoogleCalendarController extends Controller
             $projectCode = substr(preg_replace('/[^A-Z]/', '', $event->getSummary()), 0, 3);
             $project = Project::where('project_code', $projectCode)->first();
 
+            ray($project);
+
             if($project) {
                 if (!Task::where('icalUID', $event->iCalUID)->exists()) {
-                Task::create([
-                    'name' => substr($event->getSummary(), 4),
-                    'description' => $event->getDescription(),
-                    'completed_at' => $start,
-                    'project_id' => $project->id,
-                    'icalUID' => $event->iCalUID,
-                    'minutes' => isset($event->start->dateTime) && isset($event->end->dateTime) ? ceil((strtotime($event->end->dateTime) - strtotime($event->start->dateTime)) / 60) : 0,
-                ]);
-            }
+                    Task::create([
+                        'name' => substr($event->getSummary(), 4),
+                        'description' => $event->getDescription() ?? '',
+                        'completed_at' => $start,
+                        'project_id' => $project->id,
+                        'icalUID' => $event->iCalUID,
+                        'minutes' => isset($event->start->dateTime) && isset($event->end->dateTime) ? ceil((strtotime($event->end->dateTime) - strtotime($event->start->dateTime)) / 60) : 0,
+                    ]);
+                }
             }
         }
-
 
         return response()->json(['message' => 'Events imported successfully.']);
     }

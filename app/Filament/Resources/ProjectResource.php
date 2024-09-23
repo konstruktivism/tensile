@@ -26,6 +26,9 @@ class ProjectResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('project_code')
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\Textarea::make('description')
                     ->nullable(),
                 Forms\Components\Select::make('organisation_id')
