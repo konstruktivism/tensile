@@ -16,36 +16,31 @@ class GoogleCalendarController extends Controller
         $this->googleCalendarService = $googleCalendarService;
     }
 
-    public function importEvents(): void
+    public function importEvents(): \Illuminate\Http\JsonResponse
     {
         $events = $this->googleCalendarService->getEvents();
 
         $this->runImport($events);
+
+        return response()->json(['message' => 'Events imported of yesterday.']);
     }
 
-    public function importEvents30Days(): void
+    public function importEvents30Days():  \Illuminate\Http\JsonResponse
     {
         $events = $this->googleCalendarService->getEvents();
 
         $this->runImport($events);
+
+        return response()->json(['message' => 'Events imported of the last 30 days.']);
     }
 
-    public function runImport($events): \Illuminate\Http\JsonResponse
+    public function runImport($events)
     {
-        if (empty($events)) {
-            return response()->json(['message' => 'No upcoming events found.']);
-        }
-
         foreach ($events as $event) {
             $start = $event->start->dateTime ?? $event->start->date;
-            // Create a new task with the event data
-
-            ray($event);
-
             $projectCode = substr(preg_replace('/[^A-Z]/', '', $event->getSummary()), 0, 3);
-            $project = Project::where('project_code', $projectCode)->first();
 
-            ray($project);
+            $project = Project::where('project_code', $projectCode)->first();
 
             if($project) {
                 if (!Task::where('icalUID', $event->iCalUID)->exists()) {
@@ -61,6 +56,6 @@ class GoogleCalendarController extends Controller
             }
         }
 
-        return response()->json(['message' => 'Events imported successfully.']);
+        return;
     }
 }

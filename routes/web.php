@@ -32,8 +32,8 @@ Route::get('/login/magic', [MagicLinkController::class, 'showMagicLinkForm'])->n
 Route::post('/login/magic', [MagicLinkController::class, 'sendMagicLink'])->name('login.magic.send');
 Route::get('/magic-login', [MagicLinkController::class, 'login'])->name('magic.login');
 
-Route::get('/import', [GoogleCalendarController::class, 'importEvents']);
+Route::get('/import', [GoogleCalendarController::class, 'importEvents'])->name('import');
 
-Route::get('/import-30days', [GoogleCalendarController::class, 'importEvents30Days']);
+Route::get('/import-30days', [GoogleCalendarController::class, 'importEvents30Days'])->name('import-30days');
 
 require __DIR__.'/auth.php';

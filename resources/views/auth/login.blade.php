@@ -1,6 +1,6 @@
 <x-app-layout>
-    <div class="w-full bg-white h-full flex grow flex-col justify-stretch md:flex-row p-3 md:p-12">
-        <div class="bg-white lg:w-1/2 p-6 lg:p-12 flex flex-col justify-center gap-3 md:gap-12">
+    <div class="w-full bg-white dark:bg-dark h-full flex grow flex-col justify-stretch md:flex-row p-3 md:p-12">
+        <div class="bg-white dark:bg-dark lg:w-1/2 p-6 lg:p-12 flex flex-col justify-center gap-3 md:gap-12">
             <!-- Session Status -->
             <x-auth-session-status  :status="session('status')" />
 
@@ -9,6 +9,7 @@
             <form method="POST" action="{{ route('login.magic.send') }}" class="flex flex-col gap-3">
                 @csrf
                 <x-text-input id="email" type="email" name="email" placeholder="{{ __('Email') }}" required autofocus autocomplete="username" />
+
                 <x-button type="submit" class="bg-primary">{{ __('Login via e-mail') }}</x-button>
             </form>
 

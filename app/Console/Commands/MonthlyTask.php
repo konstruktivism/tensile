@@ -6,10 +6,10 @@ use Illuminate\Console\Command;
 use App\Services\GoogleCalendarService;
 use App\Http\Controllers\GoogleCalendarController;
 
-class DailyTask extends Command
+class MonthlyTask extends Command
 {
-    protected $signature = 'command:daily-task';
-    protected $description = 'Run daily tasks at 6:00 AM';
+    protected $signature = 'command:monthly-task';
+    protected $description = '30 days task';
 
     protected $googleCalendarService;
 
@@ -26,7 +26,7 @@ class DailyTask extends Command
 
     public function handle()
     {
-        $response = $this->GoogleCalendarController->importEvents();
+        $response = $this->GoogleCalendarController->importEvents30Days();
 
         $this->info($response->getData()->message);
     }
