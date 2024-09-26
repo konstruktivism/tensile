@@ -2,7 +2,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mx-auto p-4 flex flex-col gap-3 dark:text-gray-300 w-full max-w-3xl">
+    <div class="mx-auto lg:p-4 flex flex-col gap-3 dark:text-gray-300 w-full max-w-3xl">
         <div class="mb-12 flex flex-col items-center">
             <h1 class="text-lg font-bold text-center uppercase">
                 {{ $project->organisation->name }}
@@ -37,9 +37,23 @@
 
         </div>
 
+        <div class="flex justify-between mb-4">
+            @if ($previousWeekTasks->isNotEmpty())
+                <a href="{{ route('project.viewWeek', ['project' => $project->id, 'week' => $week - 1]) }}" class="text-neutral-300 rounded border border-opacity-60 px-2 py-1">< Week {{ $week-1 }}</a>
+            @else
+                <span></span>
+            @endif
+
+            @if ($nextWeekTasks->isNotEmpty())
+                <a href="{{ route('project.viewWeek', ['project' => $project->id, 'week' => $week + 1]) }}"class="text-neutral-300 rounded border border-opacity-60 px-2 py-1">Week {{ $week+1 }} ></a>
+            @else
+                <span></span>
+            @endif
+        </div>
+
         <h1 class="text-6xl font-bold tracking-tight mb-4">Week {{ $week }}</h1>
 
-        <div class="flex justify-between p-3 uppercase opacity-50 font-light">
+        <div class="flex justify-between py-3 lg:p-3 uppercase opacity-50 font-light">
             <h2 class="w-1/4">Datum</h2>
 
             <div class="w-1/2">Deliverables</div>
@@ -52,13 +66,13 @@
         </div>
 
         @foreach($tasks as $index => $day)
-            <div class="flex justify-between p-3 pt-0 @if($index !== count($tasks) - 1) border-b dark:border-neutral-500 dark:border-opacity-25 @endif">
-                <h2 class="w-1/4 text-sm">{{ \Carbon\Carbon::parse($day['completed_at'])->format('D d-m') }}</h2>
+            <div class="flex justify-between py-3 lg:p-3 pt-0 @if($index !== count($tasks) - 1) border-b dark:border-neutral-500 dark:border-opacity-25 @endif">
+                <h2 class="w-1/4 text-sm text-balance">{{ \Carbon\Carbon::parse($day['completed_at'])->format('D d-m') }}</h2>
 
                 <div class="w-1/2 flex flex-col">
-                    <div class="font-bold">{{ $day['name'] }}</div>
+                    {{ $day['name'] }}
 
-                    {{ $day['description'] }}
+                    <div class="opacity-60">{{ $day['description'] }}</div>
                 </div>
 
                 <div class="w-1/5 text-right">{{ $day['minutes']/60 }}</div>

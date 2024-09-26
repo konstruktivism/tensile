@@ -27,7 +27,7 @@ class GoogleCalendarController extends Controller
 
     public function importEvents30Days():  \Illuminate\Http\JsonResponse
     {
-        $events = $this->googleCalendarService->getEvents();
+        $events = $this->googleCalendarService->getEvents(100, 30);
 
         $this->runImport($events);
 

@@ -42,7 +42,7 @@
             <h2 class="font-bold ml-3 mt-4">{{ \Carbon\Carbon::parse($month . '-01')->format('F Y') }}</h2>
             @foreach ($weeks as $week => $data)
                 <a href="{{ route('project.viewWeek', ['project' => $project->id, 'week' => $week]) }}" class="border-b dark:border-white dark:border-opacity-25 flex justify-between p-3 pt-0">
-                    <h2 class="w-1/4 text-sm">Week {{ $week }}</h2>
+                    <h2 class="w-1/4 text-sm">Week {{ $week }} @if ($week == now()->format('W')) <span class="border border-neutral-500 text-neutral-500 rounded px-1.5 py-1 text-xs uppercase font-bold ml-2">Current</span> @endif</h2>
 
                     <div class="w-1/2 text-right">{{ $data['total_minutes']/60 }} {{ $data['total_minutes'] == 1 ? 'uur' : 'uren' }}</div>
 

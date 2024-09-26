@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Task extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +25,17 @@ class Task extends Model
         'minutes',
         'icalUID',
     ];
+
+    protected static $logAttributes = ['name', 'description', 'project_id', 'completed_at', 'minutes', 'icalUID'];
+
+    protected static $logName = 'task';
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'description', 'project_id', 'completed_at', 'minutes', 'icalUID'])
+            ->useLogName('task');
+    }
 
     // create relationships so that a task can be associated with a project
 

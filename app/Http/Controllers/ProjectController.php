@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Project;
 use Carbon\Carbon;
+use App\Models\Task;
 
 class ProjectController extends Controller
 {
@@ -76,6 +77,27 @@ class ProjectController extends Controller
 
         $tasks = $project->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->get();
 
-        return view('projects.week', compact('project', 'tasks', 'week'));
+        $previousWeekTasks = $this->getPreviousWeekTasks($project->id, $week);
+
+        $nextWeekTasks = $this->getNextWeekTasks($project->id, $week);
+
+        return view('projects.week', compact('project', 'tasks', 'week', 'previousWeekTasks', 'nextWeekTasks'));
+    }
+
+    public function getPreviousWeekTasks($projectId, $week)
+    {
+        $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $week)->startOfWeek()->subWeek();
+        $endOfWeek = $startOfWeek->copy()->endOfWeek();
+        return Task::where('project_id', $projectId)
+            ->whereBetween('completed_at', [$startOfWeek, $endOfWeek])
+            ->get();
+    }
+    public function getNextWeekTasks($projectId, $week)
+    {
+        $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $week)->startOfWeek()->addWeek();
+        $endOfWeek = $startOfWeek->copy()->endOfWeek();
+        return Task::where('project_id', $projectId)
+            ->whereBetween('completed_at', [$startOfWeek, $endOfWeek])
+            ->get();
     }
 }

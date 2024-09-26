@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Google\Client;
 use Google\Service\Calendar;
+use Google\Service\Exception;
 
 class GoogleCalendarService
 {
@@ -49,9 +50,12 @@ class GoogleCalendarService
         }
     }
 
-    public function getEvents($calendarId = null, $maxResults = 32)
+    /**
+     * @throws Exception
+     */
+    public function getEvents(int $maxResults = 32, int $days = 1)
     {
-        $calendarId = $calendarId ?? config('services.google_calendar.calendar_id');
+        $calendarId = config('services.google_calendar.calendar_id');
 
         $service = new Calendar($this->client);
 
@@ -59,29 +63,11 @@ class GoogleCalendarService
             'maxResults' => $maxResults,
             'orderBy' => 'startTime',
             'singleEvents' => true,
-            'timeMin' => date('c', strtotime('00:00 -1 day')),
+            'timeMin' => date('c', strtotime("-$days day")),
             'timeMax' => date('c'),
         ];
         $results = $service->events->listEvents($calendarId, $optParams);
 
-        return $results->getItems();
-    }
-
-    public function getEventsLast30Days($calendarId = null)
-    {
-        $calendarId = $calendarId ?? config('services.google_calendar.calendar_id');
-
-        $service = new Calendar($this->client);
-
-        $optParams = [
-            'maxResults' => 1000, // Adjust as needed
-            'orderBy' => 'startTime',
-            'singleEvents' => true,
-            'timeMin' => date('c', strtotime('-30 days')),
-            'timeMax' => date('c'),
-        ];
-
-        $results = $service->events->listEvents($calendarId, $optParams);
         return $results->getItems();
     }
 }
