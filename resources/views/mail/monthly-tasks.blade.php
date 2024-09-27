@@ -1,7 +1,7 @@
 @extends('mail.base')
 
 @section('header')
-    {{ __('Work Log Week') . ' ' .  $week }}
+    {{ __('Work Log for') . ' ' . \Carbon\Carbon::parse($month)->locale('en')->translatedFormat('F') }}
 @endsection
 
 @section('body')
@@ -22,9 +22,14 @@
         <tbody>
         @foreach($tasks as $index => $day)
             <tr>
-                <td style="width: 125px; vertical-align: top; padding: 1em 0;">{{ \Carbon\Carbon::parse($day['completed_at'])->format('D d-m') }}</td>
-                <td style="padding: 1em 0;"><strong style="color: #1b1b1b;">{{ $day['name'] }}</strong><br>{{ $day['description'] }}</td>
-                <td style="width: 100px; text-align: right; padding: 1em 0; vertical-align: top;">{{ $day['minutes']/60 }}</td>
+                <td style="width: 125px; vertical-align: top; padding: 0.5em 0;">
+                    {{ \Carbon\Carbon::parse($day['completed_at'])->format('D d-m') }}
+                    <br />
+                    <span style="font-size: .8em; text-transform: uppercase; opacity: .6;">#{{ \Carbon\Carbon::parse($day['completed_at'])->week }}</span>
+
+                </td>
+                <td style="padding: 0.5em 0; vertical-align: top;"><strong style="color: #1b1b1b;">{{ $day['name'] }}</strong><br>{{ $day['description'] }}</td>
+                <td style="width: 100px; text-align: right; padding: 0.5em 0; vertical-align: top;">{{ $day['minutes']/60 }}</td>
             </tr>
         @endforeach
             <tr>
@@ -34,5 +39,7 @@
             </tr>
         </tbody>
     </table>
+
+    <a href="{{ env('APP_URL') }}" style="display: block; margin-top: 2em; text-align: center; color: #1b1b1b; text-underline: #1b1b1b">Login</a>
 @endsection
 

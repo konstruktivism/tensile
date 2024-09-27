@@ -57,8 +57,7 @@ class TaskResource extends Resource
                 Tables\Columns\TextColumn::make('completed_at')->date()->sortable(),
                 Tables\Columns\TextColumn::make('week_year')
                     ->label('Week-Year')
-                    ->getStateUsing(fn ($record) => Carbon::parse($record->completed_at)->format('W-Y'))
-                    ->sortable(),
+                    ->getStateUsing(fn ($record) => Carbon::parse($record->completed_at)->format('W')),
                 Tables\Columns\TextColumn::make('minutes')->sortable()->formatStateUsing(fn ($state) => $state / 60)
                     ->summarize([
                         Sum::make()->formatStateUsing(fn ($state) => $state / 60),
@@ -107,7 +106,7 @@ class TaskResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultPaginationPageOption(1000);
+            ->defaultPaginationPageOption(50);
     }
 
     public static function getRelations(): array

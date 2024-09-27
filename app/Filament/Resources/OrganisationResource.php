@@ -32,20 +32,12 @@ class OrganisationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->sortable(),
-                Tables\Columns\TextColumn::make('name')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')->dateTime()->sortable(),
+                Tables\Columns\TextColumn::make('name')->sortable(),
+                Tables\Columns\TextColumn::make('projects.name')->label('Projects')->sortable(),
+                Tables\Columns\TextColumn::make('users.name')->label('Users')->sortable(),
             ])
             ->filters([
                 //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
             ]);
     }
 

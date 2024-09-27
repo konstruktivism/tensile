@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
 use App\Mail\WeeklyTasksMail;
+use App\Mail\MonthlyTasksMail;
 use Illuminate\Support\Facades\Mail;
 
 class ProjectResource extends Resource
@@ -48,8 +49,9 @@ class ProjectResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->sortable(),
-                Tables\Columns\TextColumn::make('organisation.name')->label('Organisation')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('name')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('organisation.name')->label('Organisation')->sortable(),
+                Tables\Columns\TextColumn::make('name')->sortable(),
+                Tables\Columns\TextColumn::make('project_code')->badge(),
                 Tables\Columns\TextColumn::make('description')->limit(50),
                 Tables\Columns\TextColumn::make('users.name')->label('Users'),
             ])
@@ -57,29 +59,51 @@ class ProjectResource extends Resource
                 // Add any table filters here if needed
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
                 Action::make('sendWeeklyTasks')
-                    ->label('Send Weekly Tasks')
+                    ->label('Weekly')
                     ->action(function (Project $record) {
                         $week = now()->weekOfYear;
 
                         $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $week)->startOfWeek();
                         $endOfWeek = $startOfWeek->copy()->endOfWeek();
 
-                        $tasks = $record->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->get();
+                        $tasks = $record->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->orderBy('completed_at')->get();
 
                         $users = $record->users;
 
                         foreach ($users as $user) {
                            Mail::to($user->email)->send(new WeeklyTasksMail($record, $tasks, $week));
                         }
+
+                        activity()
+                            ->performedOn($record)
+                            ->log('Weekly tasks email sent for project: ' . $record->id . ' for week: ' . $week . ' to users: ' . $users->pluck('email')->implode(', '));
                     })
+                    ->icon('heroicon-s-envelope'),
+                Action::make('sendMonthlyTasks')
+                    ->label('Monthly')
+                    ->action(function (Project $record) {
+                        $month = now()->month;
+
+                        $startOfMonth = Carbon::now()->startOfMonth();
+                        $endOfMonth = Carbon::now()->endOfMonth();
+
+                        $tasks = $record->tasks()->whereBetween('completed_at', [$startOfMonth, $endOfMonth])->orderBy('completed_at')->get();
+
+                        $users = $record->users;
+
+                        foreach ($users as $user) {
+                            Mail::to($user->email)->send(new MonthlyTasksMail($record, $tasks, $month));
+                        }
+
+                        activity()
+                            ->performedOn($record)
+                            ->log('Monthly tasks email sent for project: ' . $record->id . ' for month: ' . $month . ' to users: ' . $users->pluck('email')->implode(', '));
+                    })
+                    ->icon('heroicon-s-envelope'),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->paginated(['']); // Disable pagination;
+
     }
 
     public static function getRelations(): array

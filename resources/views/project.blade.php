@@ -42,26 +42,42 @@
             <h2 class="font-bold ml-3 mt-4">{{ \Carbon\Carbon::parse($month . '-01')->format('F Y') }}</h2>
             @foreach ($weeks as $week => $data)
                 <a href="{{ route('project.viewWeek', ['project' => $project->id, 'week' => $week]) }}" class="border-b dark:border-white dark:border-opacity-25 flex justify-between p-3 pt-0">
-                    <h2 class="w-1/4 text-sm">Week {{ $week }} @if ($week == now()->format('W')) <span class="border border-neutral-500 text-neutral-500 rounded px-1.5 py-1 text-xs uppercase font-bold ml-2">Current</span> @endif</h2>
+                    <div class="w-1/2 lg:w-1/3 text-sm flex justify-between items-center">
+                        <h2>Week {{ $week }} @if ($week == now()->format('W')) <span class="border border-neutral-500 text-neutral-500 rounded px-1.5 py-1 text-xs uppercase font-bold ml-2">Current</span> @endif</h2>
 
-                    <div class="w-1/2 text-right">{{ $data['total_minutes']/60 }} {{ $data['total_minutes'] == 1 ? 'uur' : 'uren' }}</div>
+                        {{ count($data['tasks']) }} tasks
+                    </div>
+
+                    <div class="w-1/4 lg:w-1/3 text-right">{{ $data['total_minutes']/60 }} {{ $data['total_minutes'] == 1 ? 'uur' : 'uren' }}</div>
 
                     @if ($project->is_fixed == 0)
                         <div class="w-1/5 text-right">{{ \App\Helpers\CurrencyHelper::formatCurrency($data['total_minutes']/60 * $project->hour_tariff) }}</div>
                     @endif
                 </a>
             @endforeach
+
+            <div class="flex justify-between p-3  opacity-60">
+                <div class="w-1/2 lg:w-1/3 text-sm flex justify-end items-center">
+                    {{ $weeks->sum(fn($week) => count($week['tasks'])) }} tasks
+                </div>
+
+                <div class="w-1/4 lg:w-1/3 text-right">{{ $weeks->sum('total_minutes')/60 }} {{ $weeks->sum('total_minutes') == 1 ? 'uur' : 'uren' }}</div>
+
+                @if ($project->is_fixed == 0)
+                    <div class="w-1/5 text-right">{{ \App\Helpers\CurrencyHelper::formatCurrency($weeks->sum('total_minutes')/60 * $project->hour_tariff) }}</div>
+                @endif
+            </div>
         @endforeach
 
-        <div class="flex justify-between p-3 font-bold border-yellow-400 pb-3 border-b">
-            <h2 class="w-1/4"></h2>
+        <div class="flex mt-32 justify-between p-3 font-bold dark:bg-dark bg-white drop-shadow dark:drop-shadow-md dark:drop-shadow-neutral-950 border-t  border-neutral-100 dark:border-neutral-800 rounded-lg">
+            <h2 class="w-1/2 lg:w-1/3"></h2>
 
-            <div class="w-1/2 text-right">{{ $tasksByMonthAndWeekWithMinutes->flatten(1)->sum('total_minutes')/60 }} {{ $tasksByMonthAndWeekWithMinutes->flatten(1)->sum('total_minutes') == 1 ? 'uur' : 'uren' }}</div>
+            <div class="w-1/4 lg:w-1/3 text-right">{{ $tasksByMonthAndWeekWithMinutes->flatten(1)->sum('total_minutes')/60 }} {{ $tasksByMonthAndWeekWithMinutes->flatten(1)->sum('total_minutes') == 1 ? 'uur' : 'uren' }}</div>
 
             @if ($project->is_fixed == 0)
                 <div class="w-1/5 text-right">{{ \App\Helpers\CurrencyHelper::formatCurrency($tasksByMonthAndWeekWithMinutes->flatten(1)->sum('total_minutes')/60 * $project->hour_tariff) }}</div>
             @endif
-        </div>
+        </h2>
 
     </div>
 @endsection
