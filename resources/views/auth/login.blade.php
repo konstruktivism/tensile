@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="w-full bg-white dark:bg-dark h-full flex grow flex-col justify-stretch md:flex-row p-3 md:p-12">
+    <div class="w-full bg-white dark:bg-dark flex grow flex-col justify-stretch md:flex-row p-3 md:p-12">
         <div class="bg-white dark:bg-dark lg:w-1/2 p-6 lg:p-12 flex flex-col justify-center gap-3 md:gap-12">
             <!-- Session Status -->
             <x-auth-session-status  :status="session('status')" />
@@ -59,10 +59,9 @@
                 </div>
             </form>
         </div>
-        <div class="hidden md:flex flex-col justify-center w-1/2">
-            <picture class="rounded-xl h-full overflow-hidden bg-gradient-to-br from-neutral-800 to-primary">
+        <div class="hidden md:flex flex-col justify-center w-1/2 grow relative">
+            <picture class="absolute inset-0 rounded-xl overflow-hidden shrink bg-gradient-to-br from-neutral-800 to-primary">
                 <source srcset="{{ asset('/img/bg.jpg') }}" type="image/jpg">
-
                 <img src="{{ asset('/img/bg.jpg') }}" alt="" class="object-cover w-full h-full" />
             </picture>
         </div>
