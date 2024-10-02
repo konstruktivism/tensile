@@ -6,6 +6,7 @@ use App\Services\GoogleCalendarService;
 use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\Project;
+use Carbon\Carbon;
 
 class GoogleCalendarController extends Controller
 {
@@ -25,13 +26,13 @@ class GoogleCalendarController extends Controller
         return response()->json(['message' => 'Events imported of yesterday.']);
     }
 
-    public function importEvents30Days():  \Illuminate\Http\JsonResponse
+    public function importEventsLastMonth():  \Illuminate\Http\JsonResponse
     {
-        $events = $this->googleCalendarService->getEvents(100, 30);
+        $events = $this->googleCalendarService->getEvents(100, Carbon::now()->subMonth()->daysInMonth);
 
         $this->runImport($events);
 
-        return response()->json(['message' => 'Events imported of the last 30 days.']);
+        return response()->json(['message' => 'Events imported of the last month.']);
     }
 
     public function runImport($events)

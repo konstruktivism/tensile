@@ -26,7 +26,7 @@ class MonthlyTask extends Command
 
     public function handle()
     {
-        $response = $this->GoogleCalendarController->importEvents30Days();
+        $response = $this->GoogleCalendarController->importEventsLastMonth();
 
         $this->info($response->getData()->message);
     }

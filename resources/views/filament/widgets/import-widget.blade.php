@@ -11,8 +11,8 @@
                     Import
                 </x-filament::button>
 
-                <x-filament::button wire:click="import30days">
-                    Import 30 days
+                <x-filament::button wire:click="importLastMonth">
+                    Import Last Month
                 </x-filament::button>
             </div>
         </div>

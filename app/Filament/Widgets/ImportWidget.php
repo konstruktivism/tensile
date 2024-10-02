@@ -33,7 +33,7 @@ class ImportWidget extends Widget
             ->send();
     }
 
-    public function import30days()
+    public function importLastMonth()
     {
         Artisan::call('command:monthly-task');
 
@@ -53,9 +53,9 @@ class ImportWidget extends Widget
                 ->label('Import')
                 ->action('import'),
 
-            Action::make('import-30days')
-                ->label('Import 30 Days')
-                ->action('import30days'),
+            Action::make('importLastMonth')
+                ->label('Import Last Month')
+                ->action('importLastMonth'),
         ];
     }
 }

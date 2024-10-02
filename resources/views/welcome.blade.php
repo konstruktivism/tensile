@@ -14,13 +14,13 @@
             </div>
         </section>
 
-        <section id="features" class="my-12 flex flex-col items-center gap-3 lg:w-1/2">
+        <section id="features" class="my-12 flex flex-col gap-3 lg:w-1/2">
             <h2 class="text-4xl font-bold tracking-tight">Features</h2>
 
-            <div class="grid grid-cols-1 divide-y divide-neutral-200 dark:divide-neutral-700 *:py-12">
+            <div class="grid grid-cols-1 divide-y divide-neutral-200 dark:divide-neutral-700 *:py-9">
                 @foreach ([
                     ['title' => 'Weekly Notifications', 'description' => 'Of all the logged tasks of your project delivered to your mailbox.'],
-                    ['title' => 'The right data from your Tools', 'description' => 'The right information gathered from Jira, GitHub for a simple summary.'],
+                    ['title' => 'The right data from your Tools', 'description' => 'Gathered from Jira, GitHub for a simple summary.'],
                     ['title' => 'Reporting', 'description' => 'Generate detailed reports to monitor your project\'s progress.']
                 ] as $feature)
                     <div>

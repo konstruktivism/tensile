@@ -34,6 +34,6 @@ Route::get('/magic-login', [MagicLinkController::class, 'login'])->name('magic.l
 
 Route::get('/import', [GoogleCalendarController::class, 'importEvents'])->name('import');
 
-Route::get('/import-30days', [GoogleCalendarController::class, 'importEvents30Days'])->name('import-30days');
+Route::get('/import-last-month', [GoogleCalendarController::class, 'importEventsLastMonth'])->name('importLastMonth');
 
 require __DIR__.'/auth.php';
