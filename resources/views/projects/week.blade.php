@@ -58,10 +58,10 @@
 
             <div class="w-1/2">Deliverables</div>
 
-            <div class="w-1/5 text-right">Uren</div>
+            <div class="w-1/5 text-right">Hours</div>
 
             @if ($project->is_fixed == 0)
-                <div class="w-1/5 text-right">Prijs</div>
+                <div class="w-1/5 text-right">Price</div>
             @endif
         </div>
 
