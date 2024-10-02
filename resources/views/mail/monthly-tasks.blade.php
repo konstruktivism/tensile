@@ -1,7 +1,7 @@
 @extends('mail.base')
 
 @section('header')
-    {{ __('Work Log for') . ' ' . \Carbon\Carbon::parse($month)->locale('en')->translatedFormat('F') }}
+    {{ __('Work Log for') . ' ' . \Carbon\Carbon::now()->subMonth()->locale('en')->translatedFormat('F') }}
 @endsection
 
 @section('body')
