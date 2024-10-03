@@ -43,7 +43,7 @@ class GoogleCalendarController extends Controller
 
             $project = Project::where('project_code', $projectCode)->first();
 
-            ray($event->iCalUID);
+            ray($event->getSummary());
 
             if($project) {
                 if (!Task::where('icalUID', $event->iCalUID)->exists()) {
