@@ -85,8 +85,8 @@ class ProjectResource extends Resource
                     ->action(function (Project $record) {
                         $month = now()->subMonth()->month;
 
-                        $startOfMonth = Carbon::now()->startOfMonth();
-                        $endOfMonth = Carbon::now()->endOfMonth();
+                        $startOfMonth = Carbon::now()->subMonth()->startOfMonth();
+                        $endOfMonth = Carbon::now()->subMonth()->endOfMonth();
 
                         $tasks = $record->tasks()->whereBetween('completed_at', [$startOfMonth, $endOfMonth])->orderBy('completed_at')->get();
 
