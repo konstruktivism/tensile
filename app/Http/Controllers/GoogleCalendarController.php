@@ -30,8 +30,6 @@ class GoogleCalendarController extends Controller
     {
         $events = $this->googleCalendarService->getEvents(100, Carbon::now()->subMonth()->daysInMonth);
 
-        dd($events);
-
         $this->runImport($events);
 
         return response()->json(['message' => 'Events imported of the last month.']);
@@ -44,6 +42,8 @@ class GoogleCalendarController extends Controller
             $projectCode = substr(preg_replace('/[^A-Z]/', '', $event->getSummary()), 0, 3);
 
             $project = Project::where('project_code', $projectCode)->first();
+
+            ray($event->iCalUID);
 
             if($project) {
                 if (!Task::where('icalUID', $event->iCalUID)->exists()) {
