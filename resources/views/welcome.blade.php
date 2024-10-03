@@ -3,7 +3,7 @@
 @section('content')
     <main class="container mx-auto p-6 flex flex-col items-center">
         <section class="text-center my-12 flex flex-col gap-6">
-            <h2 class="text-4xl lg:text-8xl font-bold tracking-tight mb-4 text-balance">{{ config('app.slogan') }}</h2>
+            <h2 class="text-4xl lg:text-8xl lg:max-w-2xl font-bold tracking-tight mb-4 text-balance">{{ config('app.slogan') }}</h2>
 
             <p class="text-lg bg-clip-text text-transparent bg-gradient-to-r from-neutral-400 to-neutral-500">Another minimal project management tool to streamline your weekly workflow.</p>
 
