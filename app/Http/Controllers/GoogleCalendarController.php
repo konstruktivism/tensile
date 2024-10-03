@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\Project;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class GoogleCalendarController extends Controller
 {
@@ -43,7 +44,7 @@ class GoogleCalendarController extends Controller
 
             $project = Project::where('project_code', $projectCode)->first();
 
-            ray($event->getSummary());
+            Log::info($event->getSummary());
 
             if($project) {
                 if (!Task::where('icalUID', $event->iCalUID)->exists()) {
