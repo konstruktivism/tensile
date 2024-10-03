@@ -83,7 +83,7 @@ class ProjectResource extends Resource
                 Action::make('sendMonthlyTasks')
                     ->label('Monthly')
                     ->action(function (Project $record) {
-                        $month = now()->month;
+                        $month = now()->subMonth()->month;
 
                         $startOfMonth = Carbon::now()->startOfMonth();
                         $endOfMonth = Carbon::now()->endOfMonth();

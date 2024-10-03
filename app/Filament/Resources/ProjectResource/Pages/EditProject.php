@@ -39,7 +39,7 @@ class EditProject extends EditRecord
                 ->label('Send Monthly Tasks')
                 ->action(function () {
                     $record = $this->record;
-                    $month = now()->month;
+                    $month = now()->subMonth()->month;
 
                     $startOfMonth = Carbon::now()->subMonth()->startOfMonth();
                     $endOfMonth = Carbon::now()->subMonth()->endOfMonth();
