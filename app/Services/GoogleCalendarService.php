@@ -5,6 +5,7 @@ namespace App\Services;
 use Google\Client;
 use Google\Service\Calendar;
 use Google\Service\Exception;
+use Carbon\Carbon;
 
 class GoogleCalendarService
 {
@@ -59,12 +60,22 @@ class GoogleCalendarService
 
         $service = new Calendar($this->client);
 
+        if($days > 1) {
+            $start = Carbon::now()->subMonth()->firstOfMonth()->startOfDay()->toRfc3339String();
+            $end = Carbon::now()->subMonth()->lastOfMonth()->endOfDay()->toRfc3339String();
+        } else {
+            $start = date('c', strtotime('yesterday 00:00:00'));
+            $end = date('c', strtotime('yesterday 23:59:59'));
+        }
+
+        ray($start, $end);
+
         $optParams = [
             'maxResults' => $maxResults,
             'orderBy' => 'startTime',
             'singleEvents' => true,
-            'timeMin' => date('c', strtotime("-$days day")),
-            'timeMax' => date('c'),
+            'timeMin' => $start,
+            'timeMax' => $end,
         ];
         $results = $service->events->listEvents($calendarId, $optParams);
 

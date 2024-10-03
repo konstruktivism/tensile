@@ -29,7 +29,7 @@ class GoogleCalendarController extends Controller
 
     public function importEventsLastMonth():  \Illuminate\Http\JsonResponse
     {
-        $events = $this->googleCalendarService->getEvents(100, Carbon::now()->subMonth()->daysInMonth);
+        $events = $this->googleCalendarService->getEvents(100, 2);
 
         $this->runImport($events);
 
@@ -43,8 +43,6 @@ class GoogleCalendarController extends Controller
             $projectCode = substr(preg_replace('/[^A-Z]/', '', $event->getSummary()), 0, 3);
 
             $project = Project::where('project_code', $projectCode)->first();
-
-            Log::info($event->getSummary());
 
             if($project) {
                 if (!Task::where('icalUID', $event->iCalUID)->exists()) {
