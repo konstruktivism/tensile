@@ -30,6 +30,8 @@ class GoogleCalendarController extends Controller
     {
         $events = $this->googleCalendarService->getEvents(100, Carbon::now()->subMonth()->daysInMonth);
 
+        dd($events);
+
         $this->runImport($events);
 
         return response()->json(['message' => 'Events imported of the last month.']);
