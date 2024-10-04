@@ -9,6 +9,6 @@ class Kernel extends ConsoleKernel
 {
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('command:daily-task')->dailyAt('06:00');
+        $schedule->command('command:daily-task')->dailyAt('06:00')->onQueue('default');
     }
 }
