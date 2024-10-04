@@ -62,13 +62,11 @@ class GoogleCalendarService
 
         if($days > 1) {
             $start = Carbon::now()->subMonth()->firstOfMonth()->startOfDay()->toRfc3339String();
-            $end = Carbon::now()->subMonth()->lastOfMonth()->endOfDay()->toRfc3339String();
+            $end = Carbon::now()->endOfDay()->toRfc3339String();
         } else {
             $start = date('c', strtotime('yesterday 00:00:00'));
             $end = date('c', strtotime('yesterday 23:59:59'));
         }
-
-        ray($start, $end);
 
         $optParams = [
             'maxResults' => $maxResults,
