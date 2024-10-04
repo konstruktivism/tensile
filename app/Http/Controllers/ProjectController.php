@@ -83,6 +83,8 @@ class ProjectController extends Controller
         $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $week)->startOfWeek();
         $endOfWeek = $startOfWeek->copy()->endOfWeek();
 
-        return $project->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->get();
+        return $project->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])
+            ->orderBy('completed_at')
+            ->get();
     }
 }
