@@ -73,6 +73,10 @@
                     {{ $day['name'] }}
 
                     <div class="opacity-60">{{ $day['description'] }}</div>
+
+                    @if ($day['is_service'])
+                        <div class="uppercase mt-2 text-xs text-green-500">Free of Charge</div>
+                    @endif
                 </div>
 
                 <div class="w-1/5 text-right">{{ $day['minutes']/60 }}</div>

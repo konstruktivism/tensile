@@ -32,6 +32,11 @@
                     Total hours: {{ $tasks->sum('minutes')/60 }}
                 </td>
             </tr>
+            <tr>
+                <td colspan="3" style="text-align: right;  color: rgb(34 197 94 / 1);">
+                    Free of Charge: {{ $tasks->where('is_service', 1)->sum('minutes')/60 }}
+                </td>
+            </tr>
         </tbody>
     </table>
 @endsection

@@ -30,32 +30,10 @@ class ProjectController extends Controller
      */
     public function read(Project $project)
     {
-        if (!Auth::user()->projects->contains($project)) {
-            abort(403, 'Unauthorized action.');
-        }
+        $this->authorizeProject($project);
 
-        // Group tasks by the month and week number of the completed_at date
-        $tasksByMonth = $project->tasks->groupBy(function ($task) {
-            $date = Carbon::parse($task->completed_at);
-            return $date->format('Y-m');
-        });
+        $tasksByMonthAndWeekWithMinutes = $this->groupTasksByMonthAndWeek($project->tasks);
 
-        $tasksByMonthAndWeekWithMinutes = $tasksByMonth->map(function ($tasks, $month) {
-            $tasksByWeek = $tasks->groupBy(function ($task) {
-                $date = Carbon::parse($task->completed_at);
-                return $date->format('W');
-            });
-
-            return $tasksByWeek->map(function ($tasks, $week) {
-                $totalMinutes = $tasks->sum('minutes');
-                return [
-                    'tasks' => $tasks,
-                    'total_minutes' => $totalMinutes
-                ];
-            })->sortKeys();
-        })->sortKeys();
-
-        // Return the view with the project
         return view('project', compact('project', 'tasksByMonthAndWeekWithMinutes'));
     }
 
@@ -68,36 +46,43 @@ class ProjectController extends Controller
      */
     public function viewWeek(Project $project, $week)
     {
-        if (!Auth::user()->projects->contains($project)) {
-            abort(403, 'Unauthorized action.');
-        }
+        $this->authorizeProject($project);
 
-        $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $week)->startOfWeek();
-        $endOfWeek = $startOfWeek->copy()->endOfWeek();
-
-        $tasks = $project->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->get();
-
-        $previousWeekTasks = $this->getPreviousWeekTasks($project->id, $week);
-
-        $nextWeekTasks = $this->getNextWeekTasks($project->id, $week);
+        $tasks = $this->getTasksForWeek($project, $week);
+        $previousWeekTasks = $this->getTasksForWeek($project, $week - 1);
+        $nextWeekTasks = $this->getTasksForWeek($project, $week + 1);
 
         return view('projects.week', compact('project', 'tasks', 'week', 'previousWeekTasks', 'nextWeekTasks'));
     }
 
-    public function getPreviousWeekTasks($projectId, $week)
+    protected function authorizeProject(Project $project): void
     {
-        $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $week)->startOfWeek()->subWeek();
-        $endOfWeek = $startOfWeek->copy()->endOfWeek();
-        return Task::where('project_id', $projectId)
-            ->whereBetween('completed_at', [$startOfWeek, $endOfWeek])
-            ->get();
+        if (!Auth::user()->projects->contains($project)) {
+            abort(403, 'Unauthorized action.');
+        }
     }
-    public function getNextWeekTasks($projectId, $week)
+
+    protected function groupTasksByMonthAndWeek($tasks)
     {
-        $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $week)->startOfWeek()->addWeek();
+        return $tasks->groupBy(function ($task) {
+            return Carbon::parse($task->completed_at)->format('Y-m');
+        })->map(function ($tasks, $month) {
+            return $tasks->groupBy(function ($task) {
+                return Carbon::parse($task->completed_at)->format('W');
+            })->map(function ($tasks) {
+                return [
+                    'tasks' => $tasks,
+                    'total_minutes' => $tasks->sum('minutes')
+                ];
+            })->sortKeys();
+        })->sortKeys();
+    }
+
+    protected function getTasksForWeek(Project $project, $week)
+    {
+        $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $week)->startOfWeek();
         $endOfWeek = $startOfWeek->copy()->endOfWeek();
-        return Task::where('project_id', $projectId)
-            ->whereBetween('completed_at', [$startOfWeek, $endOfWeek])
-            ->get();
+
+        return $project->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->get();
     }
 }

@@ -22,20 +22,17 @@ class ImportWidget extends Widget
 
     public function import()
     {
-        Artisan::call('command:daily-task');
-
-        $output = Artisan::output();
-
-        Notification::make()
-            ->title('Success')
-            ->body($output)
-            ->success()
-            ->send();
+        $this->executeCommand('command:daily-task');
     }
 
     public function importLastMonth()
     {
-        Artisan::call('command:monthly-task');
+        $this->executeCommand('command:days-task');
+    }
+
+    protected function executeCommand(string $command): void
+    {
+        Artisan::call($command);
 
         $output = Artisan::output();
 
@@ -54,7 +51,7 @@ class ImportWidget extends Widget
                 ->action('import'),
 
             Action::make('importLastMonth')
-                ->label('Import Last Month')
+                ->label('Import Last 30 Days')
                 ->action('importLastMonth'),
         ];
     }

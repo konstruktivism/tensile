@@ -60,8 +60,9 @@ class TaskResource extends Resource
                     ->getStateUsing(fn ($record) => Carbon::parse($record->completed_at)->format('W')),
                 Tables\Columns\TextColumn::make('minutes')->sortable()->formatStateUsing(fn ($state) => $state / 60)
                     ->summarize([
-                        Sum::make()->formatStateUsing(fn ($state) => $state / 60),
+                        Sum::make()->formatStateUsing(fn ($state) => $state / 60)
                     ]),
+                Tables\Columns\TextColumn::make('is_service')->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('project_id')

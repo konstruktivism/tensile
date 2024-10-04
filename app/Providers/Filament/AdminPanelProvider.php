@@ -20,6 +20,10 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\Facades\Blade;
 use App\Filament\Widgets\ImportWidget;
+use App\Filament\Widgets\HoursPerWeekWidget;
+use App\Filament\Widgets\TotalTasksWidget;
+use App\Filament\Widgets\ServicePercentageWidget;
+
 
 
 class AdminPanelProvider extends PanelProvider
@@ -42,6 +46,9 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 ImportWidget::class,
+                HoursPerWeekWidget::class,
+                //TotalTasksWidget::class,
+                ServicePercentageWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

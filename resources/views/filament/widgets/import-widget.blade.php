@@ -1,7 +1,5 @@
 <x-filament::widget>
     <x-filament::card>
-        <h2 class="text-lg font-medium mb-4">Import of Calendar</h2>
-
         <div class="flex flex-col lg:flex-row gap-6 lg:items-center lg:justify-between">
 
             <p>Actions to Import manually. Daily Import is run at 6:00 every day.</p>
@@ -12,7 +10,7 @@
                 </x-filament::button>
 
                 <x-filament::button wire:click="importLastMonth">
-                    Import Last Month
+                    Import last 30 days
                 </x-filament::button>
             </div>
         </div>

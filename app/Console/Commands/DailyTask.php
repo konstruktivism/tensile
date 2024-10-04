@@ -3,31 +3,16 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\GoogleCalendarService;
-use App\Http\Controllers\GoogleCalendarController;
+use App\Jobs\JobDailyTask;
 
 class DailyTask extends Command
 {
     protected $signature = 'command:daily-task';
-    protected $description = 'Run daily tasks at 6:00 AM';
-
-    protected $googleCalendarService;
-
-    protected $GoogleCalendarController;
-
-    public function __construct(
-        GoogleCalendarService $googleCalendarService,
-        GoogleCalendarController $GoogleCalendarController)
-    {
-        parent::__construct();
-        $this->googleCalendarService = $googleCalendarService;
-        $this->GoogleCalendarController = $GoogleCalendarController;
-    }
+    protected $description = 'Import daily tasks';
 
     public function handle()
     {
-        $response = $this->GoogleCalendarController->importEvents();
-
-        $this->info($response->getData()->message);
+        JobDailyTask::dispatch();
+        $this->info('Daily task has been dispatched to the queue.');
     }
 }

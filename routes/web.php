@@ -6,6 +6,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\MagicLinkController;
 use App\Http\Controllers\GoogleCalendarController;
+use App\Http\Controllers\StatsController;
 
 
 Route::get('/', function () {
@@ -26,14 +27,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects');
     Route::get('/project/{project}', [ProjectController::class, 'read'])->name('project');
     Route::get('/project/{project}/{week}', [ProjectController::class, 'viewWeek'])->name('project.viewWeek');
+
+    Route::get('/import', [GoogleCalendarController::class, 'importEvents'])->name('import');
+    Route::get('/import-last-month', [GoogleCalendarController::class, 'importEventsLastMonth'])->name('importLastMonth');
 });
 
 Route::get('/login/magic', [MagicLinkController::class, 'showMagicLinkForm'])->name('login.magic');
 Route::post('/login/magic', [MagicLinkController::class, 'sendMagicLink'])->name('login.magic.send');
 Route::get('/magic-login', [MagicLinkController::class, 'login'])->name('magic.login');
 
-Route::get('/import', [GoogleCalendarController::class, 'importEvents'])->name('import');
-
-Route::get('/import-last-month', [GoogleCalendarController::class, 'importEventsLastMonth'])->name('importLastMonth');
+Route::get('/api/hours-per-week', [StatsController::class, 'getHoursPerWeek']);
 
 require __DIR__.'/auth.php';

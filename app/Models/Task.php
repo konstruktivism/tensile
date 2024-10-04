@@ -24,9 +24,10 @@ class Task extends Model
         'completed_at',
         'minutes',
         'icalUID',
+        'is_service',
     ];
 
-    protected static $logAttributes = ['name', 'description', 'project_id', 'completed_at', 'minutes', 'icalUID'];
+    protected static $logAttributes = ['name', 'description', 'project_id', 'completed_at', 'minutes', 'icalUID', 'is_service'];
 
     protected static $logName = 'task';
 
