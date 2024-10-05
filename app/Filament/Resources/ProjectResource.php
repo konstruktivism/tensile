@@ -15,6 +15,8 @@ use Filament\Tables\Actions\Action;
 use App\Mail\WeeklyTasksMail;
 use App\Mail\MonthlyTasksMail;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\MoneybirdController;
+
 
 class ProjectResource extends Resource
 {
@@ -101,6 +103,13 @@ class ProjectResource extends Resource
                             ->log('Monthly tasks email sent for project: ' . $record->id . ' for month: ' . $month . ' to users: ' . $users->pluck('email')->implode(', '));
                     })
                     ->icon('heroicon-s-envelope'),
+                Action::make('updateInvoice')
+                    ->label('Update Invoice')
+                    ->action(function ($record) {
+                        $controller = new MoneybirdController();
+                        $controller->updateInvoice($record->id);
+                    })
+                    ->color('primary'),
             ])
             ->paginated(['']); // Disable pagination;
 

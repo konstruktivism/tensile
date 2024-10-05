@@ -7,7 +7,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\MagicLinkController;
 use App\Http\Controllers\GoogleCalendarController;
 use App\Http\Controllers\StatsController;
-
+use App\Http\Controllers\MoneybirdController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,5 +37,7 @@ Route::post('/login/magic', [MagicLinkController::class, 'sendMagicLink'])->name
 Route::get('/magic-login', [MagicLinkController::class, 'login'])->name('magic.login');
 
 Route::get('/api/hours-per-week', [StatsController::class, 'getHoursPerWeek']);
+
+Route::put('/moneybird/invoice/{projectId}', [MoneybirdController::class, 'updateInvoice']);
 
 require __DIR__.'/auth.php';
