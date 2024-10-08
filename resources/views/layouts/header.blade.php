@@ -28,7 +28,7 @@
             <x-link url="{{ route('login') }}" class="bg-white text-neutral-600 font-normal border border-neutral-200 hover:bg-neutral-100 active:bg-neutral-200 ring-0 focus:bg-transparent">Login</x-link>
         @endguest
         @auth
-            <div class="relative" x-data="{ open: false }">
+            <div class="relative flex items-center§" x-data="{ open: false }">
                 <button @click="open = !open" class="flex gap-1.5 items-center focus:outline-none" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
                     Hi {{ Auth::user()->name }}
 

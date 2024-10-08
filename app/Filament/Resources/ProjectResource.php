@@ -43,6 +43,8 @@ class ProjectResource extends Resource
                     ->required(),
                 Forms\Components\Toggle::make('is_fixed')
                     ->default(false),
+                Forms\Components\Toggle::make('notifications')
+                    ->default(false),
             ]);
     }
 

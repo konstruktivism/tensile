@@ -34,7 +34,9 @@
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right;  color: rgb(34 197 94 / 1);">
-                    Free of Charge: {{ $tasks->where('is_service', 1)->sum('minutes')/60 }}
+                    @if($tasks->where('is_service', 1)->isNotEmpty())
+                        Free of Charge: {{ $tasks->where('is_service', 1)->sum('minutes')/60 }}
+                    @endif
                 </td>
             </tr>
         </tbody>

@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Jobs\JobDaysTask;
 use Illuminate\Console\Command;
-use App\Jobs\JobDailyTask;
 
 class DaysTask extends Command
 {

@@ -22,10 +22,11 @@ class Project extends Model
         'hour_tariff',
         'is_fixed',
         'project_code',
+        'notifications',
     ];
 
 
-    protected static $logAttributes = ['name', 'description', 'is_fixed', 'hour_tariff', 'project_code'];
+    protected static $logAttributes = ['name', 'description', 'is_fixed', 'hour_tariff', 'project_code', 'notifications'];
 
     protected static $logName = 'project';
 
