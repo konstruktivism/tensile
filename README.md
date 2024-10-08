@@ -1,5 +1,9 @@
 <p align="center"><a href="https://tensile.konstruktiv.nl" target="_blank"><img style="border-radius: 12px; overflow: hidden;" src="https://raw.githubusercontent.com/konstruktivism/tensile/refs/heads/main/public/img/tensile-banner.png?token=GHSAT0AAAAAACV7ZWCFWQPIOZPQ6OUVYY7OZYFSKPQ" width="100%" alt="Tensile Logo"></a></p>
 
+<p align="center"><a href="https://tensile.konstruktiv.nl" target="_blank"><img style="border-radius: 12px; overflow: hidden;" src="https://github.com/konstruktivism/tensile/blob/main/public/img/banner-frontpage.png?raw=true" width="100%" alt="Tensile Logo"></a></p>
+
+<p align="center"><a href="https://tensile.konstruktiv.nl" target="_blank"><img style="border-radius: 12px; overflow: hidden;" src="https://github.com/konstruktivism/tensile/blob/main/public/img/banner-project.png?raw=true" width="100%" alt="Tensile Logo"></a></p>
+
 
 ## About Tensile
 Another minimal project management tool to streamline your weekly workflow. Tensile is a web application that allows users to create and manage their own work logs for Clients. Manage organisations, clients and projects.
