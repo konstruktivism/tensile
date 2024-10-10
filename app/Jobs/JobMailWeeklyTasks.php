@@ -31,6 +31,11 @@ class JobMailWeeklyTasks implements ShouldQueue
 
         foreach ($projects as $project) {
             $tasks = $project->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->orderBy('completed_at')->get();
+
+            if($tasks->count() === 0) {
+                continue;
+            }
+
             $users = $project->users;
 
             foreach ($users as $user) {

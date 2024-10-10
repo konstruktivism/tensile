@@ -8,9 +8,9 @@
 
                 /
 
-                <a href="{{ route('projects') }}" class="dark:text-gray-50 hover:underline">Projecten</a>
+                <a href="{{ route('projects') }}" class="dark:text-gray-50 hover:underline">Projects</a>
 
-                @if(request()->routeIs('project'))
+                @if(request()->routeIs('project') || request()->routeIs('project.viewWeek'))
                     /
 
                     <a href="{{ route('project', ['project' => $project->id]) }}" class="dark:text-gray-50 hover:underline">{{ $project->name }}</a>

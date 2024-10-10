@@ -43,9 +43,9 @@
             @foreach ($weeks as $week => $data)
                 <a href="{{ route('project.viewWeek', ['project' => $project->id, 'week' => $week]) }}" class="border-b dark:border-white dark:border-opacity-25 flex justify-between p-3 pt-0">
                     <div class="w-3/5 lg:w-1/2 text-sm flex justify-between items-center">
-                        <h2>Week {{ $week }} @if ($week == now()->format('W')) <span class="border border-neutral-500 text-neutral-500 rounded px-1.5 py-1 text-xs uppercase font-bold ml-2">Current</span> @endif</h2>
+                        <h2>Week {{ $week }} @if ($week == now()->format('W')) <span class="hidden lg:inline-flex border border-neutral-500 text-neutral-500 rounded px-1.5 py-1 text-xs uppercase font-bold ml-2 absolute -mt-1">Current</span> @endif</h2>
 
-                        @if($data['tasks']->contains('is_service', 1)) <div class="p-3 uppercase text-green-500 text-xs">Free</div> @endif
+                        @if($data['tasks']->contains('is_service', 1)) <div class="px-3 uppercase text-green-500 text-xs">Free</div> @endif
 
                         {{ count($data['tasks']) }} {{ count($data['tasks']) == 1 ? 'task' : 'tasks' }}
                     </div>
@@ -60,7 +60,6 @@
 
             <div class="flex justify-between p-3  opacity-60">
                 <div class="w-1/2 lg:w-1/2 text-sm flex justify-end items-center">
-
                 </div>
 
                 <div class="w-1/5 lg:w-1/4 text-right">{{ $weeks->sum('total_minutes')/60 }} {{ $weeks->sum('total_minutes') == 1 ? 'hour' : 'hours' }}</div>
@@ -79,7 +78,7 @@
             @if ($project->is_fixed == 0)
                 <div class="w-1/5 text-right">{{ \App\Helpers\CurrencyHelper::formatCurrency($tasksByMonthAndWeekWithMinutes->flatten(1)->filter(fn($week) => !$week['tasks']->contains('is_service', 1))->sum('total_minutes')/60 * $project->hour_tariff) }}</div>
             @endif
-        </h2>
+        </div>
 
     </div>
 @endsection

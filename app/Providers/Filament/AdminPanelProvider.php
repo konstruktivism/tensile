@@ -23,6 +23,7 @@ use App\Filament\Widgets\ImportWidget;
 use App\Filament\Widgets\HoursPerWeekWidget;
 use App\Filament\Widgets\TotalTasksWidget;
 use App\Filament\Widgets\ServicePercentageWidget;
+use Illuminate\Support\Facades\Vite;
 
 
 
@@ -64,6 +65,7 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarWidth('10rem')
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->favicon(Vite::asset('resources/img/favicon.svg'));
     }
 }
