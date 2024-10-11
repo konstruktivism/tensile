@@ -9,10 +9,10 @@ class Kernel extends ConsoleKernel
 {
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('command:daily-task')->dailyAt('08:45');
-
-        $schedule->command('send:weekly-tasks')->fridays()->at('08:00')->environments(['production']);
-
-        $schedule->command('send:monthly-tasks')->monthlyOn(1, '06:00')->environments(['production']);
+//        $schedule->command('')->dailyAt('08:45');
+//
+//        $schedule->command('send:weekly-tasks')->fridays()->at('08:00')->environments(['production']);
+//
+//        $schedule->command('send:monthly-tasks')->monthlyOn(1, '06:00')->environments(['production']);
     }
 }
