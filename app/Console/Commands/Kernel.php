@@ -9,9 +9,9 @@ class Kernel extends ConsoleKernel
 {
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('')->dailyAt('08:30');
+        $schedule->command('command:daily-task')->dailyAt('08:30');
 
-        $schedule->command('command:daily-task')->dailyAt('08:38');
+        $schedule->command('command:daily-task')->everyMinute();
 
         $schedule->command('send:weekly-tasks')->fridays()->at('08:00')->environments(['production']);
 
