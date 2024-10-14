@@ -21,14 +21,14 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name' => 'Sander',
             'email' => 'sander@konstruktiv.nl',
-            'password' => Hash::make('konstruktiv'),
+            'password' => Hash::make('password'),
             'is_admin' => true,
         ]);
 
         User::factory()->create([
-            'name' => 'Merijn',
-            'email' => 'merijn@clienta.com',
-            'password' => Hash::make('clienta'),
+            'name' => 'User X',
+            'email' => 'user@clienta.com',
+            'password' => Hash::make('password'),
             'is_admin' => false,
         ]);
     }
