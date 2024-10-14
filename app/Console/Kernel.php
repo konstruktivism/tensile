@@ -10,12 +10,7 @@ class Kernel extends ConsoleKernel
 {
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('command:daily-task')->dailyAt('10:35');
-
-        $schedule->call(function () {
-            Log::info('Current time: ' . now());
-        })->everyMinute();
-
+        $schedule->command('command:daily-task')->everyMinute();
 //
 //        $schedule->command('send:weekly-tasks')->fridays()->at('08:00')->environments(['production']);
 //

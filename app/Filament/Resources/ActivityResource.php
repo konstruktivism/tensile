@@ -53,7 +53,8 @@ class ActivityResource extends Resource
             ])
             ->bulkActions([
                 // Define your bulk actions here
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getPages(): array
