@@ -14,5 +14,7 @@ class DailyTask extends Command
     {
         JobDailyTask::dispatch();
         $this->info('Daily task has been dispatched to the queue.');
+
+        \Log::info('Last day task has been dispatched to the queue.');
     }
 }

@@ -14,5 +14,6 @@ class DaysTask extends Command
     {
         JobDaysTask::dispatch();
         $this->info('Last 30 days task has been dispatched to the queue.');
+        \Log::info('Last 30 days task has been dispatched to the queue.');
     }
 }
