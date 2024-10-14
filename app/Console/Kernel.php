@@ -4,15 +4,16 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('')->dailyAt('08:45');
+        $schedule->command('command:daily-task')->dailyAt('10:35');
 
         $schedule->call(function () {
-            \Log::info('Current time: ' . now());
+            Log::info('Current time: ' . now());
         })->everyMinute();
 
 //
