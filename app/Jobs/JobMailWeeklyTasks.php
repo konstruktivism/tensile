@@ -16,6 +16,18 @@ class JobMailWeeklyTasks implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    protected int $weekNumber;
+
+    /**
+     * Create a new job instance.
+     *
+     * @param int|null $weekNumber
+     */
+    public function __construct(int $weekNumber = null)
+    {
+        $this->weekNumber = $weekNumber ?? now()->weekOfYear;
+    }
+
     /**
      * Execute the job.
      *
@@ -23,8 +35,7 @@ class JobMailWeeklyTasks implements ShouldQueue
      */
     public function handle()
     {
-        $week = now()->weekOfYear;
-        $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $week)->startOfWeek();
+        $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $this->weekNumber)->startOfWeek();
         $endOfWeek = $startOfWeek->copy()->endOfWeek();
 
         $projects = Project::where('notifications', true)->get();
@@ -32,19 +43,19 @@ class JobMailWeeklyTasks implements ShouldQueue
         foreach ($projects as $project) {
             $tasks = $project->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->orderBy('completed_at')->get();
 
-            if($tasks->count() === 0) {
+            if ($tasks->count() === 0) {
                 continue;
             }
 
             $users = $project->users;
 
             foreach ($users as $user) {
-                Mail::to($user->email)->send(new WeeklyTasksMail($project, $tasks, $week));
+                Mail::to($user->email)->send(new WeeklyTasksMail($project, $tasks, $this->weekNumber));
             }
 
             activity()
                 ->performedOn($project)
-                ->log('Weekly tasks email sent for project: ' . $project->id . ' for week: ' . $week . ' to users: ' . $users->pluck('email')->implode(', '));
+                ->log('Weekly tasks email sent for project: ' . $project->id . ' for week: ' . $this->weekNumber . ' to users: ' . $users->pluck('email')->implode(', '));
         }
     }
 }
