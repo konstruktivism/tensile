@@ -34,6 +34,7 @@ class TaskResource extends Resource
                     ->required(),
                 Forms\Components\DatePicker::make('completed_at')
                     ->nullable(),
+                Forms\Components\Checkbox::make('is_service'),
                 Forms\Components\TextInput::make('minutes')
                     ->label('Minutes')
                     ->nullable()
