@@ -28,7 +28,7 @@ class TaskResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
-                    ->required(),
+                    ->nullable(),
                 Forms\Components\Select::make('project_id')
                     ->relationship('project', 'name')
                     ->required(),
