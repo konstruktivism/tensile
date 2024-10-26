@@ -20,7 +20,7 @@ class SendWeeklyTasks extends Command
             $weekNumbers = array_map('intval', Arr::flatten($weekNumbers));
         }
 
-        JobMailWeeklyTasks::dispatch($weekNumbers)->handle();
+        JobMailWeeklyTasks::dispatch($weekNumbers);
 
         $this->info('Weekly tasks email job dispatched successfully for weeks: ' . implode(', ', $weekNumbers));
     }
