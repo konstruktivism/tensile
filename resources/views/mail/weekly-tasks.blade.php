@@ -34,7 +34,7 @@
             </tr>
         @endforeach
             <tr>
-                <td colspan="3" style="text-align: right; padding: 0 1em;">
+                <td colspan="3" style="text-align: right; padding: 1em;">
                     Total hours: {{ $tasks->sum('minutes')/60 }}
                 </td>
             </tr>

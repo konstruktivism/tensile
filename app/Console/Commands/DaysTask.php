@@ -7,14 +7,17 @@ use Illuminate\Console\Command;
 
 class DaysTask extends Command
 {
-    protected $signature = 'command:days-task';
-    protected $description = 'Import last 30 days';
+    protected $signature = 'import:weeks {--weeks=1}';
+    protected $description = 'Import tasks based on the specified number of weeks or the current week if not specified';
 
     public function handle()
     {
-        JobDaysTask::dispatch();
-        $this->info('Last 30 days task has been dispatched to the queue.');
+        $weeks = $this->argument('weeks');
 
-        \Log::info('Last 30 days task has been dispatched to the queue.');
+        JobDaysTask::dispatch($weeks);
+
+        $this->info("Tasks for the last $weeks week(s) have been dispatched to the queue.");
+
+        \Log::info("Tasks for the last $weeks week(s) have been dispatched to the queue.");
     }
 }

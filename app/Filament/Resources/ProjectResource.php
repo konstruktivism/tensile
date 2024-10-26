@@ -43,6 +43,10 @@ class ProjectResource extends Resource
                     ->required(),
                 Forms\Components\Toggle::make('is_fixed')
                     ->default(false),
+                Forms\Components\TextInput::make('hour_tariff')
+                    ->label('Hour Tariff')
+                    ->nullable()
+                    ->numeric(),
                 Forms\Components\Toggle::make('notifications')
                     ->default(false),
             ]);
@@ -57,6 +61,7 @@ class ProjectResource extends Resource
                 Tables\Columns\TextColumn::make('name')->sortable(),
                 Tables\Columns\TextColumn::make('project_code')->badge(),
                 Tables\Columns\TextColumn::make('description')->limit(50),
+                Tables\Columns\TextColumn::make('hour_tariff'),
                 Tables\Columns\TextColumn::make('users.name')->label('Users'),
             ])
             ->filters([

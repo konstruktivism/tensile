@@ -29,7 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/project/{project}/{week}', [ProjectController::class, 'viewWeek'])->name('project.viewWeek');
 
     Route::get('/import', [GoogleCalendarController::class, 'importEvents'])->name('import');
-    Route::get('/import-last-month', [GoogleCalendarController::class, 'importEventsLastMonth'])->name('importLastMonth');
+    Route::get('/import-weeks', [GoogleCalendarController::class, 'importWeeks'])->name('importWeeks');
 });
 
 Route::get('/login/magic', [MagicLinkController::class, 'showMagicLinkForm'])->name('login.magic');

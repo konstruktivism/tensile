@@ -108,6 +108,7 @@ class TaskResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
+            ->defaultSort('completed_at', 'desc')
             ->defaultPaginationPageOption(50);
     }
 

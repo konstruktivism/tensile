@@ -14,10 +14,17 @@ class JobDaysTask implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $weeks;
+
+    public function __construct($weeks)
+    {
+        $this->weeks = $weeks;
+    }
+
     public function handle(GoogleCalendarService $googleCalendarService)
     {
         $GoogleCalendarController = new GoogleCalendarController($googleCalendarService);
-        $response = $GoogleCalendarController->importEventsLastMonth();
+        $response = $GoogleCalendarController->importWeeks($this->weeks);
         \Log::info($response->getData()->message);
     }
 }

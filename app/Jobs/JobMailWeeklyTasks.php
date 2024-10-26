@@ -16,46 +16,44 @@ class JobMailWeeklyTasks implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected int $weekNumber;
+    protected array $weekNumbers;
 
     /**
      * Create a new job instance.
      *
-     * @param int|null $weekNumber
+     * @param array|null $weekNumbers
      */
-    public function __construct(int $weekNumber = null)
+    public function __construct(array $weekNumbers = null)
     {
-        $this->weekNumber = $weekNumber ?? now()->weekOfYear;
+        $this->weekNumbers = $weekNumbers ?? [now()->weekOfYear];
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
-        $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, $this->weekNumber)->startOfWeek();
-        $endOfWeek = $startOfWeek->copy()->endOfWeek();
+        foreach ($this->weekNumbers as $weekNumber) {
+            dump('Sending weekly tasks email for week: ' . $weekNumber);
+            $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, (int) $weekNumber)->startOfWeek();
+            $endOfWeek = $startOfWeek->copy()->endOfWeek();
 
-        $projects = Project::where('notifications', true)->get();
+            $projects = Project::where('notifications', true)->get();
 
-        foreach ($projects as $project) {
-            $tasks = $project->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->orderBy('completed_at')->get();
+            foreach ($projects as $project) {
+                $tasks = $project->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->orderBy('completed_at')->get();
 
-            if ($tasks->count() === 0) {
-                continue;
+                if ($tasks->count() === 0) {
+                    continue;
+                }
+
+                $users = $project->users;
+
+                foreach ($users as $user) {
+                    Mail::to($user->email)->send(new WeeklyTasksMail($project, $tasks, $weekNumber));
+                }
+
+                activity()
+                    ->performedOn($project)
+                    ->log('Weekly tasks email sent for project: ' . $project->id . ' for week: ' . $weekNumber . ' to users: ' . $users->pluck('email')->implode(', '));
             }
-
-            $users = $project->users;
-
-            foreach ($users as $user) {
-                Mail::to($user->email)->send(new WeeklyTasksMail($project, $tasks, $this->weekNumber));
-            }
-
-            activity()
-                ->performedOn($project)
-                ->log('Weekly tasks email sent for project: ' . $project->id . ' for week: ' . $this->weekNumber . ' to users: ' . $users->pluck('email')->implode(', '));
         }
     }
 }

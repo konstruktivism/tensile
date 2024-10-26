@@ -25,9 +25,9 @@ class ImportWidget extends Widget
         $this->executeCommand('command:daily-task');
     }
 
-    public function importLastMonth()
+    public function importWeeks()
     {
-        $this->executeCommand('command:days-task');
+        $this->executeCommand('import:weeks');
     }
 
     protected function executeCommand(string $command): void

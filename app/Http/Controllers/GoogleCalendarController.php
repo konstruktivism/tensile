@@ -27,9 +27,8 @@ class GoogleCalendarController extends Controller
         return response()->json(['message' => 'Events imported of yesterday.']);
     }
 
-    public function importEventsLastMonth():  \Illuminate\Http\JsonResponse
-    {
-        $events = $this->googleCalendarService->getEvents(500, 30);
+    public function importWeeks($weeks): \Illuminate\Http\JsonResponse    {
+        $events = $this->googleCalendarService->getEvents(500, $weeks * 7);
 
         $this->runImport($events);
 
