@@ -7,7 +7,7 @@
 @section('body')
     {{ $project->organisation->name }} · {{ $project->name }}
 
-    <div style="padding: 2em; border: 1px solid #e5e7eb; margin: 2em 0; border-radius: 4px;">
+    <div style="padding: 1em 0 2em 0; font-style: italic;">
         {{ $project->description }}
     </div>
 
@@ -28,7 +28,7 @@
                     <span style="font-size: .8em; text-transform: uppercase; opacity: .6;">#{{ \Carbon\Carbon::parse($day['completed_at'])->week }}</span>
 
                 </td>
-                <td style="padding: 0.5em 0; vertical-align: top;"><strong style="color: #1b1b1b;">{{ $day['name'] }}</strong><br>{{ $day['description'] }}</td>
+                <td style="padding: 0.5em 0; vertical-align: top;"><strong style="color: #1b1b1b;">{{ $day['name'] }}</strong></td>
                 <td style="width: 100px; text-align: right; padding: 0.5em 0; vertical-align: top;">{{ $day['minutes']/60 }}</td>
             </tr>
         @endforeach

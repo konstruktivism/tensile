@@ -17,7 +17,7 @@ class SendWeeklyTasks extends Command
         if (empty($weekNumbers)) {
             $weekNumbers = [now()->weekOfYear];
         } else {
-            $weekNumbers = array_map('intval', Arr::flatten($weekNumbers));
+            $weekNumbers = array_map('intval', explode(',', Arr::flatten($weekNumbers)[0]));
         }
 
         JobMailWeeklyTasks::dispatch($weekNumbers);

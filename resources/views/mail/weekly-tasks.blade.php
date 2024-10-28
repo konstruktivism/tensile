@@ -7,7 +7,7 @@
 @section('body')
     {{ $project->organisation->name }} · {{ $project->name }}
 
-    <div style="padding: 1em; border: 1px solid #e5e7eb; margin: 2em 0; border-radius: 4px;">
+    <div style="padding: 1em 0 2em 0; font-style: italic;">
         {{ $project->description }}
     </div>
 
@@ -23,9 +23,7 @@
         @foreach($tasks as $index => $day)
             <tr style="background-color: {{ $index % 2 == 0 ? '#F3F4F6' : '' }};">
                 <td style="width: 125px; vertical-align: top; padding: 1em 0 1em 1em;">{{ \Carbon\Carbon::parse($day['completed_at'])->format('D d-m') }}</td>
-                <td style="padding: 1em 0;"><span style="color: #1b1b1b; font-weight: bold;">{{ $day['name'] }}</span><br>
-                    <span style="color: #a5a5a5;">{{ $day['description'] }}</span>
-
+                <td style="padding: 1em 0;"><span style="color: #1b1b1b; font-weight: bold;">{{ $day['name'] }}</span><br />
                     @if ($day['is_service'])
                         <div style="color: rgb(34 197 94 / 1); font-size: 12px; text-transform: uppercase; font-family: monospace;">Free of Charge</div>
                     @endif
