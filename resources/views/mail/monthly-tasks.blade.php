@@ -14,22 +14,25 @@
     <table style="width: 100%;">
         <thead>
         <tr>
-            <th style="width: 125px; border-bottom: 1px solid #e5e7eb; padding-bottom: 1em; font-weight: normal;">Date</th>
-            <th style="border-bottom: 1px solid #e5e7eb; padding-bottom: 1em; font-weight: normal;">Deliverables</th>
+            <th style="width: 50%; border-bottom: 1px solid #e5e7eb; padding-bottom: 1em; font-weight: normal;">Week</th>
+            <th style="border-bottom: 1px solid #e5e7eb; padding-bottom: 1em; font-weight: normal; text-align: right;">Tasks</th>
             <th style="border-bottom: 1px solid #e5e7eb; width: 100px; text-align: right; padding-bottom: 1em; font-weight: normal;">Hours</th>
         </tr>
         </thead>
         <tbody>
-        @foreach($tasks as $index => $day)
+        @foreach($tasks->groupBy(function($task) {
+            return \Carbon\Carbon::parse($task['completed_at'])->week;
+            }) as $week => $weekTasks)
             <tr>
-                <td style="width: 125px; vertical-align: top; padding: 0.5em 0;">
-                    {{ \Carbon\Carbon::parse($day['completed_at'])->format('D d-m') }}
-                    <br />
-                    <span style="font-size: .8em; text-transform: uppercase; opacity: .6;">#{{ \Carbon\Carbon::parse($day['completed_at'])->week }}</span>
-
+                <td style="padding: 1em 0;">
+                    <strong style="color: black;">Week {{ $week }}</strong>  ({{ \Carbon\Carbon::now()->setISODate(\Carbon\Carbon::now()->year, $week)->startOfWeek()->format('d M') }} - {{ \Carbon\Carbon::now()->setISODate(\Carbon\Carbon::now()->year, $week)->endOfWeek()->format('d M') }})
                 </td>
-                <td style="padding: 0.5em 0; vertical-align: top;"><strong style="color: #1b1b1b;">{{ $day['name'] }}</strong></td>
-                <td style="width: 100px; text-align: right; padding: 0.5em 0; vertical-align: top;">{{ $day['minutes']/60 }}</td>
+                <td style="padding: 1em 0; text-align: right;">
+                    {{ $weekTasks->count() }} tasks
+                </td>
+                <td style="padding: 1em 0; text-align: right;">
+                    {{ $weekTasks->sum('minutes')/60 }}
+                </td>
             </tr>
         @endforeach
             <tr>
@@ -46,7 +49,5 @@
             </tr>
         </tbody>
     </table>
-
-    <a href="{{ env('APP_URL') }}" style="display: block; margin-top: 2em; text-align: center; color: #1b1b1b; text-underline: #1b1b1b">Login</a>
 @endsection
 

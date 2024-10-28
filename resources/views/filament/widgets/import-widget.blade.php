@@ -9,8 +9,8 @@
                     Import
                 </x-filament::button>
 
-                <x-filament::button wire:click="importLastMonth">
-                    Import last 30 days
+                <x-filament::button wire:click="importWeeks">
+                    Import last week
                 </x-filament::button>
             </div>
         </div>

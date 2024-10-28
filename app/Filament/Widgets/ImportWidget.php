@@ -50,9 +50,9 @@ class ImportWidget extends Widget
                 ->label('Import')
                 ->action('import'),
 
-            Action::make('importLastMonth')
+            Action::make('importWeeks')
                 ->label('Import Last 30 Days')
-                ->action('importLastMonth'),
+                ->action('importWeeks'),
         ];
     }
 }
