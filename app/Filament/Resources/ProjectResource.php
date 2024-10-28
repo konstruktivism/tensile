@@ -62,6 +62,8 @@ class ProjectResource extends Resource
                 Tables\Columns\TextColumn::make('project_code')->badge(),
                 Tables\Columns\TextColumn::make('description')->limit(50),
                 Tables\Columns\TextColumn::make('hour_tariff'),
+                Tables\Columns\IconColumn::make('is_fixed')->boolean()->label('Fixed'),
+                Tables\Columns\IconColumn::make('notifications')->boolean()->label('Notify'),
                 Tables\Columns\TextColumn::make('users.name')->label('Users'),
             ])
             ->filters([
