@@ -69,13 +69,11 @@
             <div class="flex justify-between py-3 lg:p-3 pt-0 @if($index !== count($tasks) - 1) border-b dark:border-neutral-500 dark:border-opacity-25 @endif">
                 <h2 class="w-1/4 text-sm text-balance">{{ \Carbon\Carbon::parse($day['completed_at'])->format('D d-m') }}</h2>
 
-                <div class="w-1/2 flex flex-col">
+                <div class="w-1/2 flex items-center gap-3">
                     {{ $day['name'] }}
 
-{{--                    <div class="opacity-60">{{ $day['description'] }}</div>--}}
-
                     @if ($day['is_service'])
-                        <div class="uppercase mt-2 text-xs text-green-500">Free of Charge</div>
+                        <div class="uppercase bg-green-500 text-xs w-2 h-2 inline-block rounded-full"></div>
                     @endif
                 </div>
 
@@ -89,15 +87,23 @@
             </div>
         @endforeach
 
-        <div class="flex justify-between p-3 font-bold dark:bg-dark bg-white drop-shadow dark:drop-shadow-md dark:drop-shadow-neutral-950 border-t  border-neutral-100 dark:border-neutral-800 rounded-lg">
-            <h2 class="w-1/4"></h2>
+        <div class="flex justify-between p-3  dark:bg-dark bg-white drop-shadow dark:drop-shadow-md dark:drop-shadow-neutral-950 border-t  border-neutral-100 dark:border-neutral-800 rounded-lg">
+            <div class="w-3/4 flex items-center gap-3">
+                @if ($tasks->contains('is_service', 1))
+                    <div class="uppercase bg-green-500 text-xs w-2 h-2 inline-block rounded-full"></div>
 
-            <div class="w-1/2 flex flex-col"></div>
+                    {{ $tasks->where('is_service', 1)->sum('minutes') / 60 }} hours
 
-            <div class="w-1/5 text-right">{{ $tasks->sum('minutes')/60 }}</div>
+                    Free of Charge /  Service of Konstruktiv
+
+                    ({{ \App\Helpers\CurrencyHelper::formatCurrency($tasks->where('is_service', 1)->sum('minutes') / 60 * $project->hour_tariff) }})
+                @endif
+            </div>
+
+            <div class="w-1/5 text-right font-bold">{{ $tasks->sum('minutes')/60 }}</div>
 
             @if ($project->is_fixed == 0)
-                <div class="w-1/5 text-right">{{ \App\Helpers\CurrencyHelper::formatCurrency($tasks->sum('minutes')/60 * $project->hour_tariff) }}</div>
+                <div class="w-1/5 text-right font-bold">{{ \App\Helpers\CurrencyHelper::formatCurrency($tasks->where('is_service', 0)->sum('minutes') / 60 * $project->hour_tariff) }}</div>
             @endif
         </div>
 

@@ -72,10 +72,11 @@ class ProjectController extends Controller
             })->map(function ($tasks) {
                 return [
                     'tasks' => $tasks,
-                    'total_minutes' => $tasks->sum('minutes')
+                    'total_minutes' => $tasks->sum('minutes'),
+                    'total_minutes_without_service' => $tasks->where('is_service', '!=', 1)->sum('minutes')
                 ];
             })->sortKeys();
-        })->sortKeys();
+        })->sortKeysDesc();
     }
 
     protected function getTasksForWeek(Project $project, $week)
