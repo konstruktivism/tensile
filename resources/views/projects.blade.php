@@ -9,13 +9,13 @@
         @if(empty($projects))
         <p class="text-neutral-600">No projects found.</p>
         @else
-            <div class="flex flex-col gap-4 divide-neutral-700 divide-y *:pt-6">
+            <div class="flex flex-col divide-neutral-200 dark:divide-neutral-700 divide-y *:py-3">
                 @foreach($projects as $project)
-                    <a href="/project/{{ $project->id }}" class="dark-text-neutral-600  py-6 transition-all hover:bg-yellow-50 hover:bg-opacity-5 p-6 hover:rounded-lg">
+                    <a href="/project/{{ $project->id }}" class="dark:text-white py-6 transition-all hover:bg-gray-100 dark:hover:bg-neutral-800 p-3">
                         <div class="flex justify-between items-center">
-                            <h2 class="text-2xl tracking-tight font-bold">{{ $project->name }}</h2>
+                            <h2 class="text-xl tracking-tight font-bold">{{ $project->name }}</h2>
 
-                            <h2 class="text-yellow-500 font-semibold">{{ $project->organisation->name }}</h2>
+                            <h2 class="text-sm bg-yellow-400 text-black px-3 py-1 rounded font-bold">{{ $project->organisation->name }}</h2>
                         </div>
                         <p class="text-neutral-400 mt-2">{{ $project->description }}</p>
                     </a>

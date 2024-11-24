@@ -41,12 +41,14 @@ class ProjectResource extends Resource
                     ->multiple()
                     ->relationship('users', 'name')
                     ->required(),
-                Forms\Components\Toggle::make('is_fixed')
-                    ->default(false),
                 Forms\Components\TextInput::make('hour_tariff')
                     ->label('Hour Tariff')
                     ->nullable()
                     ->numeric(),
+                Forms\Components\Toggle::make('is_fixed')
+                    ->default(false),
+                Forms\Components\Toggle::make('is_internal')
+                    ->default(false),
                 Forms\Components\Toggle::make('notifications')
                     ->default(false),
             ]);

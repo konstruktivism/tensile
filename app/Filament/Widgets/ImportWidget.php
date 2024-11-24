@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Artisan;
 
 class ImportWidget extends Widget
 {
+    protected static ?int $sort = 4;
+
     protected static string $view = 'filament.widgets.import-widget';
 
     protected int | string | array $columnSpan = 'full';

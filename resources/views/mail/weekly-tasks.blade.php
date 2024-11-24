@@ -5,9 +5,14 @@
 @endsection
 
 @section('body')
-    {{ $project->organisation->name }} · {{ $project->name }}   @if ($project->is_fixed == 1)<div style="color: black; background: #FACC15; display: inline-block;  padding: 1px 6px; border-radius: 4px; text-transform: uppercase; font-size: 12px; margin: 0 0 0 1em;">Fixed Price</div>@endif
+    {{ $project->organisation->name }} · {{ $project->name }}
+    @if ($project->is_fixed == 1)
+        <div style="color: black; background: #FACC15; display: inline-block;  padding: 1px 6px; border-radius: 4px; text-transform: uppercase; font-size: 12px; margin: 0 0 0 1em;">Fixed Price</div>
+    @endif
 
-    <div style="padding: 1em 0 2em 0; font-style: italic;">
+    <a href="{{ url('/login') }}" style="color: #3B82F6; text-decoration: none; font-size: 14px; display: block; margin-top: 1em;">Client login</a>
+
+    <div style="padding: 1em 0 2em 0;">
         {{ $project->description }}
     </div>
 

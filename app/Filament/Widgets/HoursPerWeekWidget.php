@@ -11,6 +11,7 @@ class HoursPerWeekWidget extends ChartWidget
 
     protected int | string | array $columnSpan = 'full';
 
+    protected static ?int $sort = 1;
 
     protected function getData(): array
     {
@@ -29,9 +30,10 @@ class HoursPerWeekWidget extends ChartWidget
                 [
                     'label' => 'Hours per Week',
                     'data' => $hours,
-                    'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
+                    'backgroundColor' => 'rgba(75, 192, 192, 1)',
                     'borderColor' => 'rgba(75, 192, 192, 1)',
-                    'borderWidth' => 1,
+                    'borderWidth' => 0,
+                    'pointHitRadius' => 10, //
                 ],
             ],
             'labels' => $labels,
@@ -42,30 +44,54 @@ class HoursPerWeekWidget extends ChartWidget
     {
         return 'bar';
     }
+
+    protected function getOptions(): array
+    {
+        $option = [
+            'plugins' => [
+                'legend' => [
+                    'display' => true,
+                    'align' => 'start',
+                ],
+            ],
+        ];
+
+        return $option;
+    }
 }
 
-class TotalTasksWidget extends ChartWidget
+class RevenueWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Total Tasks';
+    protected static ?string $heading = 'Revenue per week';
 
     protected int | string | array $columnSpan = 'full';
 
+    protected static ?int $sort = 0;
+
     protected function getData(): array
     {
-        $response = Http::get(config('app.url') . '/api/hours-per-week');
+        $response = Http::get(config('app.url') . '/api/revenue-per-week');
         $data = $response->json();
 
-        $labels = array_map(fn($item) => "Week {$item['week']}", $data);
-        $totalTasks = array_map(fn($item) => $item['total_tasks'], $data);
+        $labels = array_map(fn($week) => "Week {$week}", array_keys($data));
+        $revenue = array_values($data);
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Total Tasks',
-                    'data' => $totalTasks,
-                    'backgroundColor' => 'rgba(153, 102, 255, 0.2)',
-                    'borderColor' => 'rgba(153, 102, 255, 1)',
-                    'borderWidth' => 1,
+                    'label' => 'Revenue per Week',
+                    'data' => $revenue,
+                    'backgroundColor' => 'rgba(75, 192, 192, 1)',
+                    'borderColor' => 'rgba(75, 192, 192, 1)',
+                    'cubicInterpolationMode' => 'monotone',
+                    'borderWidth' => 4,
+                    'tension' => 0.4,
+                    'fill' => true,
+                    'pointRadius' => 0,
+                    'pointHoverRadius' => 10,
+                    'pointBackgroundColor' => 'rgba(255, 159, 64, 1)',
+                    'pointBorderColor' => 'rgba(255, 159, 64, 1)',
+                    'pointHitRadius' => 10, //
                 ],
             ],
             'labels' => $labels,
@@ -74,7 +100,25 @@ class TotalTasksWidget extends ChartWidget
 
     protected function getType(): string
     {
-        return 'bar';
+        return 'line';
+    }
+
+    protected function getOptions(): array
+    {
+        $option = [
+            'plugins' => [
+                'legend' => [
+                    'display' => true,
+                    'align' => 'start',
+                ],
+            ],
+            'interaction' => [
+                'mode' => 'nearest',
+                'intersect' => false,
+            ],
+        ];
+
+        return $option;
     }
 }
 
@@ -84,37 +128,79 @@ class ServicePercentageWidget extends ChartWidget
 
     protected int | string | array $columnSpan = 'full';
 
+    protected static ?int $sort = 2;
+
     protected function getData(): array
     {
         $response = Http::get(config('app.url') . '/api/hours-per-week');
         $data = $response->json();
 
         $labels = array_map(fn($item) => "Week {$item['week']}", $data);
-        $servicePercentage = array_map(fn($item) => $item['service_percentage'], $data);
+        $servicePercentage = array_map(fn($item) => round($item['service_percentage']), $data);
+        $internalPercentage = array_map(fn($item) => round($item['internal_tasks']), $data);
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Service Percentage',
+                    'label' => 'Service',
                     'data' => $servicePercentage,
-                    'backgroundColor' => 'rgba(255, 159, 64, 0.2)',
+                    'backgroundColor' => 'rgba(255, 159, 64, 1)',
                     'borderColor' => 'rgba(255, 159, 64, 1)',
                     'borderWidth' => 1,
+                    'stack' => 'Stack 0',
+                    'pointHitRadius' => 10, //
                 ],
                 [
-                    'label' => 'Total Percentage',
-                    'data' => array_map(fn($percentage) => 100 - $percentage, $servicePercentage),
-                    'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
+                    'label' => 'Internal',
+                    'data' => $internalPercentage,
+                    'backgroundColor' => 'rgba(255, 207, 0, 1)',
+                    'borderColor' => 'rgba(255, 207, 0, 1)',
+                    'borderWidth' => 1,
+                    'stack' => 'Stack 0',
+                    'pointHitRadius' => 10, //
+                ],
+                [
+                    'label' => 'Paid',
+                    'data' => array_map(fn($service, $internal) => round(100 - ($service + $internal)), $servicePercentage, $internalPercentage),
+                    'backgroundColor' => 'rgba(54, 162, 235, 1)',
                     'borderColor' => 'rgba(54, 162, 235, 1)',
                     'borderWidth' => 1,
+                    'stack' => 'Stack 0',
+                    'pointHitRadius' => 10, //
                 ],
             ],
             'labels' => $labels,
+            'options' => [
+                'plugins' => [
+                    'legend' => [
+                        'display' => false
+                    ],
+                ],
+            ]
         ];
     }
 
     protected function getType(): string
     {
         return 'bar';
+    }
+
+    protected function getOptions(): array
+    {
+        $option = [
+            'plugins' => [
+                'legend' => [
+                    'display' => true,
+                    'align' => 'start',
+                ],
+            ],
+            'scales' => [
+                'y' => [
+                    'display' => false,
+                ],
+            ],
+        ];
+
+        return $option;
     }
 }

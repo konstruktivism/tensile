@@ -21,7 +21,7 @@ use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\Facades\Blade;
 use App\Filament\Widgets\ImportWidget;
 use App\Filament\Widgets\HoursPerWeekWidget;
-use App\Filament\Widgets\TotalTasksWidget;
+use App\Filament\Widgets\RevenueWidget;
 use App\Filament\Widgets\ServicePercentageWidget;
 use Illuminate\Support\Facades\Vite;
 
@@ -46,10 +46,10 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                ImportWidget::class,
+                RevenueWidget::class,
                 HoursPerWeekWidget::class,
-                //TotalTasksWidget::class,
                 ServicePercentageWidget::class,
+                ImportWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

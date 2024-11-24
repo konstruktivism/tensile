@@ -37,6 +37,7 @@ Route::post('/login/magic', [MagicLinkController::class, 'sendMagicLink'])->name
 Route::get('/magic-login', [MagicLinkController::class, 'login'])->name('magic.login');
 
 Route::get('/api/hours-per-week', [StatsController::class, 'getHoursPerWeek']);
+Route::get('/api/revenue-per-week', [StatsController::class, 'getRevenuePerWeek']);
 
 Route::put('/moneybird/invoice/{projectId}', [MoneybirdController::class, 'updateInvoice']);
 
