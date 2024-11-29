@@ -17,9 +17,15 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Auth::user()->projects;
+        $projects = Auth::user()->projects->map(function ($project) {
+            $project->is_active = $project->tasks()->where('completed_at', '>=', Carbon::now()->subMonth())->exists();
+            return $project;
+        })->sortByDesc('is_active');
 
-        return view('projects', compact('projects'));
+        $activeProjects = $projects->where('is_active', true);
+        $inactiveProjects = $projects->where('is_active', false);
+
+        return view('projects', compact('activeProjects', 'inactiveProjects'));
     }
 
     /**

@@ -54,11 +54,11 @@
         <h1 class="text-6xl font-bold tracking-tight mb-4">Week {{ $week }}</h1>
 
         <div class="flex justify-between py-3 lg:p-3 uppercase opacity-50 font-light">
-            <h2 class="w-1/4">Datum</h2>
+            <h2 class="w-1/4">Date</h2>
 
             <div class="w-1/2">Deliverables</div>
 
-            <div class="w-1/5 text-right">Hours</div>
+            <div class="w-1/5 text-right">Minutes</div>
 
             @if ($project->is_fixed == 0)
                 <div class="w-1/5 text-right">Price</div>
@@ -77,7 +77,7 @@
                     @endif
                 </div>
 
-                <div class="w-1/5 text-right">{{ $day['minutes']/60 }}</div>
+                <div class="w-1/5 text-right">{{ $day['minutes'] }}</div>
 
                 @if ($project->is_fixed == 0)
                     <div class="w-1/5 text-right">
@@ -100,7 +100,7 @@
                 @endif
             </div>
 
-            <div class="w-1/5 text-right font-bold">{{ $tasks->sum('minutes')/60 }}</div>
+            <div class="w-1/5 text-right font-bold">{{ $tasks->sum('minutes') }}</div>
 
             @if ($project->is_fixed == 0)
                 <div class="w-1/5 text-right font-bold">{{ \App\Helpers\CurrencyHelper::formatCurrency($tasks->where('is_service', 0)->sum('minutes') / 60 * $project->hour_tariff) }}</div>

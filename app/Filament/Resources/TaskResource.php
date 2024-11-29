@@ -59,10 +59,7 @@ class TaskResource extends Resource
                 Tables\Columns\TextColumn::make('week_year')
                     ->label('Week-Year')
                     ->getStateUsing(fn ($record) => Carbon::parse($record->completed_at)->format('W')),
-                Tables\Columns\TextColumn::make('minutes')->sortable()->formatStateUsing(fn ($state) => $state / 60)
-                    ->summarize([
-                        Sum::make()->formatStateUsing(fn ($state) => $state / 60)
-                    ]),
+                Tables\Columns\TextColumn::make('minutes')->sortable(),
                 Tables\Columns\TextColumn::make('is_service')->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No'),
             ])
             ->filters([

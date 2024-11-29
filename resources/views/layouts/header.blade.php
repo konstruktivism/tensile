@@ -13,7 +13,13 @@
                 @if(request()->routeIs('project') || request()->routeIs('project.viewWeek'))
                     /
 
-                    <a href="{{ route('project', ['project' => $project->id]) }}" class="dark:text-gray-50 hover:underline">{{ $project->name }}</a>
+                    <a href="{{ route('project', ['project' => $project->id]) }}" class="dark:text-gray-50 hover:underline flex items-center gap-3">
+                        <div class="text-xs px-3 py-1 uppercase rounded font-bold no-underline hover:no-underline {{ $project->organisation->name == 'Konstruktiv' ? 'bg-yellow-400 text-black' : 'bg-blue-600 text-white' }}">
+                            {{ $project->organisation->name }}
+                        </div>
+
+                        {{ $project->name }}
+                    </a>
                 @endif
             @endauth
 
