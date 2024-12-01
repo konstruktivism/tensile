@@ -23,8 +23,8 @@
         <tr>
             <th style="width: 125px; border-bottom: 1px solid #e5e7eb; padding-left: 1em; padding-bottom: 1em; font-weight: bold; color: black;">Date</th>
             <th style="border-bottom: 1px solid #e5e7eb; padding-bottom: 1em; font-weight: bold; color: black; text-align:right;">Deliverables</th>
-            <th style="border-bottom: 1px solid #e5e7eb; width: 100px; text-align: right; padding-bottom: 1em; font-weight: bold; color: black;">Hours</th>
-            <th style="border-bottom: 1px solid #e5e7eb; width: 100px; text-align: right; padding-bottom: 1em; padding-right: 1em; font-weight: bold; color: black;">Price</th>
+            <th style="border-bottom: 1px solid #e5e7eb; width: 100px; text-align: right; padding-bottom: 1em; padding-right: 1em; font-weight: bold; color: black;">Hours</th>
+{{--            <th style="border-bottom: 1px solid #e5e7eb; width: 100px; text-align: right; padding-bottom: 1em; padding-right: 1em; font-weight: bold; color: black;">Price</th>--}}
         </tr>
         </thead>
         <tbody>
@@ -39,48 +39,48 @@
                 <td style="padding: 1em 0;text-align:right;  vertical-align: top;">
                     {{ $weekTasks->count() }} tasks
                 </td>
-                <td style="width: 100px; text-align: right; padding: 1em 0; vertical-align: top;">
+                <td style="width: 100px; text-align: right; padding: 1em; vertical-align: top;">
                     {{ round($weekTasks->sum('minutes')/60, 2) }}
                 </td>
-                <td style="width: 100px; text-align: right; padding: 1em 1em 1em 0; vertical-align: top;">
-                    @if ($project->is_fixed == 1)
+{{--                <td style="width: 100px; text-align: right; padding: 1em 1em 1em 0; vertical-align: top;">--}}
+{{--                    @if ($project->is_fixed == 1)--}}
 
-                    @else
-                        &euro; {{ round(round($weekTasks->sum('minutes')/60, 2)  * $project->hour_tariff) }}
-                    @endif
-                </td>
+{{--                    @else--}}
+{{--                        &euro; {{ round(round($weekTasks->sum('minutes')/60, 2)  * $project->hour_tariff) }}--}}
+{{--                    @endif--}}
+{{--                </td>--}}
             </tr>
         @endforeach
         <tr>
-            <td colspan="4" style="text-align: right; padding: 1em; color: black; font-weight: bold;">
+            <td colspan="3" style="text-align: right; padding: 1em; color: black; font-weight: bold;">
                 Total hours: {{ round($tasks->sum('minutes')/60, 2) }}
             </td>
         </tr>
-        <tr>
-            <td colspan="4" style="text-align: right; padding: 0 1em; color: black; font-weight: bold;">
-                @if ($project->is_fixed == 1)
+{{--        <tr>--}}
+{{--            <td colspan="3" style="text-align: right; padding: 0 1em; color: black; font-weight: bold;">--}}
+{{--                @if ($project->is_fixed == 1)--}}
 
-                @else
-                    Subtotal : &euro; {{ round(round($tasks->sum('minutes')/60, 2) * $project->hour_tariff) }}
-                @endif
-            </td>
-        </tr>
+{{--                @else--}}
+{{--                    Subtotal : &euro; {{ round(round($tasks->sum('minutes')/60, 2) * $project->hour_tariff) }}--}}
+{{--                @endif--}}
+{{--            </td>--}}
+{{--        </tr>--}}
         <tr>
-            <td colspan="4" style="text-align: right; padding: 1em; color: rgb(34 197 94 / 1);">
+            <td colspan="3" style="text-align: right; padding: 1em 0; color: rgb(34 197 94 / 1);">
                 @if($tasks->where('is_service', 1)->isNotEmpty())
                     – Free of Charge : {{ round($tasks->where('is_service', 1)->sum('minutes')/60, 2) }}
                 @endif
             </td>
         </tr>
-        <tr>
-            <td colspan="4" style="text-align: right; padding: 0 1em; color: black; font-weight: bold;">
-                @if ($project->is_fixed == 1)
+{{--        <tr>--}}
+{{--            <td colspan="3" style="text-align: right; padding: 0 1em; color: black; font-weight: bold;">--}}
+{{--                @if ($project->is_fixed == 1)--}}
 
-                @else
-                    Total : &euro; {{ round(round(round($tasks->sum('minutes')/60, 2) * $project->hour_tariff) - (round($tasks->where('is_service', 1)->sum('minutes')/60, 2) * $project->hour_tariff))  }}
-                @endif
-            </td>
-        </tr>
+{{--                @else--}}
+{{--                    Total : &euro; {{ round(round(round($tasks->sum('minutes')/60, 2) * $project->hour_tariff) - (round($tasks->where('is_service', 1)->sum('minutes')/60, 2) * $project->hour_tariff))  }}--}}
+{{--                @endif--}}
+{{--            </td>--}}
+{{--        </tr>--}}
         </tbody>
     </table>
 @endsection
