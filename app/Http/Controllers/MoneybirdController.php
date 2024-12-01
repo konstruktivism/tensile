@@ -56,7 +56,7 @@ class MoneybirdController extends Controller
                     return [
                         'description' => $task->name,
                         'price' => $task->project->hour_tariff,
-                        'amount' => $task->minutes . ' minuten',
+                        'amount' => $task->minutes . ' minutes',
                         'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
                     ];
                 })->toArray(),
