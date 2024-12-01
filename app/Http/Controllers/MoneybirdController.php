@@ -56,7 +56,7 @@ class MoneybirdController extends Controller
                     return [
                         'description' => $task->name . '<br />' . $task->description,
                         'price' => $task->project->hour_tariff,
-                        'amount' => $task->minutes / 60 . ' hours',
+                        'amount' => round($task->minutes / 60) . ' hours',
                         'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
                     ];
                 })->toArray(),
@@ -137,8 +137,8 @@ class MoneybirdController extends Controller
 
     protected function getTasksForCurrentMonth(Project $project)
     {
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
+        $startOfMonth = Carbon::now()->subMonth()->startOfMonth();
+        $endOfMonth = Carbon::now()->subMonth()->endOfMonth();
 
         return $project->tasks()
             ->whereBetween('completed_at', [$startOfMonth, $endOfMonth])
