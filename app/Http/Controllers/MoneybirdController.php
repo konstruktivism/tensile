@@ -54,7 +54,7 @@ class MoneybirdController extends Controller
             'sales_invoice' => [
                 'details_attributes' => $tasks->map(function ($task) {
                     return [
-                        'description' => $task->name . '<br />' . $task->description,
+                        'description' => $task->name,
                         'price' => $task->project->hour_tariff,
                         'amount' => round($task->minutes / 60) . ' hours',
                         'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
@@ -135,7 +135,7 @@ class MoneybirdController extends Controller
         return null;
     }
 
-    protected function getTasksForCurrentMonth(Project $project)
+    protected function getTasksForCurrentMonth(Project $project): \Illuminate\Database\Eloquent\Collection
     {
         $startOfMonth = Carbon::now()->subMonth()->startOfMonth();
         $endOfMonth = Carbon::now()->subMonth()->endOfMonth();
@@ -144,6 +144,7 @@ class MoneybirdController extends Controller
             ->whereBetween('completed_at', [$startOfMonth, $endOfMonth])
             ->whereNull('invoiced')
             ->orderBy('completed_at')
+            ->whereNull('is_service')
             ->get();
     }
 }
