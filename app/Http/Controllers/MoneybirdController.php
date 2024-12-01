@@ -54,7 +54,7 @@ class MoneybirdController extends Controller
             'sales_invoice' => [
                 'details_attributes' => $tasks->map(function ($task) {
                     return [
-                        'description' => $task->name,
+                        'description' => $task->name . ' [' . $task->completed_at->format('d-m-Y') . ']',
                         'price' => $task->project->hour_tariff,
                         'amount' => round($task->minutes / 60, 2) . ' hours',
                         'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
