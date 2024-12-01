@@ -144,7 +144,7 @@ class MoneybirdController extends Controller
             ->whereBetween('completed_at', [$startOfMonth, $endOfMonth])
             ->whereNull('invoiced')
             ->orderBy('completed_at')
-            ->whereNull('is_service')
+            ->where('is_service', 0)
             ->get();
     }
 }
