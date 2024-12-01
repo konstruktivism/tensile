@@ -28,6 +28,10 @@ class Task extends Model
         'invoiced'
     ];
 
+    protected $casts = [
+        'completed_at' => 'datetime',
+    ];
+
     protected static $logAttributes = ['name', 'description', 'project_id', 'completed_at', 'minutes', 'icalUID', 'is_service', 'invoiced'];
 
     protected static $logName = 'task';
