@@ -40,6 +40,6 @@ class MonthlyTasksMail extends Mailable
         $htmlContent = Mjml::new()->convert($mjmlContent)->html();
 
         return $this->view('mail.raw', ['htmlContent' => $htmlContent])
-            ->subject('🪢 '. config('app.client') . ' · ' . 'Work Log ' . \Carbon\Carbon::now()->subMonth()->locale('en')->translatedFormat('F') . ' for ' . $this->project->organisation->name);
+            ->subject('🪢 '. config('app.client') . ' · ' . 'Work Log ' . \Carbon\Carbon::now()->subMonth()->locale('en')->translatedFormat('F') . ' ' . $this->project->organisation->name);
     }
 }

@@ -21,6 +21,7 @@ class StatsController extends Controller
                 DB::raw('SUM(CASE WHEN projects.is_internal = true THEN 1 ELSE 0 END) as internal_tasks')
             )
             ->groupBy('week')
+            ->orderBy('week')
             ->get();
 
         return response()->json($tasks);

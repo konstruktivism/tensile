@@ -137,8 +137,8 @@ class MoneybirdController extends Controller
 
     protected function getTasksForCurrentMonth(Project $project): \Illuminate\Database\Eloquent\Collection
     {
-        $startOfMonth = Carbon::now()->subMonth()->startOfMonth();
-        $endOfMonth = Carbon::now()->subMonth()->endOfMonth();
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
 
         return $project->tasks()
             ->whereBetween('completed_at', [$startOfMonth, $endOfMonth])

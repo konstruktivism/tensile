@@ -39,7 +39,7 @@ class JobMailMonthlyTasks implements ShouldQueue
 
             activity()
                 ->performedOn($project)
-                ->log('Monthly tasks email sent for project: ' . $project->id . ' for  ' . $month . ' to users: ' . $users->pluck('email')->implode(', '));
+                ->log('Monthly tasks email sent for project ' . $project->id . ' for ' . $month . ' to users: ' . $users->pluck('email')->implode(', '));
         }
     }
 }

@@ -40,6 +40,6 @@ class WeeklyTasksMail extends Mailable
         $htmlContent = Mjml::new()->convert($mjmlContent)->html();
 
         return $this->view('mail.raw', ['htmlContent' => $htmlContent])
-            ->subject('🪢 '. config('app.client') . ' · ' . 'Work Log Week ' . $this->week . ' for ' . $this->project->name);
+            ->subject('🪢 '. config('app.client') . ' · ' . 'Work Log Week ' . $this->week . ' ' . $this->project->name);
     }
 }
