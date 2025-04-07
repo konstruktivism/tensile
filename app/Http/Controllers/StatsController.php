@@ -20,6 +20,7 @@ class StatsController extends Controller
                 DB::raw('(SUM(tasks.is_service) / COUNT(*)) * 100 as service_percentage'),
                 DB::raw('SUM(CASE WHEN projects.is_internal = true THEN 1 ELSE 0 END) as internal_tasks')
             )
+            ->whereRaw('YEAR(tasks.completed_at) = YEAR(CURDATE())')
             ->groupBy('week')
             ->orderBy('week')
             ->get();
@@ -39,6 +40,7 @@ class StatsController extends Controller
             $tasks = DB::table('tasks')
                 ->where('project_id', $project->id)
                 ->where('is_service', false)
+                ->whereRaw('YEAR(completed_at) = YEAR(CURDATE())')
                 ->get(['completed_at', 'minutes']);
 
             $weeklyTasks = $tasks->groupBy(function ($task) {
