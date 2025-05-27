@@ -45,7 +45,9 @@ class GoogleCalendarController extends Controller
 
             if($project) {
                 if (!Task::where('icalUID', $event->iCalUID)->exists()) {
-                    $name = preg_replace('/[^a-zA-Z0-9\s.\/]/', '', substr($event->getSummary(), 4));
+                    $name = preg_replace('/[^a-zA-Z0-9\s.]/', '', substr($event->getSummary(), 4));
+                    // Filter out all text starting with a /
+                    $name = preg_replace('/\/\S*/', '', $name);
 
                     Task::create([
                         'name' => $name,
