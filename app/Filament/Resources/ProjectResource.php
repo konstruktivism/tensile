@@ -122,7 +122,7 @@ class ProjectResource extends Resource
                     })
                     ->color('primary'),
             ])
-            ->paginated(['']); // Disable pagination;
+            ->defaultPaginationPageOption(100);
 
     }
 

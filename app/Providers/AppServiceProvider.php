@@ -19,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Filament\Tables\Table::configureUsing(function (\Filament\Tables\Table $table): void {
+            $table
+                ->defaultPaginationPageOption(100)
+                ->paginationPageOptions([10, 25, 50, 100, 'all']);
+        });
     }
 }

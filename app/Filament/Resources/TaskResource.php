@@ -106,7 +106,7 @@ class TaskResource extends Resource
                 ]),
             ])
             ->defaultSort('completed_at', 'desc')
-            ->defaultPaginationPageOption(50);
+            ->defaultPaginationPageOption(100);
     }
 
     public static function getRelations(): array
