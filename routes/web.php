@@ -30,6 +30,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/import', [GoogleCalendarController::class, 'importEvents'])->name('import');
     Route::get('/import-weeks', [GoogleCalendarController::class, 'importWeeks'])->name('importWeeks');
+
+    // Admin-only import routes
+    Route::middleware(['auth', 'admin'])->group(function () {
+        Route::post('/admin/import/last-month', [GoogleCalendarController::class, 'importLastMonth'])->name('admin.import.last-month');
+        Route::post('/admin/import/weeks/{weeks}', [GoogleCalendarController::class, 'importWeeksAdmin'])->name('admin.import.weeks');
+    });
 });
 
 Route::get('/login/magic', [MagicLinkController::class, 'showMagicLinkForm'])->name('login.magic');
@@ -41,4 +47,4 @@ Route::get('/api/revenue-per-week', [StatsController::class, 'getRevenuePerWeek'
 
 Route::put('/moneybird/invoice/{projectId}', [MoneybirdController::class, 'updateInvoice']);
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
