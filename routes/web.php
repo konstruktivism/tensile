@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('/admin/import/last-month', [GoogleCalendarController::class, 'importLastMonth'])->name('admin.import.last-month');
         Route::post('/admin/import/weeks/{weeks}', [GoogleCalendarController::class, 'importWeeksAdmin'])->name('admin.import.weeks');
+        Route::post('/admin/import/date-range/{startDate}/{endDate}', [GoogleCalendarController::class, 'importDateRange'])->name('admin.import.date-range');
     });
 });
 

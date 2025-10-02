@@ -61,6 +61,27 @@ class GoogleCalendarController extends Controller
         ]);
     }
 
+    public function importDateRange(string $startDate, string $endDate): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $events = $this->googleCalendarService->getEventsByDateRange($startDate, $endDate);
+
+            $importedCount = $this->runImportWithCount($events);
+
+            return response()->json([
+                'message' => "Successfully imported {$importedCount} tasks between {$startDate} and {$endDate}.",
+                'imported_count' => $importedCount,
+                'start_date' => $startDate,
+                'end_date' => $endDate
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to import events',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function runImport($events)
     {
         foreach ($events as $event) {
@@ -70,7 +91,12 @@ class GoogleCalendarController extends Controller
             $project = Project::where('project_code', $projectCode)->first();
 
             if ($project) {
-                if (!Task::where('icalUID', $event->iCalUID)->exists()) {
+                // Check for existing task with same iCalUID AND date to allow duplicate iCalUIDs on different dates
+                $existingTask = Task::where('icalUID', $event->iCalUID)
+                    ->whereDate('completed_at', $start)
+                    ->exists();
+
+                if (!$existingTask) {
                     $name = preg_replace('/[^a-zA-Z0-9\s.]/', '', substr($event->getSummary(), 4));
                     // Filter out all text starting with a /
                     $name = preg_replace('/\/\S*/', '', $name);
@@ -100,7 +126,12 @@ class GoogleCalendarController extends Controller
             $project = Project::where('project_code', $projectCode)->first();
 
             if ($project) {
-                if (!Task::where('icalUID', $event->iCalUID)->exists()) {
+                // Check for existing task with same iCalUID AND date to allow duplicate iCalUIDs on different dates
+                $existingTask = Task::where('icalUID', $event->iCalUID)
+                    ->whereDate('completed_at', $start)
+                    ->exists();
+
+                if (!$existingTask) {
                     $name = preg_replace('/[^a-zA-Z0-9\s.]/', '', substr($event->getSummary(), 4));
                     // Filter out all text starting with a /
                     $name = preg_replace('/\/\S*/', '', $name);

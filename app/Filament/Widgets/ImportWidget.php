@@ -32,6 +32,22 @@ class ImportWidget extends Widget
         $this->executeCommand('import:weeks');
     }
 
+    public function importSeptember2025()
+    {
+        Artisan::call('import:date-range', [
+            'start_date' => '2025-09-01',
+            'end_date' => '2025-09-30'
+        ]);
+
+        $output = Artisan::output();
+
+        Notification::make()
+            ->title('September 2025 Import')
+            ->body($output)
+            ->success()
+            ->send();
+    }
+
     protected function executeCommand(string $command): void
     {
         Artisan::call($command);
@@ -49,12 +65,17 @@ class ImportWidget extends Widget
     {
         return [
             Action::make('import')
-                ->label('Import')
+                ->label('Import Yesterday')
                 ->action('import'),
 
             Action::make('importWeeks')
                 ->label('Import Last 30 Days')
                 ->action('importWeeks'),
+
+            Action::make('importSeptember2025')
+                ->label('Import September 2025')
+                ->action('importSeptember2025')
+                ->color('info'),
         ];
     }
 }

@@ -60,7 +60,7 @@ class GoogleCalendarService
 
         $service = new Calendar($this->client);
 
-        if($days > 1) {
+        if ($days > 1) {
             $start = Carbon::now()->subMonth()->firstOfMonth()->startOfDay()->toRfc3339String();
             $end = Carbon::now()->toRfc3339String();
         } else {
@@ -75,6 +75,33 @@ class GoogleCalendarService
             'timeMin' => $start,
             'timeMax' => $end,
         ];
+        $results = $service->events->listEvents($calendarId, $optParams);
+
+        return $results->getItems();
+    }
+
+    /**
+     * Get events for a specific date range (supports past and future dates)
+     * 
+     * @throws Exception
+     */
+    public function getEventsByDateRange(string $startDate, string $endDate, int $maxResults = 1000)
+    {
+        $calendarId = config('services.google_calendar.calendar_id');
+
+        $service = new Calendar($this->client);
+
+        $start = Carbon::parse($startDate)->startOfDay()->toRfc3339String();
+        $end = Carbon::parse($endDate)->endOfDay()->toRfc3339String();
+
+        $optParams = [
+            'maxResults' => $maxResults,
+            'orderBy' => 'startTime',
+            'singleEvents' => true,
+            'timeMin' => $start,
+            'timeMax' => $end,
+        ];
+
         $results = $service->events->listEvents($calendarId, $optParams);
 
         return $results->getItems();
