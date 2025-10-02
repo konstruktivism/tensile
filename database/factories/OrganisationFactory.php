@@ -17,7 +17,11 @@ class OrganisationFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => ucfirst($this->faker->word()), // Generates a random project name
+            'name' => $this->faker->company(),
+            'email' => $this->faker->companyEmail(),
+            'address' => $this->faker->address(),
+            'phone' => $this->faker->phoneNumber(),
+            'website' => $this->faker->url(),
             'created_at' => now(),
             'updated_at' => now(),
         ];

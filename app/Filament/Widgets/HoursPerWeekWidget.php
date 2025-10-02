@@ -2,8 +2,8 @@
 
 namespace App\Filament\Widgets;
 
+use App\Http\Controllers\StatsController;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\Http;
 
 class HoursPerWeekWidget extends ChartWidget
 {
@@ -15,9 +15,10 @@ class HoursPerWeekWidget extends ChartWidget
 
     protected function getData(): array
     {
-        // Fetch data from your API
-        $response = Http::get(config('app.url') . '/api/hours-per-week');
-        $data = $response->json();
+        // Call the controller method directly instead of making HTTP requests
+        $statsController = new StatsController();
+        $response = $statsController->getHoursPerWeek();
+        $data = $response->getData(true);
 
         // Process data for the chart
         $labels = array_map(fn($item) => "Week {$item['week']}", $data);
@@ -70,8 +71,10 @@ class RevenueWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $response = Http::get(config('app.url') . '/api/revenue-per-week');
-        $data = $response->json();
+        // Call the controller method directly instead of making HTTP requests
+        $statsController = new StatsController();
+        $response = $statsController->getRevenuePerWeek();
+        $data = $response->getData(true);
 
         $labels = array_map(fn($week) => "Week {$week}", array_keys($data));
         $revenue = array_values($data);
@@ -132,8 +135,10 @@ class ServicePercentageWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $response = Http::get(config('app.url') . '/api/hours-per-week');
-        $data = $response->json();
+        // Call the controller method directly instead of making HTTP requests
+        $statsController = new StatsController();
+        $response = $statsController->getHoursPerWeek();
+        $data = $response->getData(true);
 
         $labels = array_map(fn($item) => "Week {$item['week']}", $data);
         $servicePercentage = array_map(fn($item) => round($item['service_percentage']), $data);

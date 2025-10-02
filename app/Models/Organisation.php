@@ -16,6 +16,10 @@ class Organisation extends Model
      */
     protected $fillable = [
         'name',
+        'email',
+        'address',
+        'phone',
+        'website',
     ];
 
     // create relationships so that multiple projects can be associated with an organisation

@@ -40,7 +40,8 @@ class JobMailWeeklyTasks implements ShouldQueue
             foreach ($projects as $project) {
                 $tasks = $project->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->orderBy('completed_at')->get();
 
-                if ($tasks->count() === 0) {
+                // Only send notifications if there are tasks with actual hours logged
+                if ($tasks->count() === 0 || $tasks->sum('minutes') === 0) {
                     continue;
                 }
 

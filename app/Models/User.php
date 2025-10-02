@@ -45,6 +45,7 @@ class User extends Authenticatable implements FilamentUser
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'magic_link_expires_at' => 'datetime',
     ];
 
     /**
@@ -63,5 +64,15 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return str_ends_with($this->email, '@konstruktiv.nl') && $this->hasVerifiedEmail();
+    }
+
+    /**
+     * Check if the magic link token is valid
+     */
+    public function isMagicLinkValid(string $token): bool
+    {
+        return $this->magic_link_token === $token
+            && $this->magic_link_expires_at
+            && $this->magic_link_expires_at->isFuture();
     }
 }

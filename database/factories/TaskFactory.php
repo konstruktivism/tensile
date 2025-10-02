@@ -21,7 +21,11 @@ class TaskFactory extends Factory
             'name' => $this->faker->sentence(3), // Generates a random task name
             'description' => $this->faker->paragraph(), // Generates a random description
             'project_id' => Project::factory(), // Associates the task with a project
-            'completed_at' => $this->faker->optional()->date(), // Generates a random date or null
+            'completed_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
+            'minutes' => $this->faker->numberBetween(30, 480), // 30 minutes to 8 hours
+            'icalUID' => $this->faker->uuid(),
+            'is_service' => $this->faker->boolean(20), // 20% chance of being a service
+            'invoiced' => $this->faker->boolean(60), // 60% chance of being invoiced
             'created_at' => now(),
             'updated_at' => now(),
         ];
