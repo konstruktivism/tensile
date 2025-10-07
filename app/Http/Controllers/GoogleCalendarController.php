@@ -86,31 +86,29 @@ class GoogleCalendarController extends Controller
     {
         foreach ($events as $event) {
             $start = $event->start->dateTime ?? $event->start->date;
+            $completedAt = Carbon::parse($start)->startOfMinute();
             $projectCode = substr(preg_replace('/[^A-Z]/', '', $event->getSummary()), 0, 3);
 
             $project = Project::where('project_code', $projectCode)->first();
 
             if ($project) {
-                // Check for existing task with same iCalUID AND date to allow duplicate iCalUIDs on different dates
-                $existingTask = Task::where('icalUID', $event->iCalUID)
-                    ->whereDate('completed_at', $start)
-                    ->exists();
+                $name = preg_replace('/[^a-zA-Z0-9\s.]/', '', substr($event->getSummary(), 4));
+                // Filter out all text starting with a /
+                $name = preg_replace('/\/\S*/', '', $name);
 
-                if (!$existingTask) {
-                    $name = preg_replace('/[^a-zA-Z0-9\s.]/', '', substr($event->getSummary(), 4));
-                    // Filter out all text starting with a /
-                    $name = preg_replace('/\/\S*/', '', $name);
-
-                    Task::create([
+                Task::updateOrCreate(
+                    [
+                        'icalUID' => $event->iCalUID,
+                        'completed_at' => $completedAt,
+                    ],
+                    [
                         'name' => $name,
                         'description' => $event->getDescription() ?? '',
-                        'completed_at' => $start,
                         'project_id' => $project->id,
-                        'icalUID' => $event->iCalUID,
                         'minutes' => isset($event->start->dateTime) && isset($event->end->dateTime) ? ceil((strtotime($event->end->dateTime) - strtotime($event->start->dateTime)) / 60) : 0,
                         'is_service' => str_contains($event->getSummary(), '🆓') ? 1 : 0,
-                    ]);
-                }
+                    ]
+                );
             }
         }
     }
@@ -121,31 +119,31 @@ class GoogleCalendarController extends Controller
 
         foreach ($events as $event) {
             $start = $event->start->dateTime ?? $event->start->date;
+            $completedAt = Carbon::parse($start)->startOfMinute();
             $projectCode = substr(preg_replace('/[^A-Z]/', '', $event->getSummary()), 0, 3);
 
             $project = Project::where('project_code', $projectCode)->first();
 
             if ($project) {
-                // Check for existing task with same iCalUID AND date to allow duplicate iCalUIDs on different dates
-                $existingTask = Task::where('icalUID', $event->iCalUID)
-                    ->whereDate('completed_at', $start)
-                    ->exists();
+                $name = preg_replace('/[^a-zA-Z0-9\s.]/', '', substr($event->getSummary(), 4));
+                // Filter out all text starting with a /
+                $name = preg_replace('/\/\S*/', '', $name);
 
-                if (!$existingTask) {
-                    $name = preg_replace('/[^a-zA-Z0-9\s.]/', '', substr($event->getSummary(), 4));
-                    // Filter out all text starting with a /
-                    $name = preg_replace('/\/\S*/', '', $name);
-
-                    Task::create([
+                $created = Task::updateOrCreate(
+                    [
+                        'icalUID' => $event->iCalUID,
+                        'completed_at' => $completedAt,
+                    ],
+                    [
                         'name' => $name,
                         'description' => $event->getDescription() ?? '',
-                        'completed_at' => $start,
                         'project_id' => $project->id,
-                        'icalUID' => $event->iCalUID,
                         'minutes' => isset($event->start->dateTime) && isset($event->end->dateTime) ? ceil((strtotime($event->end->dateTime) - strtotime($event->start->dateTime)) / 60) : 0,
                         'is_service' => str_contains($event->getSummary(), '🆓') ? 1 : 0,
-                    ]);
+                    ]
+                );
 
+                if ($created->wasRecentlyCreated === true) {
                     $importedCount++;
                 }
             }
