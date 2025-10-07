@@ -86,7 +86,8 @@ class GoogleCalendarController extends Controller
     {
         foreach ($events as $event) {
             $start = $event->start->dateTime ?? $event->start->date;
-            $completedAt = Carbon::parse($start)->startOfMinute();
+            // Normalize to day to avoid duplicates for the same calendar entry within a day
+            $completedAt = Carbon::parse($start)->startOfDay();
             $projectCode = substr(preg_replace('/[^A-Z]/', '', $event->getSummary()), 0, 3);
 
             $project = Project::where('project_code', $projectCode)->first();
