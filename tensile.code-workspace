@@ -19,6 +19,34 @@
 				"icon": "terminal"
 			}
 		},
+		"terminal.integrated.automationProfile.osx": {
+			"path": "/bin/zsh",
+			"args": [
+				"-c",
+				"npm run dev"
+			]
+		},
+		"task.autoDetect": "on",
 		"terminal.integrated.startupBehavior": "minimized"
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "npm dev",
+				"type": "shell",
+				"command": "npm run dev",
+				"problemMatcher": [],
+				"presentation": {
+					"reveal": "silent",
+					"panel": "dedicated",
+					"showReuseMessage": false,
+					"clear": false
+				},
+				"runOptions": {
+					"runOn": "folderOpen"
+				}
+			}
+		]
 	}
 }
