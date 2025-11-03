@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 class MoneybirdController extends Controller
 {
@@ -50,20 +51,76 @@ class MoneybirdController extends Controller
         // Step 3: Update/patch the sales invoice
         $tasks = $this->getTasksForCurrentMonth($project);
 
-        $invoiceData = [
-            'sales_invoice' => [
-                'details_attributes' => $tasks->map(function ($task) {
-                    return [
-                        'description' => $task->name.' ['.$task->completed_at->format('d-m-Y').']',
-                        'price' => $task->project->hour_tariff,
-                        'amount' => round($task->minutes / 60, 2).' hours',
-                        'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
-                    ];
-                })->toArray(),
-            ],
-        ];
+        if ($tasks->isEmpty()) {
+            return response()->json([
+                'message' => 'No tasks found to invoice',
+                'tasks_count' => 0,
+            ], 200);
+        }
+
+        // First, get existing invoice to preserve existing details
+        try {
+            $existingInvoiceResponse = $this->client->get($this->apiUrl.env('MONEYBIRD_ADMINISTRATION_ID').'/sales_invoices/'.$invoiceId, [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$this->accessToken,
+                    'Content-Type' => 'application/json',
+                ],
+            ]);
+
+            $existingInvoice = json_decode($existingInvoiceResponse->getBody()->getContents(), true);
+            $existingDetails = $existingInvoice['sales_invoice']['details'] ?? [];
+
+            // Build details_attributes: preserve existing + add new
+            $detailsAttributes = [];
+
+            // Keep existing details (mark as not destroyed)
+            foreach ($existingDetails as $detail) {
+                $detailsAttributes[] = [
+                    'id' => $detail['id'],
+                    '_destroy' => false,
+                ];
+            }
+
+            // Add new task details
+            foreach ($tasks as $task) {
+                $detailsAttributes[] = [
+                    'description' => $task->name.' ['.$task->completed_at->format('d-m-Y').']',
+                    'price' => (float) $task->project->hour_tariff,
+                    'amount' => (float) round($task->minutes / 60, 2), // Moneybird expects numeric
+                    'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
+                ];
+            }
+
+            $invoiceData = [
+                'sales_invoice' => [
+                    'details_attributes' => $detailsAttributes,
+                ],
+            ];
+        } catch (\Exception $e) {
+            // If we can't get existing invoice, just send new details
+            $invoiceData = [
+                'sales_invoice' => [
+                    'details_attributes' => $tasks->map(function ($task) {
+                        return [
+                            'description' => $task->name.' ['.$task->completed_at->format('d-m-Y').']',
+                            'price' => (float) $task->project->hour_tariff,
+                            'amount' => (float) round($task->minutes / 60, 2), // Moneybird expects numeric
+                            'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
+                        ];
+                    })->toArray(),
+                ],
+            ];
+        }
 
         try {
+            // Log the request for debugging
+            \Log::info('Moneybird invoice update request', [
+                'invoice_id' => $invoiceId,
+                'tasks_count' => $tasks->count(),
+                'details_count' => count($detailsAttributes ?? $invoiceData['sales_invoice']['details_attributes']),
+                'sample_detail' => ($invoiceData['sales_invoice']['details_attributes'][0] ?? null),
+            ]);
+
             $response = $this->client->patch($this->apiUrl.env('MONEYBIRD_ADMINISTRATION_ID').'/sales_invoices/'.$invoiceId, [
                 'headers' => [
                     'Authorization' => 'Bearer '.$this->accessToken,
@@ -72,16 +129,52 @@ class MoneybirdController extends Controller
                 'json' => $invoiceData,
             ]);
 
-            $tasks->each->update(['invoiced' => Carbon::now()]);
+            $responseBody = json_decode($response->getBody()->getContents(), true);
+
+            // Log the response for debugging
+            \Log::info('Moneybird invoice update response', [
+                'status_code' => $response->getStatusCode(),
+                'response_keys' => array_keys($responseBody ?? []),
+                'has_details' => isset($responseBody['sales_invoice']['details']),
+                'details_count' => count($responseBody['sales_invoice']['details'] ?? []),
+            ]);
+
+            // Check for API errors in response
+            if (isset($responseBody['error']) || isset($responseBody['errors'])) {
+                \Log::error('Moneybird API error', [
+                    'response' => $responseBody,
+                    'invoice_data' => $invoiceData,
+                ]);
+
+                return response()->json([
+                    'message' => 'Moneybird API returned errors',
+                    'errors' => $responseBody['error'] ?? $responseBody['errors'],
+                    'tasks_count' => $tasks->count(),
+                ], 400);
+            }
+
+            // Only mark as invoiced if the API call was successful
+            if ($response->getStatusCode() === 200) {
+                $tasks->each->update(['invoiced' => Carbon::now()]);
+            }
 
             return response()->json([
                 'message' => 'Invoice updated successfully',
-                'data' => json_decode($response->getBody()->getContents(), true),
+                'tasks_count' => $tasks->count(),
+                'details_count' => count($detailsAttributes ?? $invoiceData['sales_invoice']['details_attributes']),
+                'data' => $responseBody,
             ]);
         } catch (\Exception $e) {
+            \Log::error('Moneybird invoice update failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'invoice_data' => $invoiceData,
+            ]);
+
             return response()->json([
                 'message' => 'Failed to update invoice',
                 'error' => $e->getMessage(),
+                'tasks_count' => $tasks->count(),
             ], 500);
         }
     }
@@ -99,9 +192,29 @@ class MoneybirdController extends Controller
 
             $contacts = json_decode($response->getBody()->getContents(), true);
 
+            // Try exact match first
             foreach ($contacts as $contact) {
-                if ($contact['company_name'] === $organisationName) {
+                if (isset($contact['company_name']) && $contact['company_name'] === $organisationName) {
                     return $contact['id'];
+                }
+            }
+
+            // Try case-insensitive match
+            foreach ($contacts as $contact) {
+                if (isset($contact['company_name']) && strcasecmp($contact['company_name'], $organisationName) === 0) {
+                    return $contact['id'];
+                }
+            }
+
+            // Try partial match (organisation name contains contact name or vice versa)
+            $organisationNameLower = strtolower(trim($organisationName));
+            foreach ($contacts as $contact) {
+                if (isset($contact['company_name'])) {
+                    $contactNameLower = strtolower(trim($contact['company_name']));
+                    if (strpos($contactNameLower, $organisationNameLower) !== false ||
+                        strpos($organisationNameLower, $contactNameLower) !== false) {
+                        return $contact['id'];
+                    }
                 }
             }
         } catch (\Exception $e) {
