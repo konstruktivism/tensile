@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Task extends Model
 {
@@ -25,11 +25,12 @@ class Task extends Model
         'minutes',
         'icalUID',
         'is_service',
-        'invoiced'
+        'invoiced',
     ];
 
     protected $casts = [
         'completed_at' => 'datetime',
+        'invoiced' => 'datetime',
     ];
 
     protected static $logAttributes = ['name', 'description', 'project_id', 'completed_at', 'minutes', 'icalUID', 'is_service', 'invoiced'];

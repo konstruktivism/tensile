@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use GuzzleHttp\Client;
-use App\Models\Task;
 use App\Models\Project;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 
 class MoneybirdController extends Controller
 {
     protected $client;
+
     protected $apiUrl;
+
     protected $accessToken;
 
     public function __construct()
     {
-        $this->client = new Client();
+        $this->client = new Client;
         $this->apiUrl = 'https://moneybird.com/api/v2/';
         $this->accessToken = env('MONEYBIRD_TOKEN');
     }
@@ -36,14 +36,14 @@ class MoneybirdController extends Controller
         // Step 1: Find contact based on the Organisation name
         $contactId = $this->getContactIdByOrganisationName($organisationName);
 
-        if (!$contactId) {
+        if (! $contactId) {
             return response()->json(['message' => 'Contact not found'], 404);
         }
 
         // Step 2: Get draft sales invoice of contact_id
         $invoiceId = $this->getDraftInvoiceIdByContactId($contactId);
 
-        if (!$invoiceId) {
+        if (! $invoiceId) {
             return response()->json(['message' => 'Draft invoice not found'], 404);
         }
 
@@ -54,9 +54,9 @@ class MoneybirdController extends Controller
             'sales_invoice' => [
                 'details_attributes' => $tasks->map(function ($task) {
                     return [
-                        'description' => $task->name . ' [' . $task->completed_at->format('d-m-Y') . ']',
+                        'description' => $task->name.' ['.$task->completed_at->format('d-m-Y').']',
                         'price' => $task->project->hour_tariff,
-                        'amount' => round($task->minutes / 60, 2) . ' hours',
+                        'amount' => round($task->minutes / 60, 2).' hours',
                         'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
                     ];
                 })->toArray(),
@@ -64,16 +64,15 @@ class MoneybirdController extends Controller
         ];
 
         try {
-            $response = $this->client->patch($this->apiUrl . env('MONEYBIRD_ADMINISTRATION_ID') . '/sales_invoices/' . $invoiceId, [
+            $response = $this->client->patch($this->apiUrl.env('MONEYBIRD_ADMINISTRATION_ID').'/sales_invoices/'.$invoiceId, [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
+                    'Authorization' => 'Bearer '.$this->accessToken,
                     'Content-Type' => 'application/json',
                 ],
                 'json' => $invoiceData,
             ]);
 
             $tasks->each->update(['invoiced' => Carbon::now()]);
-
 
             return response()->json([
                 'message' => 'Invoice updated successfully',
@@ -90,9 +89,9 @@ class MoneybirdController extends Controller
     protected function getContactIdByOrganisationName($organisationName)
     {
         try {
-            $response = $this->client->get($this->apiUrl . env('MONEYBIRD_ADMINISTRATION_ID') . '/contacts', [
+            $response = $this->client->get($this->apiUrl.env('MONEYBIRD_ADMINISTRATION_ID').'/contacts', [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
+                    'Authorization' => 'Bearer '.$this->accessToken,
                     'Content-Type' => 'application/json',
                 ],
                 'query' => ['query' => $organisationName],
@@ -115,17 +114,17 @@ class MoneybirdController extends Controller
     protected function getDraftInvoiceIdByContactId($contactId)
     {
         try {
-            $response = $this->client->get($this->apiUrl . env('MONEYBIRD_ADMINISTRATION_ID') .  '/sales_invoices', [
+            $response = $this->client->get($this->apiUrl.env('MONEYBIRD_ADMINISTRATION_ID').'/sales_invoices', [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
+                    'Authorization' => 'Bearer '.$this->accessToken,
                     'Content-Type' => 'application/json',
                 ],
-                'query' => ['filter' => 'state:draft,contact_id:' . $contactId],
+                'query' => ['filter' => 'state:draft,contact_id:'.$contactId],
             ]);
 
             $invoices = json_decode($response->getBody()->getContents(), true);
 
-            if (!empty($invoices)) {
+            if (! empty($invoices)) {
                 return $invoices[0]['id'];
             }
         } catch (\Exception $e) {
@@ -152,9 +151,9 @@ class MoneybirdController extends Controller
 
         return $project->tasks()
             ->whereBetween('completed_at', [$startOfMonth, $endOfMonth])
-            ->whereNull('invoiced')
-            ->orderBy('completed_at')
+            ->whereNull('invoiced') // Only include tasks that haven't been invoiced yet
             ->where('is_service', 0)
+            ->orderBy('completed_at')
             ->get();
     }
 }
