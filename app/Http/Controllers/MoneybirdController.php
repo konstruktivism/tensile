@@ -58,66 +58,31 @@ class MoneybirdController extends Controller
             ], 200);
         }
 
-        // First, get existing invoice to preserve existing details
-        try {
-            $existingInvoiceResponse = $this->client->get($this->apiUrl.env('MONEYBIRD_ADMINISTRATION_ID').'/sales_invoices/'.$invoiceId, [
-                'headers' => [
-                    'Authorization' => 'Bearer '.$this->accessToken,
-                    'Content-Type' => 'application/json',
-                ],
-            ]);
+        // Build invoice data with only new tasks (skip any with invoiced date)
+        // Filter out any tasks that somehow have an invoiced date (extra safety check)
+        $tasksToInvoice = $tasks->filter(function ($task) {
+            return is_null($task->invoiced);
+        });
 
-            $existingInvoice = json_decode($existingInvoiceResponse->getBody()->getContents(), true);
-            $existingDetails = $existingInvoice['sales_invoice']['details'] ?? [];
-
-            // Build details_attributes: preserve existing + add new
-            $detailsAttributes = [];
-
-            // Keep existing details (mark as not destroyed)
-            foreach ($existingDetails as $detail) {
-                $detailsAttributes[] = [
-                    'id' => $detail['id'],
-                    '_destroy' => false,
-                ];
-            }
-
-            // Add new task details
-            foreach ($tasks as $task) {
-                $detailsAttributes[] = [
-                    'description' => $task->name.' ['.$task->completed_at->format('d-m-Y').']',
-                    'price' => (float) $task->project->hour_tariff,
-                    'amount' => (float) round($task->minutes / 60, 2), // Moneybird expects numeric
-                    'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
-                ];
-            }
-
-            $invoiceData = [
-                'sales_invoice' => [
-                    'details_attributes' => $detailsAttributes,
-                ],
-            ];
-        } catch (\Exception $e) {
-            // If we can't get existing invoice, just send new details
-            $invoiceData = [
-                'sales_invoice' => [
-                    'details_attributes' => $tasks->map(function ($task) {
-                        return [
-                            'description' => $task->name.' ['.$task->completed_at->format('d-m-Y').']',
-                            'price' => (float) $task->project->hour_tariff,
-                            'amount' => (float) round($task->minutes / 60, 2), // Moneybird expects numeric
-                            'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
-                        ];
-                    })->toArray(),
-                ],
-            ];
-        }
+        $invoiceData = [
+            'sales_invoice' => [
+                'details_attributes' => $tasksToInvoice->map(function ($task) {
+                    return [
+                        'description' => $task->name.' ['.$task->completed_at->format('d-m-Y').']',
+                        'price' => (float) $task->project->hour_tariff,
+                        'amount' => (float) round($task->minutes / 60, 2), // Moneybird expects numeric
+                        'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
+                    ];
+                })->toArray(),
+            ],
+        ];
 
         try {
             // Log the request for debugging
             \Log::info('Moneybird invoice update request', [
                 'invoice_id' => $invoiceId,
-                'tasks_count' => $tasks->count(),
-                'details_count' => count($detailsAttributes ?? $invoiceData['sales_invoice']['details_attributes']),
+                'tasks_count' => $tasksToInvoice->count(),
+                'details_count' => count($invoiceData['sales_invoice']['details_attributes']),
                 'sample_detail' => ($invoiceData['sales_invoice']['details_attributes'][0] ?? null),
             ]);
 
@@ -149,19 +114,19 @@ class MoneybirdController extends Controller
                 return response()->json([
                     'message' => 'Moneybird API returned errors',
                     'errors' => $responseBody['error'] ?? $responseBody['errors'],
-                    'tasks_count' => $tasks->count(),
+                    'tasks_count' => $tasksToInvoice->count(),
                 ], 400);
             }
 
             // Only mark as invoiced if the API call was successful
             if ($response->getStatusCode() === 200) {
-                $tasks->each->update(['invoiced' => Carbon::now()]);
+                $tasksToInvoice->each->update(['invoiced' => Carbon::now()]);
             }
 
             return response()->json([
                 'message' => 'Invoice updated successfully',
-                'tasks_count' => $tasks->count(),
-                'details_count' => count($detailsAttributes ?? $invoiceData['sales_invoice']['details_attributes']),
+                'tasks_count' => $tasksToInvoice->count(),
+                'details_count' => count($invoiceData['sales_invoice']['details_attributes']),
                 'data' => $responseBody,
             ]);
         } catch (\Exception $e) {
@@ -174,7 +139,7 @@ class MoneybirdController extends Controller
             return response()->json([
                 'message' => 'Failed to update invoice',
                 'error' => $e->getMessage(),
-                'tasks_count' => $tasks->count(),
+                'tasks_count' => $tasksToInvoice->count(),
             ], 500);
         }
     }
