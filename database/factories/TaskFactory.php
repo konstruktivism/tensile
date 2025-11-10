@@ -18,14 +18,14 @@ class TaskFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->sentence(3), // Generates a random task name
-            'description' => $this->faker->paragraph(), // Generates a random description
+            'name' => fake()->sentence(3), // Generates a random task name
+            'description' => fake()->paragraph(), // Generates a random description
             'project_id' => Project::factory(), // Associates the task with a project
-            'completed_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
-            'minutes' => $this->faker->numberBetween(30, 480), // 30 minutes to 8 hours
-            'icalUID' => $this->faker->uuid(),
-            'is_service' => $this->faker->boolean(20), // 20% chance of being a service
-            'invoiced' => $this->faker->boolean(60), // 60% chance of being invoiced
+            'completed_at' => fake()->dateTimeBetween('-1 month', 'now'),
+            'minutes' => fake()->numberBetween(30, 480), // 30 minutes to 8 hours
+            'icalUID' => fake()->uuid(),
+            'is_service' => fake()->boolean(20), // 20% chance of being a service
+            'invoiced' => fake()->boolean(60) ? now() : null, // 60% chance of being invoiced
             'created_at' => now(),
             'updated_at' => now(),
         ];

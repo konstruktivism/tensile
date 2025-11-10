@@ -20,7 +20,8 @@ it('can send magic link email', function () {
         'email' => 'test@example.com',
     ]);
 
-    $response->assertStatus(200);
+    $response->assertRedirect();
+    $response->assertSessionHas('status', 'Magic link sent! Please check your email and close this window.');
 
     Mail::assertSent(\App\Mail\MagicLinkMail::class, function ($mail) use ($user) {
         return $mail->hasTo($user->email);
@@ -39,9 +40,9 @@ it('can login with valid magic link', function () {
         'magic_link_expires_at' => now()->addMinutes(30),
     ]);
 
-    $response = $this->get('/magic-login?token=valid-token');
+    $response = $this->get(sprintf('/magic-login?token=%s&email=%s', 'valid-token', $user->email));
 
-    $response->assertRedirect('/');
+    $response->assertRedirect(route('projects', absolute: false));
     $this->assertAuthenticatedAs($user);
 });
 
@@ -51,15 +52,20 @@ it('cannot login with expired magic link', function () {
         'magic_link_expires_at' => now()->subMinutes(30),
     ]);
 
-    $response = $this->get('/magic-login?token=expired-token');
+    $response = $this->get(sprintf('/magic-login?token=%s&email=%s', 'expired-token', $user->email));
 
-    $response->assertRedirect('/login/magic');
+    $response->assertRedirect('/login');
     $this->assertGuest();
 });
 
 it('cannot login with invalid magic link token', function () {
-    $response = $this->get('/magic-login?token=invalid-token');
+    $user = User::factory()->create([
+        'magic_link_token' => 'valid-token',
+        'magic_link_expires_at' => now()->addMinutes(30),
+    ]);
 
-    $response->assertRedirect('/login/magic');
+    $response = $this->get(sprintf('/magic-login?token=%s&email=%s', 'invalid-token', $user->email));
+
+    $response->assertRedirect('/login');
     $this->assertGuest();
 });

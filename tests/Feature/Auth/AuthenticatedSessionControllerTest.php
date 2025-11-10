@@ -18,7 +18,7 @@ it('can login with valid credentials', function () {
         'password' => 'password',
     ]);
 
-    $response->assertRedirect('/dashboard');
+    $response->assertRedirect(route('projects'));
     $this->assertAuthenticatedAs($user);
 });
 
@@ -68,7 +68,7 @@ it('redirects authenticated user from login page', function () {
     $response = $this->actingAs($user)
         ->get('/login');
 
-    $response->assertRedirect('/dashboard');
+    $response->assertRedirect(url('/'));
 });
 
 it('remembers user login when requested', function () {
@@ -82,7 +82,7 @@ it('remembers user login when requested', function () {
         'remember' => true,
     ]);
 
-    $response->assertRedirect('/dashboard');
+    $response->assertRedirect(route('projects'));
     $this->assertAuthenticatedAs($user);
 
     // Check that remember token was set

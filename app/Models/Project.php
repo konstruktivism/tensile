@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Project extends Model
 {
@@ -19,13 +19,13 @@ class Project extends Model
     protected $fillable = [
         'name',
         'description',
+        'organisation_id',
         'hour_tariff',
         'is_fixed',
         'project_code',
         'notifications',
-        'is_internal'
+        'is_internal',
     ];
-
 
     protected static $logAttributes = ['name', 'description', 'is_fixed', 'hour_tariff', 'project_code', 'notifications', 'is_internal'];
 

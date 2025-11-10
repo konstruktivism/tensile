@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\GoogleCalendarService;
-use Illuminate\Http\Request;
-use App\Models\Task;
 use App\Models\Project;
+use App\Models\Task;
+use App\Services\GoogleCalendarService;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class GoogleCalendarController extends Controller
 {
@@ -18,13 +16,17 @@ class GoogleCalendarController extends Controller
         $this->googleCalendarService = $googleCalendarService;
     }
 
-    public function importEvents(): \Illuminate\Http\JsonResponse
+    public function importEvents(bool $includeToday = false): \Illuminate\Http\JsonResponse
     {
-        $events = $this->googleCalendarService->getEvents();
+        $events = $this->googleCalendarService->getEvents(32, 1, $includeToday);
 
         $this->runImport($events);
 
-        return response()->json(['message' => 'Events imported of yesterday.']);
+        return response()->json([
+            'message' => $includeToday
+                ? 'Events imported of today.'
+                : 'Events imported of yesterday.',
+        ]);
     }
 
     public function importWeeks($weeks): \Illuminate\Http\JsonResponse
@@ -44,7 +46,7 @@ class GoogleCalendarController extends Controller
 
         return response()->json([
             'message' => "Successfully imported {$importedCount} tasks from the last month.",
-            'imported_count' => $importedCount
+            'imported_count' => $importedCount,
         ]);
     }
 
@@ -57,7 +59,7 @@ class GoogleCalendarController extends Controller
         return response()->json([
             'message' => "Successfully imported {$importedCount} tasks from the last {$weeks} weeks.",
             'imported_count' => $importedCount,
-            'weeks' => $weeks
+            'weeks' => $weeks,
         ]);
     }
 
@@ -72,12 +74,12 @@ class GoogleCalendarController extends Controller
                 'message' => "Successfully imported {$importedCount} tasks between {$startDate} and {$endDate}.",
                 'imported_count' => $importedCount,
                 'start_date' => $startDate,
-                'end_date' => $endDate
+                'end_date' => $endDate,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to import events',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -120,7 +122,7 @@ class GoogleCalendarController extends Controller
 
         foreach ($events as $event) {
             $start = $event->start->dateTime ?? $event->start->date;
-            $completedAt = Carbon::parse($start)->startOfMinute();
+            $completedAt = Carbon::parse($start)->startOfDay();
             $projectCode = substr(preg_replace('/[^A-Z]/', '', $event->getSummary()), 0, 3);
 
             $project = Project::where('project_code', $projectCode)->first();

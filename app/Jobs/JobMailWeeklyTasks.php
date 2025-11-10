@@ -20,18 +20,20 @@ class JobMailWeeklyTasks implements ShouldQueue
 
     /**
      * Create a new job instance.
-     *
-     * @param array|null $weekNumbers
      */
-    public function __construct(array $weekNumbers = null)
+    public function __construct(?array $weekNumbers = null)
     {
         $this->weekNumbers = $weekNumbers ?? [now()->weekOfYear];
+    }
+
+    public function weekNumbers(): array
+    {
+        return $this->weekNumbers;
     }
 
     public function handle()
     {
         foreach ($this->weekNumbers as $weekNumber) {
-            dump('Sending weekly tasks email for week: ' . $weekNumber);
             $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, (int) $weekNumber)->startOfWeek();
             $endOfWeek = $startOfWeek->copy()->endOfWeek();
 
@@ -53,7 +55,7 @@ class JobMailWeeklyTasks implements ShouldQueue
 
                 activity()
                     ->performedOn($project)
-                    ->log('Weekly tasks email sent for project: ' . $project->id . ' for week: ' . $weekNumber . ' to users: ' . $users->pluck('email')->implode(', '));
+                    ->log('Weekly tasks email sent for project: '.$project->id.' for week: '.$weekNumber.' to users: '.$users->pluck('email')->implode(', '));
             }
         }
     }

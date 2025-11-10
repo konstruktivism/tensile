@@ -1,13 +1,13 @@
 <?php
 
 use App\Jobs\JobMailWeeklyTasks;
-use App\Models\User;
+use App\Models\Organisation;
 use App\Models\Project;
 use App\Models\Task;
-use App\Models\Organisation;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
-use Carbon\Carbon;
 
 it('can dispatch weekly tasks email job', function () {
     Queue::fake();
@@ -42,8 +42,38 @@ it('sends weekly tasks email for projects with notifications enabled', function 
     $job = new JobMailWeeklyTasks([now()->weekOfYear]);
     $job->handle();
 
-    Mail::assertSent(\App\Mail\WeeklyTasksMail::class, function ($mail) use ($user, $project) {
+    Mail::assertSent(\App\Mail\WeeklyTasksMail::class, function ($mail) use ($user) {
         return $mail->hasTo($user->email);
+    });
+});
+
+it('includes tasks completed late on friday in the weekly summary email', function () {
+    Mail::fake();
+
+    $user = User::factory()->create();
+    $organisation = Organisation::factory()->create();
+    $project = Project::factory()->create([
+        'organisation_id' => $organisation->id,
+        'notifications' => true,
+    ]);
+
+    $project->users()->attach($user);
+
+    $fridayEvening = Carbon::now()->startOfWeek()->addDays(4)->setHour(20)->setMinute(45);
+
+    $fridayTask = Task::factory()->create([
+        'project_id' => $project->id,
+        'completed_at' => $fridayEvening,
+        'minutes' => 180,
+        'name' => 'End of week wrap-up',
+    ]);
+
+    $job = new JobMailWeeklyTasks([now()->weekOfYear]);
+    $job->handle();
+
+    Mail::assertSent(\App\Mail\WeeklyTasksMail::class, function ($mail) use ($user, $fridayTask) {
+        return $mail->hasTo($user->email)
+            && $mail->tasks->contains(fn ($task) => $task->id === $fridayTask->id);
     });
 });
 
@@ -158,13 +188,13 @@ it('processes multiple week numbers', function () {
     $weekNumbers = [now()->weekOfYear, now()->subWeek()->weekOfYear];
     $job = new JobMailWeeklyTasks($weekNumbers);
 
-    expect($job->weekNumbers)->toBe($weekNumbers);
+    expect($job->weekNumbers())->toBe($weekNumbers);
 });
 
 it('uses current week when no week numbers provided', function () {
-    $job = new JobMailWeeklyTasks();
+    $job = new JobMailWeeklyTasks;
 
-    expect($job->weekNumbers)->toBe([now()->weekOfYear]);
+    expect($job->weekNumbers())->toBe([now()->weekOfYear]);
 });
 
 it('logs activity when email is sent', function () {
@@ -183,13 +213,16 @@ it('logs activity when email is sent', function () {
         'minutes' => 120,
     ]);
 
-    $job = new JobMailWeeklyTasks([now()->weekOfYear]);
+    $weekNumber = now()->weekOfYear;
+    $job = new JobMailWeeklyTasks([$weekNumber]);
     $job->handle();
 
     // Check that activity was logged
+    $recipientList = $project->users->pluck('email')->implode(', ');
+
     $this->assertDatabaseHas('activity_log', [
         'subject_type' => get_class($project),
         'subject_id' => $project->id,
-        'event' => 'created',
+        'description' => 'Weekly tasks email sent for project: '.$project->id.' for week: '.$weekNumber.' to users: '.$recipientList,
     ]);
 });

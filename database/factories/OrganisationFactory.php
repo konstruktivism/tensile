@@ -17,11 +17,11 @@ class OrganisationFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->company(),
-            'email' => $this->faker->companyEmail(),
-            'address' => $this->faker->address(),
-            'phone' => $this->faker->phoneNumber(),
-            'website' => $this->faker->url(),
+            'name' => fake()->company(),
+            'email' => fake()->companyEmail(),
+            'address' => fake()->address(),
+            'phone' => fake()->phoneNumber(),
+            'website' => fake()->url(),
             'created_at' => now(),
             'updated_at' => now(),
         ];

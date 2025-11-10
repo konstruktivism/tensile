@@ -1,7 +1,8 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Notification;
 
 it('can view forgot password page', function () {
     $response = $this->get('/forgot-password');
@@ -10,7 +11,7 @@ it('can view forgot password page', function () {
 });
 
 it('can send password reset email', function () {
-    Mail::fake();
+    Notification::fake();
 
     $user = User::factory()->create([
         'email' => 'test@example.com',
@@ -20,10 +21,10 @@ it('can send password reset email', function () {
         'email' => 'test@example.com',
     ]);
 
-    $response->assertRedirect('/forgot-password');
+    $response->assertRedirect(route('password.request'));
     $response->assertSessionHas('status', 'We have emailed your password reset link.');
 
-    Mail::assertSent(\Illuminate\Auth\Notifications\ResetPassword::class);
+    Notification::assertSentTo($user, ResetPassword::class);
 });
 
 it('validates email for password reset', function () {
@@ -33,17 +34,17 @@ it('validates email for password reset', function () {
 });
 
 it('handles non-existent email gracefully', function () {
-    Mail::fake();
+    Notification::fake();
 
     $response = $this->post('/forgot-password', [
         'email' => 'nonexistent@example.com',
     ]);
 
-    $response->assertRedirect('/forgot-password');
-    $response->assertSessionHas('status', 'We have emailed your password reset link.');
+    $response->assertRedirect(route('password.request'));
+    $response->assertSessionHasErrors('email');
 
     // Should not send email for non-existent user
-    Mail::assertNotSent(\Illuminate\Auth\Notifications\ResetPassword::class);
+    Notification::assertNothingSent();
 });
 
 it('validates email format', function () {
@@ -60,5 +61,5 @@ it('redirects authenticated user from forgot password page', function () {
     $response = $this->actingAs($user)
         ->get('/forgot-password');
 
-    $response->assertRedirect('/dashboard');
+    $response->assertRedirect('/');
 });

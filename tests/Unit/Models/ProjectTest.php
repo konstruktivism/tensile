@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\Project;
 use App\Models\Organisation;
-use App\Models\User;
+use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
 
 it('can create a project', function () {
     $organisation = Organisation::factory()->create();
@@ -62,7 +62,7 @@ it('can calculate total hours from tasks', function () {
     $totalMinutes = $project->tasks()->sum('minutes');
     $totalHours = $totalMinutes / 60;
 
-    expect($totalHours)->toBe(5.0);
+    expect($totalHours)->toEqual(5.0);
 });
 
 it('can check if notifications are enabled', function () {
@@ -90,7 +90,7 @@ it('can check if project is internal', function () {
 });
 
 it('has fillable attributes', function () {
-    $project = new Project();
+    $project = new Project;
     $fillable = $project->getFillable();
 
     expect($fillable)->toContain('name', 'description', 'organisation_id', 'hour_tariff', 'is_fixed', 'notifications', 'is_internal');

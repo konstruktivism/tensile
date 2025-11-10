@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Task;
-use App\Models\Project;
 use App\Models\Organisation;
+use App\Models\Project;
+use App\Models\Task;
 use Carbon\Carbon;
 
 it('can create a task', function () {
@@ -35,7 +35,7 @@ it('can calculate hours from minutes', function () {
 
     $hours = $task->minutes / 60;
 
-    expect($hours)->toBe(2.0);
+    expect($hours)->toEqual(2.0);
 });
 
 it('can check if task is a service', function () {
@@ -47,11 +47,11 @@ it('can check if task is a service', function () {
 });
 
 it('can check if task is invoiced', function () {
-    $invoicedTask = Task::factory()->create(['invoiced' => true]);
-    $nonInvoicedTask = Task::factory()->create(['invoiced' => false]);
+    $invoicedTask = Task::factory()->create(['invoiced' => now()]);
+    $nonInvoicedTask = Task::factory()->create(['invoiced' => null]);
 
-    expect($invoicedTask->invoiced)->toBeTrue();
-    expect($nonInvoicedTask->invoiced)->toBeFalse();
+    expect($invoicedTask->invoiced)->toBeInstanceOf(Carbon::class);
+    expect($nonInvoicedTask->invoiced)->toBeNull();
 });
 
 it('has completed_at as Carbon instance', function () {
@@ -69,7 +69,7 @@ it('can get week number from completed_at', function () {
 });
 
 it('has fillable attributes', function () {
-    $task = new Task();
+    $task = new Task;
     $fillable = $task->getFillable();
 
     expect($fillable)->toContain('name', 'description', 'project_id', 'completed_at', 'minutes', 'icalUID', 'is_service', 'invoiced');

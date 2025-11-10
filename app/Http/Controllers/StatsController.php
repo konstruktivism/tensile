@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class StatsController extends Controller
@@ -12,20 +12,41 @@ class StatsController extends Controller
     {
         $tasks = DB::table('tasks')
             ->join('projects', 'tasks.project_id', '=', 'projects.id')
-            ->select(
-                DB::raw('WEEKOFYEAR(tasks.completed_at) as week'),
-                DB::raw('SUM(tasks.minutes) as total_minutes'),
-                DB::raw('SUM(tasks.is_service) as service_tasks'),
-                DB::raw('COUNT(*) as total_tasks'),
-                DB::raw('(SUM(tasks.is_service) / COUNT(*)) * 100 as service_percentage'),
-                DB::raw('SUM(CASE WHEN projects.is_internal = true THEN 1 ELSE 0 END) as internal_tasks')
-            )
-            ->whereRaw('YEAR(tasks.completed_at) = YEAR(CURDATE())')
-            ->groupBy('week')
-            ->orderBy('week')
-            ->get();
+            ->whereYear('tasks.completed_at', now()->year)
+            ->get([
+                'tasks.completed_at',
+                'tasks.minutes',
+                'tasks.is_service',
+                'projects.is_internal',
+            ]);
 
-        return response()->json($tasks);
+        $weeklyStats = $tasks
+            ->groupBy(function ($task) {
+                return Carbon::parse($task->completed_at)->weekOfYear;
+            })
+            ->map(function ($weekTasks, $week) {
+                $totalMinutes = (int) $weekTasks->sum('minutes');
+                $totalTasks = $weekTasks->count();
+                $serviceTasks = (int) $weekTasks->sum('is_service');
+                $internalTasks = $weekTasks->where('is_internal', true)->count();
+
+                $servicePercentage = $totalTasks === 0
+                    ? 0
+                    : round(($serviceTasks / $totalTasks) * 100, 2);
+
+                return [
+                    'week' => (int) $week,
+                    'total_minutes' => $totalMinutes,
+                    'service_tasks' => $serviceTasks,
+                    'total_tasks' => $totalTasks,
+                    'service_percentage' => $servicePercentage,
+                    'internal_tasks' => $internalTasks,
+                ];
+            })
+            ->sortKeys()
+            ->values();
+
+        return response()->json($weeklyStats);
     }
 
     public function getRevenuePerWeek()
@@ -40,11 +61,11 @@ class StatsController extends Controller
             $tasks = DB::table('tasks')
                 ->where('project_id', $project->id)
                 ->where('is_service', false)
-                ->whereRaw('YEAR(completed_at) = YEAR(CURDATE())')
+                ->whereYear('completed_at', now()->year)
                 ->get(['completed_at', 'minutes']);
 
             $weeklyTasks = $tasks->groupBy(function ($task) {
-                return \Carbon\Carbon::parse($task->completed_at)->weekOfYear;
+                return Carbon::parse($task->completed_at)->weekOfYear;
             });
 
             foreach ($weeklyTasks as $week => $tasks) {

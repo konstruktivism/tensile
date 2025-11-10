@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use Google\Client;
 use Google\Service\Calendar;
 use Google\Service\Exception;
-use Carbon\Carbon;
 
 class GoogleCalendarService
 {
@@ -13,7 +13,7 @@ class GoogleCalendarService
 
     public function __construct()
     {
-        $this->client = new Client();
+        $this->client = new Client;
         $this->client->setApplicationName('Google Calendar API Laravel Integration');
         $this->client->setScopes(Calendar::CALENDAR_READONLY);
         $this->client->setAuthConfig(storage_path('app/client_secret_1011594109685-r98negli2lau90uvlkqs63rm972ra0lp.apps.googleusercontent.com.json'));
@@ -37,13 +37,13 @@ class GoogleCalendarService
             } else {
                 $authUrl = $this->client->createAuthUrl();
                 printf("Open the following link in your browser:\n%s\n", $authUrl);
-                print 'Enter verification code: ';
+                echo 'Enter verification code: ';
                 $authCode = config('services.google_calendar.auth_code');
 
                 $accessToken = $this->client->fetchAccessTokenWithAuthCode($authCode);
                 $this->client->setAccessToken($accessToken);
 
-                if (!file_exists(dirname($tokenPath))) {
+                if (! file_exists(dirname($tokenPath))) {
                     mkdir(dirname($tokenPath), 0700, true);
                 }
                 file_put_contents($tokenPath, json_encode($accessToken));
@@ -54,18 +54,21 @@ class GoogleCalendarService
     /**
      * @throws Exception
      */
-    public function getEvents(int $maxResults = 32, int $days = 1)
+    public function getEvents(int $maxResults = 32, int $days = 1, bool $includeToday = false)
     {
         $calendarId = config('services.google_calendar.calendar_id');
 
         $service = new Calendar($this->client);
 
         if ($days > 1) {
-            $start = Carbon::now()->subMonth()->firstOfMonth()->startOfDay()->toRfc3339String();
-            $end = Carbon::now()->toRfc3339String();
+            $start = Carbon::now()->subDays($days - 1)->startOfDay()->toRfc3339String();
+            $end = Carbon::now()->endOfDay()->toRfc3339String();
         } else {
-            $start = date('c', strtotime('yesterday 00:00:00'));
-            $end = date('c', strtotime('yesterday 23:59:59'));
+            $startDate = $includeToday ? Carbon::now()->startOfDay() : Carbon::yesterday()->startOfDay();
+            $endDate = $includeToday ? Carbon::now()->endOfDay() : Carbon::yesterday()->endOfDay();
+
+            $start = $startDate->toRfc3339String();
+            $end = $endDate->toRfc3339String();
         }
 
         $optParams = [
@@ -82,7 +85,7 @@ class GoogleCalendarService
 
     /**
      * Get events for a specific date range (supports past and future dates)
-     * 
+     *
      * @throws Exception
      */
     public function getEventsByDateRange(string $startDate, string $endDate, int $maxResults = 1000)

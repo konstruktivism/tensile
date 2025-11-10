@@ -18,7 +18,7 @@ it('can register a new user', function () {
 
     $response = $this->post('/register', $userData);
 
-    $response->assertRedirect('/dashboard');
+    $response->assertRedirect(route('projects'));
 
     $this->assertDatabaseHas('users', [
         'name' => 'John Doe',
@@ -86,5 +86,5 @@ it('redirects authenticated user from registration page', function () {
     $response = $this->actingAs($user)
         ->get('/register');
 
-    $response->assertRedirect('/dashboard');
+    $response->assertRedirect(route('projects'));
 });

@@ -46,7 +46,8 @@ it('can update password via password route', function () {
         'password_confirmation' => 'new-password',
     ];
 
-    $response = $this->actingAs($user)
+    $response = $this->from('/profile')
+        ->actingAs($user)
         ->put('/password', $updateData);
 
     $response->assertRedirect('/profile');
