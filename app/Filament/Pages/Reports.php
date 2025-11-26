@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Models\Task;
 use Carbon\Carbon;
 use Filament\Pages\Page;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
@@ -89,13 +90,17 @@ class Reports extends Page implements HasTable
                     ->formatStateUsing(fn ($state) => "Week {$state}"),
                 TextColumn::make('total_hours')
                     ->label('Total Hours')
+                    ->numeric(decimalPlaces: 2)
+                    ->suffix('h')
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => number_format($state, 2).'h'),
+                    ->summarize(Sum::make()->label('Total')->formatStateUsing(fn ($state) => number_format($state, 2).'h')),
                 TextColumn::make('billable_hours')
                     ->label('Billable Hours')
+                    ->numeric(decimalPlaces: 2)
+                    ->suffix('h')
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => number_format($state, 2).'h')
-                    ->color(fn ($state) => $state > 0 ? 'success' : 'gray'),
+                    ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
+                    ->summarize(Sum::make()->label('Total')->formatStateUsing(fn ($state) => number_format($state, 2).'h')),
             ])
             ->filters([
                 SelectFilter::make('year')
@@ -103,11 +108,10 @@ class Reports extends Page implements HasTable
                     ->options($this->getYearOptions())
                     ->default(now()->year)
                     ->query(function (Builder $query, array $data): Builder {
-                        if (! empty($data['value'])) {
-                            $this->selectedYear = $data['value'];
-                            $this->selectedWeek = null;
-                            $query->whereYear('tasks.completed_at', $data['value']);
-                        }
+                        $year = ! empty($data['value']) ? $data['value'] : now()->year;
+                        $this->selectedYear = $year;
+                        $this->selectedWeek = null;
+                        $query->whereYear('tasks.completed_at', $year);
 
                         return $query;
                     }),
@@ -139,12 +143,9 @@ class Reports extends Page implements HasTable
 
     protected function getTableQuery(): Builder
     {
-        $year = $this->selectedYear ?? now()->year;
-
         $query = Task::query()
             ->join('projects', 'tasks.project_id', '=', 'projects.id')
             ->join('organisations', 'projects.organisation_id', '=', 'organisations.id')
-            ->whereYear('tasks.completed_at', $year)
             ->whereNotNull('tasks.completed_at');
 
         return $query
