@@ -16,6 +16,23 @@ class Dashboard extends BaseDashboard
 
     protected static ?string $navigationIcon = null;
 
+    public static function getNavigationIcon(): ?string
+    {
+        return null;
+    }
+
+    protected ?string $heading = null;
+
+    public function getHeading(): \Illuminate\Contracts\Support\Htmlable|string
+    {
+        return '';
+    }
+
+    public function getHeader(): ?\Illuminate\Contracts\View\View
+    {
+        return null;
+    }
+
     public function getYearOptions(): array
     {
         $availableYears = Task::query()
