@@ -61,5 +61,5 @@ it('redirects authenticated user from forgot password page', function () {
     $response = $this->actingAs($user)
         ->get('/forgot-password');
 
-    $response->assertRedirect('/');
+    $response->assertRedirect('/projects');
 });

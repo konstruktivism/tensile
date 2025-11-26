@@ -29,8 +29,9 @@ class GoogleCalendarController extends Controller
         ]);
     }
 
-    public function importWeeks($weeks): \Illuminate\Http\JsonResponse
+    public function importWeeks(): \Illuminate\Http\JsonResponse
     {
+        $weeks = request()->query('weeks', 4);
         $events = $this->googleCalendarService->getEvents(500, $weeks * 7);
 
         $this->runImport($events);

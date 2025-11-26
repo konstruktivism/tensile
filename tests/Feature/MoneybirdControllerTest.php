@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\User;
+use App\Models\Organisation;
+use App\Models\Project;
 
 it('can update Moneybird invoice', function () {
     $user = User::factory()->create();

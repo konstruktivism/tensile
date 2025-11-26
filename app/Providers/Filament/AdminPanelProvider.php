@@ -2,30 +2,23 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\HoursPerWeekWidget;
+use App\Filament\Widgets\ImportWidget;
+use App\Filament\Widgets\RevenueWidget;
+use App\Filament\Widgets\ServicePercentageWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Filament\Support\Facades\FilamentView;
-use Illuminate\Support\Facades\Blade;
-use App\Filament\Widgets\ImportWidget;
-use App\Filament\Widgets\HoursPerWeekWidget;
-use App\Filament\Widgets\RevenueWidget;
-use App\Filament\Widgets\ServicePercentageWidget;
 use Illuminate\Support\Facades\Vite;
-
-
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -37,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::Yellow,
+                'primary' => '#facc15',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

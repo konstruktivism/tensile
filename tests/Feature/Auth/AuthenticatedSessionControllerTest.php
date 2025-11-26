@@ -68,7 +68,7 @@ it('redirects authenticated user from login page', function () {
     $response = $this->actingAs($user)
         ->get('/login');
 
-    $response->assertRedirect(url('/'));
+    $response->assertRedirect('/projects');
 });
 
 it('remembers user login when requested', function () {

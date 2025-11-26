@@ -17,6 +17,7 @@ it('can view a specific project', function () {
     $user = User::factory()->create();
     $organisation = Organisation::factory()->create();
     $project = Project::factory()->create(['organisation_id' => $organisation->id]);
+    $user->projects()->attach($project);
 
     $response = $this->actingAs($user)
         ->get("/project/{$project->id}");
@@ -34,6 +35,7 @@ it('can view project week view', function () {
     $user = User::factory()->create();
     $organisation = Organisation::factory()->create();
     $project = Project::factory()->create(['organisation_id' => $organisation->id]);
+    $user->projects()->attach($project);
 
     $response = $this->actingAs($user)
         ->get("/project/{$project->id}/1");

@@ -4,27 +4,32 @@ namespace App\Filament\Widgets;
 
 use App\Http\Controllers\StatsController;
 use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
 class HoursPerWeekWidget extends ChartWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?string $heading = 'Hours Per Week';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = 1;
 
     protected function getData(): array
     {
+        $year = $this->filters['year'] ?? now()->year;
+
         // Call the controller method directly instead of making HTTP requests
-        $statsController = new StatsController();
-        $response = $statsController->getHoursPerWeek();
+        $statsController = new StatsController;
+        $response = $statsController->getHoursPerWeek($year);
         $data = $response->getData(true);
 
         // Process data for the chart
-        $labels = array_map(fn($item) => "Week {$item['week']}", $data);
-        $hours = array_map(fn($item) => $item['total_minutes'] / 60, $data);
-        $totalTasks = array_map(fn($item) => $item['total_tasks'], $data);
-        $servicePercentage = array_map(fn($item) => $item['service_percentage'], $data);
+        $labels = array_map(fn ($item) => "Week {$item['week']}", $data);
+        $hours = array_map(fn ($item) => $item['total_minutes'] / 60, $data);
+        $totalTasks = array_map(fn ($item) => $item['total_tasks'], $data);
+        $servicePercentage = array_map(fn ($item) => $item['service_percentage'], $data);
 
         return [
             'datasets' => [
@@ -63,20 +68,24 @@ class HoursPerWeekWidget extends ChartWidget
 
 class RevenueWidget extends ChartWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?string $heading = 'Revenue per week';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = 0;
 
     protected function getData(): array
     {
+        $year = $this->filters['year'] ?? now()->year;
+
         // Call the controller method directly instead of making HTTP requests
-        $statsController = new StatsController();
-        $response = $statsController->getRevenuePerWeek();
+        $statsController = new StatsController;
+        $response = $statsController->getRevenuePerWeek($year);
         $data = $response->getData(true);
 
-        $labels = array_map(fn($week) => "Week {$week}", array_keys($data));
+        $labels = array_map(fn ($week) => "Week {$week}", array_keys($data));
         $revenue = array_values($data);
 
         return [
@@ -127,22 +136,26 @@ class RevenueWidget extends ChartWidget
 
 class ServicePercentageWidget extends ChartWidget
 {
+    use InteractsWithPageFilters;
+
     protected static ?string $heading = 'Service Percentage';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = 2;
 
     protected function getData(): array
     {
+        $year = $this->filters['year'] ?? now()->year;
+
         // Call the controller method directly instead of making HTTP requests
-        $statsController = new StatsController();
-        $response = $statsController->getHoursPerWeek();
+        $statsController = new StatsController;
+        $response = $statsController->getHoursPerWeek($year);
         $data = $response->getData(true);
 
-        $labels = array_map(fn($item) => "Week {$item['week']}", $data);
-        $servicePercentage = array_map(fn($item) => round($item['service_percentage']), $data);
-        $internalPercentage = array_map(fn($item) => round($item['internal_tasks']), $data);
+        $labels = array_map(fn ($item) => "Week {$item['week']}", $data);
+        $servicePercentage = array_map(fn ($item) => round($item['service_percentage']), $data);
+        $internalPercentage = array_map(fn ($item) => round($item['internal_tasks']), $data);
 
         return [
             'datasets' => [
@@ -166,7 +179,7 @@ class ServicePercentageWidget extends ChartWidget
                 ],
                 [
                     'label' => 'Paid',
-                    'data' => array_map(fn($service, $internal) => round(100 - ($service + $internal)), $servicePercentage, $internalPercentage),
+                    'data' => array_map(fn ($service, $internal) => round(100 - ($service + $internal)), $servicePercentage, $internalPercentage),
                     'backgroundColor' => 'rgba(54, 162, 235, 1)',
                     'borderColor' => 'rgba(54, 162, 235, 1)',
                     'borderWidth' => 1,
@@ -178,10 +191,10 @@ class ServicePercentageWidget extends ChartWidget
             'options' => [
                 'plugins' => [
                     'legend' => [
-                        'display' => false
+                        'display' => false,
                     ],
                 ],
-            ]
+            ],
         ];
     }
 

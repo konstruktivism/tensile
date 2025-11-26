@@ -2,9 +2,9 @@
 
 namespace App\Filament\Widgets;
 
-use Filament\Widgets\Widget;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Artisan;
 
 class ImportWidget extends Widget
@@ -13,7 +13,15 @@ class ImportWidget extends Widget
 
     protected static string $view = 'filament.widgets.import-widget';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = [
+        'default' => 1,
+        'md' => 1,
+    ];
+
+    public static function canView(): bool
+    {
+        return false;
+    }
 
     protected function getHeaderActions(): array
     {
@@ -36,7 +44,7 @@ class ImportWidget extends Widget
     {
         Artisan::call('import:date-range', [
             'start_date' => '2025-09-01',
-            'end_date' => '2025-09-30'
+            'end_date' => '2025-09-30',
         ]);
 
         $output = Artisan::output();
