@@ -35,6 +35,10 @@ class Dashboard extends BaseDashboard
 
     public function mount(): void
     {
+        if (! is_array($this->filters)) {
+            $this->filters = [];
+        }
+
         if (! isset($this->filters['year'])) {
             $this->filters['year'] = now()->year;
         }
