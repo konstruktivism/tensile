@@ -33,6 +33,13 @@ class Dashboard extends BaseDashboard
         return null;
     }
 
+    public function mount(): void
+    {
+        if (! isset($this->filters['year'])) {
+            $this->filters['year'] = now()->year;
+        }
+    }
+
     public function getYearOptions(): array
     {
         $availableYears = Task::query()
