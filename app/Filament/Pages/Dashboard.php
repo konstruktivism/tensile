@@ -14,7 +14,7 @@ class Dashboard extends BaseDashboard
 {
     use HasFiltersForm;
 
-    protected static ?string $navigationIcon = '';
+    protected static ?string $navigationIcon = null;
 
     public function getYearOptions(): array
     {
