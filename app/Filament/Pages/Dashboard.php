@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Task;
+use Carbon\Carbon;
 use Filament\Forms\Components\View;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -74,12 +75,18 @@ class Dashboard extends BaseDashboard
 
     public function importWeeks(): void
     {
-        Artisan::call('import:weeks');
+        $startOfWeek = Carbon::now()->startOfWeek()->format('Y-m-d');
+        $endOfWeek = Carbon::now()->endOfWeek()->format('Y-m-d');
+
+        Artisan::call('import:date-range', [
+            'start_date' => $startOfWeek,
+            'end_date' => $endOfWeek,
+        ]);
 
         $output = Artisan::output();
 
         Notification::make()
-            ->title('Success')
+            ->title('Import Complete')
             ->body($output)
             ->success()
             ->send();
