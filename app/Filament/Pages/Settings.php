@@ -2,36 +2,28 @@
 
 namespace App\Filament\Pages;
 
+use App\Jobs\JobForecastImport;
 use Carbon\Carbon;
-use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Artisan;
 
-class Import extends Page
+class Settings extends Page
 {
     protected static ?string $navigationIcon = null;
 
-    protected static string $view = 'filament.pages.import';
+    protected static string $view = 'filament.pages.settings';
 
-    protected static ?string $navigationLabel = 'Import';
+    protected static ?string $navigationLabel = 'Settings';
 
     protected static ?int $navigationSort = 3;
 
     protected function getHeaderActions(): array
     {
-        return [
-            Action::make('importThisWeek')
-                ->label('Import this week')
-                ->action(fn () => $this->importThisWeek()),
-
-            Action::make('importThisMonth')
-                ->label('Import this month')
-                ->action(fn () => $this->importThisMonth()),
-        ];
+        return [];
     }
 
-    public function importThisWeek(): void
+    public function importTasksThisWeek(): void
     {
         $startOfWeek = Carbon::now()->startOfWeek()->format('Y-m-d');
         $endOfWeek = Carbon::now()->endOfWeek()->format('Y-m-d');
@@ -50,7 +42,7 @@ class Import extends Page
             ->send();
     }
 
-    public function importThisMonth(): void
+    public function importTasksThisMonth(): void
     {
         $startOfMonth = Carbon::now()->startOfMonth()->format('Y-m-d');
         $endOfMonth = Carbon::now()->endOfMonth()->format('Y-m-d');
@@ -65,6 +57,17 @@ class Import extends Page
         Notification::make()
             ->title('Month Import Complete')
             ->body($output)
+            ->success()
+            ->send();
+    }
+
+    public function importForecasts(): void
+    {
+        JobForecastImport::dispatch();
+
+        Notification::make()
+            ->title('Forecast Import Started')
+            ->body('Forecast import has been queued and will process shortly.')
             ->success()
             ->send();
     }

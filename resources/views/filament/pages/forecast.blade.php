@@ -14,21 +14,17 @@
                     @endforeach
                 </select>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Week
-                </label>
-                <select 
-                    wire:model.live="selectedWeek" 
-                    class="fi-input block rounded-lg border-none bg-white px-3 py-1.5 text-base text-gray-950 outline-none transition duration-75 focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50 disabled:text-gray-500 dark:bg-white/5 dark:text-white dark:focus:ring-primary-400 sm:text-sm sm:leading-6"
-                >
-                    <option value="">All weeks</option>
-                    @foreach($this->getWeekOptions() as $value => $label)
-                        <option value="{{ $value }}">{{ $label }}</option>
-                    @endforeach
-                </select>
-            </div>
         </div>
-        {{ $this->table }}
+        
+        @foreach($this->getMonthOptions() as $month => $monthName)
+            <x-filament::section>
+                <x-slot name="heading">
+                    {{ $monthName }} {{ $this->selectedYear }}
+                </x-slot>
+                <div wire:key="month-table-{{ $month }}-{{ $this->selectedYear }}">
+                    @livewire('forecast-month-table', ['month' => $month, 'year' => $this->selectedYear], key("forecast-table-{$month}-{$this->selectedYear}"))
+                </div>
+            </x-filament::section>
+        @endforeach
     </div>
 </x-filament-panels::page>

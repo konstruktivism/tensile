@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Helpers\CurrencyHelper;
 use App\Models\Task;
 use Carbon\Carbon;
 use Filament\Pages\Page;
@@ -9,7 +10,6 @@ use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -33,6 +33,17 @@ class Reports extends Page implements HasTable
     public function mount(): void
     {
         $this->selectedYear = $this->selectedYear ?? now()->year;
+    }
+
+    public function updatedSelectedYear(): void
+    {
+        $this->selectedWeek = null;
+        $this->resetTable();
+    }
+
+    public function updatedSelectedWeek(): void
+    {
+        $this->resetTable();
     }
 
     public function getYearOptions(): array
@@ -101,40 +112,12 @@ class Reports extends Page implements HasTable
                     ->sortable()
                     ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
                     ->summarize(Sum::make()->label('Total')->formatStateUsing(fn ($state) => number_format($state, 2).'h')),
-            ])
-            ->filters([
-                SelectFilter::make('year')
-                    ->label('Year')
-                    ->options($this->getYearOptions())
-                    ->default(now()->year)
-                    ->query(function (Builder $query, array $data): Builder {
-                        $year = ! empty($data['value']) ? $data['value'] : now()->year;
-                        $this->selectedYear = $year;
-                        $this->selectedWeek = null;
-                        $query->whereYear('tasks.completed_at', $year);
-
-                        return $query;
-                    }),
-                SelectFilter::make('week')
-                    ->label('Week')
-                    ->options(fn () => $this->getWeekOptions())
-                    ->placeholder('All weeks')
-                    ->query(function (Builder $query, array $data): Builder {
-                        if (! empty($data['value'])) {
-                            $this->selectedWeek = $data['value'];
-                            $year = $this->selectedYear ?? now()->year;
-                            $week = $data['value'];
-
-                            $startOfWeek = Carbon::now()->setISODate($year, $week)->startOfWeek();
-                            $endOfWeek = $startOfWeek->copy()->endOfWeek();
-
-                            $query->whereBetween('tasks.completed_at', [$startOfWeek, $endOfWeek]);
-                        } else {
-                            $this->selectedWeek = null;
-                        }
-
-                        return $query;
-                    }),
+                TextColumn::make('revenue')
+                    ->label('Revenue')
+                    ->sortable()
+                    ->color(fn ($state, $record) => ($state > 0 && $record->is_fixed == 0) ? 'success' : 'gray')
+                    ->formatStateUsing(fn ($state, $record) => $record->is_fixed == 0 ? CurrencyHelper::formatCurrency($state) : '-')
+                    ->summarize(Sum::make()->label('Total')->formatStateUsing(fn ($state) => CurrencyHelper::formatCurrency($state))),
             ])
             ->defaultSort('week', 'desc')
             ->paginated([10, 25, 50, 100])
@@ -148,17 +131,29 @@ class Reports extends Page implements HasTable
             ->join('organisations', 'projects.organisation_id', '=', 'organisations.id')
             ->whereNotNull('tasks.completed_at');
 
+        $year = $this->selectedYear ?? now()->year;
+        $query->whereYear('tasks.completed_at', $year);
+
+        if ($this->selectedWeek !== null) {
+            $startOfWeek = Carbon::now()->setISODate($year, $this->selectedWeek)->startOfWeek();
+            $endOfWeek = $startOfWeek->copy()->endOfWeek();
+            $query->whereBetween('tasks.completed_at', [$startOfWeek, $endOfWeek]);
+        }
+
         return $query
             ->select([
                 'projects.id as project_id',
                 'projects.name as project_name',
                 'organisations.name as organisation_name',
+                'projects.hour_tariff',
+                'projects.is_fixed',
                 DB::raw('WEEK(tasks.completed_at, 3) as week'),
                 DB::raw('SUM(tasks.minutes) as total_minutes'),
                 DB::raw('SUM(tasks.minutes) / 60 as total_hours'),
                 DB::raw('SUM(CASE WHEN tasks.is_service = 0 AND projects.is_internal = 0 THEN tasks.minutes ELSE 0 END) / 60 as billable_hours'),
+                DB::raw('SUM(CASE WHEN tasks.is_service = 0 AND projects.is_internal = 0 AND projects.is_fixed = 0 THEN tasks.minutes / 60 * projects.hour_tariff ELSE 0 END) as revenue'),
             ])
-            ->groupBy('projects.id', 'projects.name', 'organisations.name', DB::raw('WEEK(tasks.completed_at, 3)'))
+            ->groupBy('projects.id', 'projects.name', 'organisations.name', 'projects.hour_tariff', 'projects.is_fixed', DB::raw('WEEK(tasks.completed_at, 3)'))
             ->orderBy('week', 'desc')
             ->orderBy('projects.name');
     }

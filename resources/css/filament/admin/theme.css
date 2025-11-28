@@ -1,0 +1,32 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+
+/* Import Albert Sans font */
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,100..900;1,100..900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/* Override text-white class on primary buttons */
+.fi-btn-color-primary.text-white,
+.fi-color-primary.text-white,
+.fi-btn-color-primary .text-white,
+.fi-color-primary .text-white,
+.fi-btn-color-primary .fi-btn-label,
+.fi-color-primary .fi-btn-label,
+.fi-btn-color-primary .fi-btn-icon,
+.fi-color-primary .fi-btn-icon {
+    color: #000000 !important;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    .fi-btn-color-primary.text-white,
+    .fi-color-primary.text-white,
+    .fi-btn-color-primary .text-white,
+    .fi-color-primary .text-white,
+    .fi-btn-color-primary .fi-btn-label,
+    .fi-color-primary .fi-btn-label,
+    .fi-btn-color-primary .fi-btn-icon,
+    .fi-color-primary .fi-btn-icon {
+        color: #000000 !important;
+    }
+}

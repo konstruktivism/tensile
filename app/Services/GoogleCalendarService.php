@@ -115,4 +115,31 @@ class GoogleCalendarService
 
         return $results->getItems();
     }
+
+    /**
+     * Get future events from now to N weeks ahead
+     *
+     * @throws Exception
+     */
+    public function getFutureEvents(int $weeks = 12, int $maxResults = 1000)
+    {
+        $calendarId = config('services.google_calendar.calendar_id');
+
+        $service = new Calendar($this->client);
+
+        $start = Carbon::now()->toRfc3339String();
+        $end = Carbon::now()->addWeeks($weeks)->endOfDay()->toRfc3339String();
+
+        $optParams = [
+            'maxResults' => $maxResults,
+            'orderBy' => 'startTime',
+            'singleEvents' => true,
+            'timeMin' => $start,
+            'timeMax' => $end,
+        ];
+
+        $results = $service->events->listEvents($calendarId, $optParams);
+
+        return $results->getItems();
+    }
 }
