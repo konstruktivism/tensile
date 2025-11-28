@@ -62,10 +62,10 @@ class GoogleCalendarService
 
         if ($days > 1) {
             $start = Carbon::now()->subDays($days - 1)->startOfDay()->toRfc3339String();
-            $end = Carbon::now()->endOfDay()->toRfc3339String();
+            $end = Carbon::now()->toRfc3339String();
         } else {
             $startDate = $includeToday ? Carbon::now()->startOfDay() : Carbon::yesterday()->startOfDay();
-            $endDate = $includeToday ? Carbon::now()->endOfDay() : Carbon::yesterday()->endOfDay();
+            $endDate = $includeToday ? Carbon::now() : Carbon::yesterday()->endOfDay();
 
             $start = $startDate->toRfc3339String();
             $end = $endDate->toRfc3339String();

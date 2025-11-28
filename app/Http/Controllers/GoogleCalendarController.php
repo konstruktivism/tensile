@@ -90,6 +90,13 @@ class GoogleCalendarController extends Controller
     {
         foreach ($events as $event) {
             $start = $event->start->dateTime ?? $event->start->date;
+            $end = $event->end->dateTime ?? $event->end->date;
+
+            // Only import events that have already ended
+            if ($end && Carbon::parse($end)->isFuture()) {
+                continue;
+            }
+
             // Normalize to day to avoid duplicates for the same calendar entry within a day
             $completedAt = Carbon::parse($start)->startOfDay();
             $projectCode = substr(preg_replace('/[^A-Z]/', '', $event->getSummary()), 0, 3);
@@ -124,6 +131,13 @@ class GoogleCalendarController extends Controller
 
         foreach ($events as $event) {
             $start = $event->start->dateTime ?? $event->start->date;
+            $end = $event->end->dateTime ?? $event->end->date;
+
+            // Only import events that have already ended
+            if ($end && Carbon::parse($end)->isFuture()) {
+                continue;
+            }
+
             $completedAt = Carbon::parse($start)->startOfDay();
             $projectCode = substr(preg_replace('/[^A-Z]/', '', $event->getSummary()), 0, 3);
 
