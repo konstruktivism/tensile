@@ -55,25 +55,28 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
                     ->label('Planned Hours')
                     ->numeric(decimalPlaces: 2)
                     ->suffix('h')
+                    ->alignRight()
                     ->sortable()
                     ->summarize([
-                        Sum::make()->label('Week Total')->formatStateUsing(fn ($state) => number_format($state, 2).'h'),
+                        Sum::make()->label('')->formatStateUsing(fn ($state) => number_format($state, 2).'h'),
                     ]),
                 TextColumn::make('billable_hours')
                     ->label('Billable Hours')
                     ->numeric(decimalPlaces: 2)
                     ->suffix('h')
+                    ->alignRight()
                     ->sortable()
                     ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
                     ->summarize([
-                        Sum::make()->label('Week Total')->formatStateUsing(fn ($state) => number_format($state, 2).'h'),
+                        Sum::make()->label('')->formatStateUsing(fn ($state) => number_format($state, 2).'h'),
                     ]),
                 TextColumn::make('revenue')
                     ->label('Revenue')
                     ->money('EUR')
+                    ->alignRight()
                     ->sortable()
                     ->summarize([
-                        Sum::make()->label('Week Total')->money('EUR'),
+                        Sum::make()->label('')->money('EUR'),
                     ]),
             ])
             ->defaultSort('week', 'asc')
