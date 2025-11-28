@@ -18,16 +18,20 @@ class GoogleCalendarController extends Controller
 
     public function importEvents(bool $includeToday = false): \Illuminate\Http\JsonResponse
     {
-        $maxResults = $includeToday ? 1000 : 32;
-        $events = $this->googleCalendarService->getEvents($maxResults, 1, $includeToday);
+        if ($includeToday) {
+            // For hourly imports: query events from last 24 hours, but only import those that ended in last hour
+            // This is more efficient than querying all of today's events every hour
+            $events = $this->googleCalendarService->getEvents(100, 1, true, 2);
+            $this->runImport($events, 1);
+            $message = 'Events imported from the last hour.';
+        } else {
+            // For daily imports: get yesterday's events
+            $events = $this->googleCalendarService->getEvents(32, 1, false);
+            $this->runImport($events);
+            $message = 'Events imported of yesterday.';
+        }
 
-        $this->runImport($events);
-
-        return response()->json([
-            'message' => $includeToday
-                ? 'Events imported of today up to this moment.'
-                : 'Events imported of yesterday.',
-        ]);
+        return response()->json(['message' => $message]);
     }
 
     public function importWeeks(): \Illuminate\Http\JsonResponse
@@ -86,14 +90,22 @@ class GoogleCalendarController extends Controller
         }
     }
 
-    public function runImport($events)
+    public function runImport($events, ?int $hoursBack = null)
     {
+        $now = Carbon::now();
+        $cutoffTime = $hoursBack ? $now->copy()->subHours($hoursBack) : null;
+
         foreach ($events as $event) {
             $start = $event->start->dateTime ?? $event->start->date;
             $end = $event->end->dateTime ?? $event->end->date;
 
             // Only import events that have already ended
-            if ($end && Carbon::parse($end)->isFuture()) {
+            if (! $end || Carbon::parse($end)->isFuture()) {
+                continue;
+            }
+
+            // For hourly imports: only import events that ended in the last N hours
+            if ($cutoffTime && Carbon::parse($end)->isBefore($cutoffTime)) {
                 continue;
             }
 

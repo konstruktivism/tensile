@@ -54,13 +54,19 @@ class GoogleCalendarService
     /**
      * @throws Exception
      */
-    public function getEvents(int $maxResults = 32, int $days = 1, bool $includeToday = false)
+    public function getEvents(int $maxResults = 32, int $days = 1, bool $includeToday = false, ?int $hoursBack = null)
     {
         $calendarId = config('services.google_calendar.calendar_id');
 
         $service = new Calendar($this->client);
 
-        if ($days > 1) {
+        if ($hoursBack !== null) {
+            // For hourly imports: query events that started in the last 24 hours
+            // (to catch long events that may have ended recently)
+            // We'll filter by end time in the controller
+            $start = Carbon::now()->subHours(24)->toRfc3339String();
+            $end = Carbon::now()->toRfc3339String();
+        } elseif ($days > 1) {
             $start = Carbon::now()->subDays($days - 1)->startOfDay()->toRfc3339String();
             $end = Carbon::now()->toRfc3339String();
         } else {
