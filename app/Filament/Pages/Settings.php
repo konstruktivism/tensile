@@ -16,7 +16,7 @@ class Settings extends Page
 
     protected static ?string $navigationLabel = 'Settings';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 8;
 
     protected function getHeaderActions(): array
     {

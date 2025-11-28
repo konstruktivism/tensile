@@ -95,7 +95,8 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
             ->join('organisations', 'projects.organisation_id', '=', 'organisations.id')
             ->whereNotNull('forecast_tasks.scheduled_at')
             ->whereYear('forecast_tasks.scheduled_at', $this->year)
-            ->whereMonth('forecast_tasks.scheduled_at', $this->month);
+            ->whereMonth('forecast_tasks.scheduled_at', $this->month)
+            ->whereRaw('YEARWEEK(forecast_tasks.scheduled_at, 3) DIV 100 = ?', [$this->year]);
 
         return $query
             ->select([

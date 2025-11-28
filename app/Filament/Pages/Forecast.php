@@ -21,9 +21,9 @@ class Forecast extends Page implements HasTable
 
     protected static string $view = 'filament.pages.forecast';
 
-    protected static ?string $navigationLabel = 'Forecast';
+    protected static ?string $navigationLabel = 'Forecasts';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 5;
 
     public ?int $selectedYear = null;
 
@@ -165,7 +165,8 @@ class Forecast extends Page implements HasTable
             ->join('organisations', 'projects.organisation_id', '=', 'organisations.id')
             ->whereNotNull('forecast_tasks.scheduled_at')
             ->whereYear('forecast_tasks.scheduled_at', $year)
-            ->whereMonth('forecast_tasks.scheduled_at', $month);
+            ->whereMonth('forecast_tasks.scheduled_at', $month)
+            ->whereRaw('YEARWEEK(forecast_tasks.scheduled_at, 3) DIV 100 = ?', [$year]);
 
         return $query
             ->select([

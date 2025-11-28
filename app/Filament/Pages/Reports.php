@@ -24,7 +24,7 @@ class Reports extends Page implements HasTable
 
     protected static ?string $navigationLabel = 'Reports';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 6;
 
     public ?int $selectedYear = null;
 
@@ -79,7 +79,7 @@ class Reports extends Page implements HasTable
             $weeks = [now()->week];
         }
 
-        return array_combine($weeks, array_map(fn ($w) => "Week {$w}", $weeks));
+        return array_combine($weeks, array_map(fn($w) => "Week {$w}", $weeks));
     }
 
     public function table(Table $table): Table
@@ -98,26 +98,26 @@ class Reports extends Page implements HasTable
                 TextColumn::make('week')
                     ->label('Week')
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => "Week {$state}"),
+                    ->formatStateUsing(fn($state) => "Week {$state}"),
                 TextColumn::make('total_hours')
                     ->label('Total Hours')
                     ->numeric(decimalPlaces: 2)
                     ->suffix('h')
                     ->sortable()
-                    ->summarize(Sum::make()->label('Total')->formatStateUsing(fn ($state) => number_format($state, 2).'h')),
+                    ->summarize(Sum::make()->label('Total')->formatStateUsing(fn($state) => number_format($state, 2) . 'h')),
                 TextColumn::make('billable_hours')
                     ->label('Billable Hours')
                     ->numeric(decimalPlaces: 2)
                     ->suffix('h')
                     ->sortable()
-                    ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
-                    ->summarize(Sum::make()->label('Total')->formatStateUsing(fn ($state) => number_format($state, 2).'h')),
+                    ->color(fn($state) => $state > 0 ? 'success' : 'gray')
+                    ->summarize(Sum::make()->label('Total')->formatStateUsing(fn($state) => number_format($state, 2) . 'h')),
                 TextColumn::make('revenue')
                     ->label('Revenue')
                     ->sortable()
-                    ->color(fn ($state, $record) => ($state > 0 && $record->is_fixed == 0) ? 'success' : 'gray')
-                    ->formatStateUsing(fn ($state, $record) => $record->is_fixed == 0 ? CurrencyHelper::formatCurrency($state) : '-')
-                    ->summarize(Sum::make()->label('Total')->formatStateUsing(fn ($state) => CurrencyHelper::formatCurrency($state))),
+                    ->color(fn($state, $record) => ($state > 0 && $record->is_fixed == 0) ? 'success' : 'gray')
+                    ->formatStateUsing(fn($state, $record) => $record->is_fixed == 0 ? CurrencyHelper::formatCurrency($state) : '-')
+                    ->summarize(Sum::make()->label('Total')->formatStateUsing(fn($state) => CurrencyHelper::formatCurrency($state))),
             ])
             ->defaultSort('week', 'desc')
             ->paginated([10, 25, 50, 100])

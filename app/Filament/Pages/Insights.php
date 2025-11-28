@@ -16,7 +16,7 @@ class Insights extends Page
 
     protected static ?string $navigationLabel = 'Insights';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 7;
 
     public ?int $selectedYear = null;
 

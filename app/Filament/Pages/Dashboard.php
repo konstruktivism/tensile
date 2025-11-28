@@ -17,6 +17,11 @@ class Dashboard extends BaseDashboard
 
     protected static ?string $navigationIcon = null;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public static function getNavigationIcon(): ?string
     {
         return null;
