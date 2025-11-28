@@ -40,37 +40,31 @@ class Forecast extends Page implements HasTable
     public function getYearOptions(): array
     {
         $currentYear = now()->year;
-        $currentWeekStart = Carbon::now()->startOfWeek();
 
         // Get years from forecast data
         $dataYears = ForecastTask::query()
             ->whereNull('deleted_at')
             ->whereNotNull('scheduled_at')
-            ->where('scheduled_at', '>=', $currentWeekStart)
             ->get()
             ->map(fn ($task) => Carbon::parse($task->scheduled_at)->year)
             ->unique()
+            ->sort()
+            ->values()
             ->toArray();
 
-        // Always show from 2025 onwards, or current year onwards if current year is before 2025
-        $startYear = max(2025, $currentYear);
-        $endYear = max($startYear, $currentYear + 1);
+        $years = [];
 
-        // Include any years from data that are beyond our range
+        // If we have data years, use them
         if (! empty($dataYears)) {
-            $maxDataYear = max($dataYears);
-            $endYear = max($endYear, $maxDataYear);
+            $years = $dataYears;
+        } else {
+            // Fallback: show current year and next year if no data
+            $years = [$currentYear, $currentYear + 1];
         }
 
-        $years = [];
-        // Start with current year first
-        $years[] = $currentYear;
-
-        // Add other years (excluding current year if already added)
-        for ($year = $startYear; $year <= $endYear; $year++) {
-            if ($year !== $currentYear && ! in_array($year, $years)) {
-                $years[] = $year;
-            }
+        // Always include current year if not already present
+        if (! in_array($currentYear, $years)) {
+            $years[] = $currentYear;
         }
 
         // Sort descending so current year is first
@@ -82,12 +76,10 @@ class Forecast extends Page implements HasTable
     public function getMonthOptions(): array
     {
         $year = $this->selectedYear ?? now()->year;
-        $currentWeekStart = Carbon::now()->startOfWeek();
 
         $months = ForecastTask::query()
             ->whereNull('deleted_at')
             ->whereNotNull('scheduled_at')
-            ->where('scheduled_at', '>=', $currentWeekStart)
             ->whereYear('scheduled_at', $year)
             ->get()
             ->map(fn ($task) => Carbon::parse($task->scheduled_at)->month)
@@ -165,18 +157,13 @@ class Forecast extends Page implements HasTable
 
     protected function getMonthlyTableQuery(int $month): Builder
     {
-        $now = Carbon::now();
-        $currentWeekStart = $now->copy()->startOfWeek();
         $year = $this->selectedYear ?? now()->year;
-        $monthStart = Carbon::create($year, $month, 1)->startOfMonth();
-        $monthEnd = $monthStart->copy()->endOfMonth();
 
         $query = ForecastTask::query()
             ->whereNull('forecast_tasks.deleted_at')
             ->join('projects', 'forecast_tasks.project_id', '=', 'projects.id')
             ->join('organisations', 'projects.organisation_id', '=', 'organisations.id')
             ->whereNotNull('forecast_tasks.scheduled_at')
-            ->where('forecast_tasks.scheduled_at', '>=', $currentWeekStart)
             ->whereYear('forecast_tasks.scheduled_at', $year)
             ->whereMonth('forecast_tasks.scheduled_at', $month);
 
@@ -193,7 +180,6 @@ class Forecast extends Page implements HasTable
                 DB::raw('SUM(CASE WHEN forecast_tasks.is_service = 0 AND projects.is_internal = 0 THEN forecast_tasks.minutes ELSE 0 END) / 60 * projects.hour_tariff as revenue'),
             ])
             ->groupBy('projects.id', 'projects.name', 'projects.hour_tariff', 'organisations.name', DB::raw('WEEK(forecast_tasks.scheduled_at, 3)'))
-            ->havingRaw('MIN(forecast_tasks.scheduled_at) >= ?', [$currentWeekStart])
             ->orderBy('week', 'asc')
             ->orderBy('projects.name');
     }

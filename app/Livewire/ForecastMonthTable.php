@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use App\Models\ForecastTask;
-use Carbon\Carbon;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -90,15 +89,11 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
 
     protected function getTableQuery(): Builder
     {
-        $now = Carbon::now();
-        $currentWeekStart = $now->copy()->startOfWeek();
-
         $query = ForecastTask::query()
             ->whereNull('forecast_tasks.deleted_at')
             ->join('projects', 'forecast_tasks.project_id', '=', 'projects.id')
             ->join('organisations', 'projects.organisation_id', '=', 'organisations.id')
             ->whereNotNull('forecast_tasks.scheduled_at')
-            ->where('forecast_tasks.scheduled_at', '>=', $currentWeekStart)
             ->whereYear('forecast_tasks.scheduled_at', $this->year)
             ->whereMonth('forecast_tasks.scheduled_at', $this->month);
 
@@ -115,7 +110,6 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
                 DB::raw('SUM(CASE WHEN forecast_tasks.is_service = 0 AND projects.is_internal = 0 THEN forecast_tasks.minutes ELSE 0 END) / 60 * projects.hour_tariff as revenue'),
             ])
             ->groupBy('projects.id', 'projects.name', 'projects.hour_tariff', 'organisations.name', DB::raw('WEEK(forecast_tasks.scheduled_at, 3)'))
-            ->havingRaw('MIN(forecast_tasks.scheduled_at) >= ?', [$currentWeekStart])
             ->orderBy('week', 'asc')
             ->orderBy('projects.name');
     }
