@@ -18,13 +18,14 @@ class GoogleCalendarController extends Controller
 
     public function importEvents(bool $includeToday = false): \Illuminate\Http\JsonResponse
     {
-        $events = $this->googleCalendarService->getEvents(32, 1, $includeToday);
+        $maxResults = $includeToday ? 1000 : 32;
+        $events = $this->googleCalendarService->getEvents($maxResults, 1, $includeToday);
 
         $this->runImport($events);
 
         return response()->json([
             'message' => $includeToday
-                ? 'Events imported of today.'
+                ? 'Events imported of today up to this moment.'
                 : 'Events imported of yesterday.',
         ]);
     }
