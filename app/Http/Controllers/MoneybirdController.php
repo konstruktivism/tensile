@@ -38,23 +38,47 @@ class MoneybirdController extends Controller
         $contactId = $this->getContactIdByOrganisationName($organisationName);
 
         if (! $contactId) {
-            return response()->json(['message' => 'Contact not found'], 404);
+            return response()->json([
+                'message' => 'Contact not found in Moneybird',
+                'organisation_name' => $organisationName,
+            ], 404);
         }
 
         // Step 2: Get draft sales invoice of contact_id
         $invoiceId = $this->getDraftInvoiceIdByContactId($contactId);
 
         if (! $invoiceId) {
-            return response()->json(['message' => 'Draft invoice not found'], 404);
+            return response()->json([
+                'message' => 'Draft invoice not found in Moneybird',
+                'contact_id' => $contactId,
+                'organisation_name' => $organisationName,
+                'hint' => 'Please create a draft invoice in Moneybird for this contact first',
+            ], 404);
         }
 
         // Step 3: Update/patch the sales invoice
         $tasks = $this->getTasksForCurrentMonth($project);
 
+        // Get diagnostic information about tasks
+        $allTasksCount = $project->tasks()->count();
+        $notInvoicedCount = $project->tasks()->whereNull('invoiced')->count();
+        $notServiceCount = $project->tasks()->where('is_service', 0)->count();
+        $completedBeforeCurrentMonth = $project->tasks()
+            ->whereDate('completed_at', '<', Carbon::now()->startOfMonth()->toDateString())
+            ->count();
+
         if ($tasks->isEmpty()) {
             return response()->json([
                 'message' => 'No tasks found to invoice',
                 'tasks_count' => 0,
+                'diagnostics' => [
+                    'total_tasks' => $allTasksCount,
+                    'not_invoiced' => $notInvoicedCount,
+                    'not_service' => $notServiceCount,
+                    'completed_before_current_month' => $completedBeforeCurrentMonth,
+                    'current_month_start' => Carbon::now()->startOfMonth()->toDateString(),
+                    'hint' => 'Tasks must be: not invoiced, not service tasks, and completed before current month',
+                ],
             ], 200);
         }
 
@@ -64,11 +88,18 @@ class MoneybirdController extends Controller
             return is_null($task->invoiced);
         });
 
+        if ($tasksToInvoice->isEmpty()) {
+            return response()->json([
+                'message' => 'No tasks to invoice (all tasks already have invoiced date)',
+                'tasks_found' => $tasks->count(),
+            ], 200);
+        }
+
         $invoiceData = [
             'sales_invoice' => [
                 'details_attributes' => $tasksToInvoice->map(function ($task) {
                     return [
-                        'description' => $task->name.' ['.$task->completed_at->format('d-m-Y').']',
+                        'description' => $task->name . ' [' . $task->completed_at->format('d-m-Y') . ']',
                         'price' => (float) $task->project->hour_tariff,
                         'amount' => (float) round($task->minutes / 60, 2), // Moneybird expects numeric
                         'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
@@ -86,9 +117,9 @@ class MoneybirdController extends Controller
                 'sample_detail' => ($invoiceData['sales_invoice']['details_attributes'][0] ?? null),
             ]);
 
-            $response = $this->client->patch($this->apiUrl.env('MONEYBIRD_ADMINISTRATION_ID').'/sales_invoices/'.$invoiceId, [
+            $response = $this->client->patch($this->apiUrl . env('MONEYBIRD_ADMINISTRATION_ID') . '/sales_invoices/' . $invoiceId, [
                 'headers' => [
-                    'Authorization' => 'Bearer '.$this->accessToken,
+                    'Authorization' => 'Bearer ' . $this->accessToken,
                     'Content-Type' => 'application/json',
                 ],
                 'json' => $invoiceData,
@@ -147,9 +178,9 @@ class MoneybirdController extends Controller
     protected function getContactIdByOrganisationName($organisationName)
     {
         try {
-            $response = $this->client->get($this->apiUrl.env('MONEYBIRD_ADMINISTRATION_ID').'/contacts', [
+            $response = $this->client->get($this->apiUrl . env('MONEYBIRD_ADMINISTRATION_ID') . '/contacts', [
                 'headers' => [
-                    'Authorization' => 'Bearer '.$this->accessToken,
+                    'Authorization' => 'Bearer ' . $this->accessToken,
                     'Content-Type' => 'application/json',
                 ],
                 'query' => ['query' => $organisationName],
@@ -176,8 +207,10 @@ class MoneybirdController extends Controller
             foreach ($contacts as $contact) {
                 if (isset($contact['company_name'])) {
                     $contactNameLower = strtolower(trim($contact['company_name']));
-                    if (strpos($contactNameLower, $organisationNameLower) !== false ||
-                        strpos($organisationNameLower, $contactNameLower) !== false) {
+                    if (
+                        strpos($contactNameLower, $organisationNameLower) !== false ||
+                        strpos($organisationNameLower, $contactNameLower) !== false
+                    ) {
                         return $contact['id'];
                     }
                 }
@@ -192,12 +225,12 @@ class MoneybirdController extends Controller
     protected function getDraftInvoiceIdByContactId($contactId)
     {
         try {
-            $response = $this->client->get($this->apiUrl.env('MONEYBIRD_ADMINISTRATION_ID').'/sales_invoices', [
+            $response = $this->client->get($this->apiUrl . env('MONEYBIRD_ADMINISTRATION_ID') . '/sales_invoices', [
                 'headers' => [
-                    'Authorization' => 'Bearer '.$this->accessToken,
+                    'Authorization' => 'Bearer ' . $this->accessToken,
                     'Content-Type' => 'application/json',
                 ],
-                'query' => ['filter' => 'state:draft,contact_id:'.$contactId],
+                'query' => ['filter' => 'state:draft,contact_id:' . $contactId],
             ]);
 
             $invoices = json_decode($response->getBody()->getContents(), true);
