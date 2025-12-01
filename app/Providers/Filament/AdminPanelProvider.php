@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Dashboard;
 use App\Filament\Widgets\HoursPerWeekWidget;
 use App\Filament\Widgets\ImportWidget;
 use App\Filament\Widgets\RevenueWidget;
@@ -29,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->homeUrl(fn (): string => Dashboard::getUrl())
             ->colors([
                 'primary' => '#facc15',
             ])

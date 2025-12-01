@@ -7,7 +7,7 @@
                 </label>
                 <select 
                     wire:model.live="selectedYear" 
-                    class="fi-input block rounded-lg border-none bg-white px-3 py-1.5 text-base text-gray-950 outline-none transition duration-75 focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50 disabled:text-gray-500 dark:bg-white/5 dark:text-white dark:focus:ring-primary-400 sm:text-sm sm:leading-6"
+                    class="fi-input block w-[125%] rounded-lg border-none bg-white px-3 py-1.5 text-base text-gray-950 outline-none transition duration-75 focus:ring-2 focus:ring-primary-500 disabled:bg-gray-50 disabled:text-gray-500 dark:bg-white/5 dark:text-white dark:focus:ring-primary-400 sm:text-sm sm:leading-6"
                 >
                     @foreach($this->getYearOptions() as $value => $label)
                         <option value="{{ $value }}">{{ $label }}</option>
