@@ -4,19 +4,18 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProjectResource\Pages;
 use App\Filament\Resources\ProjectResource\RelationManagers;
+use App\Http\Controllers\MoneybirdController;
+use App\Mail\MonthlyTasksMail;
+use App\Mail\WeeklyTasksMail;
 use App\Models\Project;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Tables\Actions\Action;
-use App\Mail\WeeklyTasksMail;
-use App\Mail\MonthlyTasksMail;
+use Filament\Tables\Table;
 use Illuminate\Support\Facades\Mail;
-use App\Http\Controllers\MoneybirdController;
-
 
 class ProjectResource extends Resource
 {
@@ -87,12 +86,12 @@ class ProjectResource extends Resource
                         $users = $record->users;
 
                         foreach ($users as $user) {
-                           Mail::to($user->email)->send(new WeeklyTasksMail($record, $tasks, $week));
+                            Mail::to($user->email)->send(new WeeklyTasksMail($record, $tasks, $week));
                         }
 
                         activity()
                             ->performedOn($record)
-                            ->log('Weekly tasks email sent for project: ' . $record->id . ' for week: ' . $week . ' to users: ' . $users->pluck('email')->implode(', '));
+                            ->log('Weekly tasks email sent for project: '.$record->id.' for week: '.$week.' to users: '.$users->pluck('email')->implode(', '));
                     })
                     ->icon('heroicon-s-envelope'),
                 Action::make('sendMonthlyTasks')
@@ -113,13 +112,13 @@ class ProjectResource extends Resource
 
                         activity()
                             ->performedOn($record)
-                            ->log('Monthly tasks email sent for project: ' . $record->id . ' for month: ' . $month . ' to users: ' . $users->pluck('email')->implode(', '));
+                            ->log('Monthly tasks email sent for project: '.$record->id.' for month: '.$month.' to users: '.$users->pluck('email')->implode(', '));
                     })
                     ->icon('heroicon-s-envelope'),
                 Action::make('updateInvoice')
                     ->label('Update Invoice')
                     ->action(function ($record) {
-                        $controller = new MoneybirdController();
+                        $controller = new MoneybirdController;
                         $controller->updateInvoice($record->id);
                     })
                     ->color('primary'),
