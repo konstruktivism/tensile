@@ -15,6 +15,7 @@
         $dayOfWeekStats = $this->getDayOfWeekStats();
         $peakHours = $this->getPeakHours();
         $workingDaysStats = $this->getWorkingDaysStats();
+        $avgHoursPerWeek = $this->getAverageHoursPerWeek();
         $revenueEfficiency = $this->getRevenueEfficiency();
         $growthTrends = $this->getGrowthTrends();
         $quarterlyTrends = $this->getQuarterlyTrends();
@@ -182,6 +183,12 @@
                     <div class="text-xs text-gray-500 dark:text-gray-500 mt-1">{{ number_format($hourDistribution['night'], 1) }}h</div>
                 </div>
             </div>
+            @if($avgHoursPerWeek > 0)
+            <div class="mt-4 p-4 bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-lg text-center">
+                <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Average Hours Per Week</div>
+                <div class="text-3xl font-bold text-primary-600 dark:text-primary-400">{{ number_format($avgHoursPerWeek, 1) }}h</div>
+            </div>
+            @endif
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -473,7 +480,8 @@
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ number_format($fixedVsHourly['fixed']['total_hours'], 1) }}h</div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">{{ $fixedVsHourly['fixed']['task_count'] }} tasks</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">{{ $fixedVsHourly['fixed']['percentage'] }}%</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-500">{{ $fixedVsHourly['fixed']['task_count'] }} tasks</div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
@@ -483,7 +491,8 @@
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ number_format($fixedVsHourly['hourly']['total_hours'], 1) }}h</div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">{{ \App\Helpers\CurrencyHelper::formatCurrency($fixedVsHourly['hourly']['revenue'], '€', 0) }}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">{{ $fixedVsHourly['hourly']['percentage'] }}%</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-500">{{ \App\Helpers\CurrencyHelper::formatCurrency($fixedVsHourly['hourly']['revenue'], '€', 0) }}</div>
                         </div>
                     </div>
                 </div>

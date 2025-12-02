@@ -300,6 +300,11 @@ class Insights extends Page
             $insights[] = "Average {$workingDaysStats['avg_hours_per_day']} hours per working day";
         }
 
+        $avgHoursPerWeek = $this->getAverageHoursPerWeek();
+        if ($avgHoursPerWeek > 0) {
+            $insights[] = "Average {$avgHoursPerWeek} hours per week";
+        }
+
         if (! empty($dayOfWeekStats)) {
             $mostProductiveDay = $dayOfWeekStats[0];
             $insights[] = "Most productive day: {$mostProductiveDay['day']} ({$mostProductiveDay['hours']} hours)";
@@ -568,6 +573,28 @@ class Insights extends Page
         ];
     }
 
+    public function getAverageHoursPerWeek(): float
+    {
+        $year = $this->selectedYear ?? now()->year;
+
+        $weeklyStats = Task::query()
+            ->whereYear('completed_at', $year)
+            ->whereNotNull('completed_at')
+            ->selectRaw('WEEK(completed_at, 3) as week')
+            ->selectRaw('SUM(minutes) / 60 as total_hours')
+            ->groupBy('week')
+            ->get();
+
+        if ($weeklyStats->isEmpty()) {
+            return 0;
+        }
+
+        $totalWeeks = $weeklyStats->count();
+        $totalHours = $weeklyStats->sum('total_hours');
+
+        return round($totalHours / $totalWeeks, 2);
+    }
+
     public function getRevenueEfficiency(): array
     {
         $year = $this->selectedYear ?? now()->year;
@@ -825,17 +852,26 @@ class Insights extends Page
             ])
             ->first();
 
+        $fixedHours = round($fixedProjects->total_hours ?? 0, 2);
+        $hourlyHours = round($hourlyProjects->total_hours ?? 0, 2);
+        $totalHours = $fixedHours + $hourlyHours;
+
+        $fixedPercentage = $totalHours > 0 ? round(($fixedHours / $totalHours) * 100, 1) : 0;
+        $hourlyPercentage = $totalHours > 0 ? round(($hourlyHours / $totalHours) * 100, 1) : 0;
+
         return [
             'fixed' => [
                 'project_count' => $fixedProjects->project_count ?? 0,
-                'total_hours' => round($fixedProjects->total_hours ?? 0, 2),
+                'total_hours' => $fixedHours,
                 'task_count' => $fixedProjects->task_count ?? 0,
+                'percentage' => $fixedPercentage,
             ],
             'hourly' => [
                 'project_count' => $hourlyProjects->project_count ?? 0,
-                'total_hours' => round($hourlyProjects->total_hours ?? 0, 2),
+                'total_hours' => $hourlyHours,
                 'revenue' => round($hourlyProjects->revenue ?? 0, 2),
                 'task_count' => $hourlyProjects->task_count ?? 0,
+                'percentage' => $hourlyPercentage,
             ],
         ];
     }
