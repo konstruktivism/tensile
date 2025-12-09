@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\ForecastTask;
+use Carbon\Carbon;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\Summarizers\Sum;
@@ -42,7 +43,7 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
                 TextColumn::make('week')
                     ->label('Week')
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => "Week {$state}"),
+                    ->formatStateUsing(fn($state) => "Week {$state}"),
                 TextColumn::make('project_name')
                     ->label('Project')
                     ->searchable()
@@ -58,7 +59,7 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
                     ->alignRight()
                     ->sortable()
                     ->summarize([
-                        Sum::make()->label('')->formatStateUsing(fn ($state) => number_format($state, 2).'h'),
+                        Sum::make()->label('')->formatStateUsing(fn($state) => number_format($state, 2) . 'h'),
                     ]),
                 TextColumn::make('billable_hours')
                     ->label('Billable Hours')
@@ -66,9 +67,9 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
                     ->suffix('h')
                     ->alignRight()
                     ->sortable()
-                    ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
+                    ->color(fn($state) => $state > 0 ? 'success' : 'gray')
                     ->summarize([
-                        Sum::make()->label('')->formatStateUsing(fn ($state) => number_format($state, 2).'h'),
+                        Sum::make()->label('')->formatStateUsing(fn($state) => number_format($state, 2) . 'h'),
                     ]),
                 TextColumn::make('revenue')
                     ->label('Revenue')
@@ -97,6 +98,7 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
             ->join('projects', 'forecast_tasks.project_id', '=', 'projects.id')
             ->join('organisations', 'projects.organisation_id', '=', 'organisations.id')
             ->whereNotNull('forecast_tasks.scheduled_at')
+            ->where('forecast_tasks.scheduled_at', '>=', Carbon::now()->startOfDay())
             ->whereYear('forecast_tasks.scheduled_at', $this->year)
             ->whereMonth('forecast_tasks.scheduled_at', $this->month)
             ->whereRaw('YEARWEEK(forecast_tasks.scheduled_at, 3) DIV 100 = ?', [$this->year]);

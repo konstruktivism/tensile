@@ -164,6 +164,7 @@ class Forecast extends Page implements HasTable
             ->join('projects', 'forecast_tasks.project_id', '=', 'projects.id')
             ->join('organisations', 'projects.organisation_id', '=', 'organisations.id')
             ->whereNotNull('forecast_tasks.scheduled_at')
+            ->where('forecast_tasks.scheduled_at', '>=', Carbon::now()->startOfDay())
             ->whereYear('forecast_tasks.scheduled_at', $year)
             ->whereMonth('forecast_tasks.scheduled_at', $month)
             ->whereRaw('YEARWEEK(forecast_tasks.scheduled_at, 3) DIV 100 = ?', [$year]);

@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class JobForecastImport implements ShouldQueue
 {
@@ -23,12 +24,17 @@ class JobForecastImport implements ShouldQueue
         $deletedCount = ForecastTask::where('scheduled_at', '<', $currentWeekStart)
             ->whereNull('deleted_at')
             ->delete();
-        
+
         if ($deletedCount > 0) {
-            \Log::info("Soft deleted {$deletedCount} past forecast tasks before import.");
+            Log::info("Soft deleted {$deletedCount} past forecast tasks before import.");
         }
 
-        $events = $googleCalendarService->getFutureEvents(12, 1000);
+        // Import from start of current week to catch events for newly added projects
+        // This ensures events for projects added later are still imported
+        // (events from before current week are filtered out below)
+        $startDate = Carbon::now()->startOfWeek()->format('Y-m-d');
+        $endDate = Carbon::now()->addWeeks(12)->format('Y-m-d');
+        $events = $googleCalendarService->getEventsByDateRange($startDate, $endDate, 1000);
 
         $importedCount = 0;
         $now = Carbon::now();
@@ -37,8 +43,13 @@ class JobForecastImport implements ShouldQueue
             $start = $event->start->dateTime ?? $event->start->date;
             $end = $event->end->dateTime ?? $event->end->date;
 
-            // Only import events that haven't ended yet (future events)
-            if ($end && Carbon::parse($end)->isPast()) {
+            // Import events from current week onwards (to catch newly added projects)
+            // Skip events that ended before the current week started
+            $eventEnd = $end ? Carbon::parse($end) : null;
+            $eventStart = Carbon::parse($start);
+
+            // Skip events that ended before current week (already in the past)
+            if ($eventEnd && $eventEnd->isBefore($currentWeekStart)) {
                 continue;
             }
 
@@ -73,6 +84,6 @@ class JobForecastImport implements ShouldQueue
             }
         }
 
-        \Log::info("Forecast import completed. Imported {$importedCount} new forecast tasks.");
+        Log::info("Forecast import completed. Imported {$importedCount} new forecast tasks.");
     }
 }

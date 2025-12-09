@@ -71,4 +71,18 @@ class Settings extends Page
             ->success()
             ->send();
     }
+
+    public function importForecastsFromWeek(): void
+    {
+        $startOfWeek = Carbon::now()->startOfWeek()->format('Y-m-d');
+        $endOfWeek = Carbon::now()->addWeeks(12)->format('Y-m-d');
+
+        JobForecastImportFromRange::dispatch($startOfWeek, $endOfWeek);
+
+        Notification::make()
+            ->title('Forecast Import Started')
+            ->body('Importing forecasts from start of current week. This will catch events for newly added projects.')
+            ->success()
+            ->send();
+    }
 }
