@@ -37,6 +37,10 @@ class Reports extends Page implements HasTable
     public function mount(): void
     {
         $this->selectedYear = $this->selectedYear ?? now()->year;
+
+        if ($this->reportType === 'week' && $this->selectedWeek === null) {
+            $this->selectedWeek = now()->week;
+        }
     }
 
     public function updatedSelectedYear(): void
@@ -72,7 +76,11 @@ class Reports extends Page implements HasTable
 
     public function updatedReportType(): void
     {
-        $this->selectedWeek = null;
+        if ($this->reportType === 'week') {
+            $this->selectedWeek = $this->selectedWeek ?? now()->week;
+        } else {
+            $this->selectedWeek = null;
+        }
         $this->selectedMonth = null;
         $this->resetTable();
     }
