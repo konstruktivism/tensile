@@ -40,36 +40,36 @@
         </div>
 
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold tracking-tight mb-2 text-gray-900 dark:text-white">Your {{ $this->selectedYear }}</h1>
-            <p class="text-gray-700 dark:text-gray-300 font-medium">A year in review</p>
+            <h1 class="text-4xl font-bold tracking-tight mb-2 text-gray-900 dark:text-white">Deconstructed Year</h1>
+            <p class="text-gray-700 dark:text-gray-300 font-medium">{{ $this->selectedYear }} in review</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-yellow-400 rounded-2xl p-6 border border-yellow-500">
-                <div class="text-lg font-medium text-gray-900 mb-2">Total Hours</div>
-                <div class="text-4xl font-bold text-gray-900">{{ number_format($stats['total_hours'], 0) }}</div>
-                <div class="text-base font-light text-gray-800 mt-1">hours worked</div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
+                <div class="text-lg font-medium text-gray-900 dark:text-white mb-2">Total Hours</div>
+                <div class="text-4xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_hours'], 0) }}</div>
+                <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">hours worked</div>
             </div>
-            <div class="bg-yellow-400 rounded-2xl p-6 border border-yellow-500">
-                <div class="text-lg font-medium text-gray-900 mb-2">Total Tasks</div>
-                <div class="text-4xl font-bold text-gray-900">{{ number_format($stats['total_tasks'], 0) }}</div>
-                <div class="text-base font-light text-gray-800 mt-1">tasks completed</div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
+                <div class="text-lg font-medium text-gray-900 dark:text-white mb-2">Total Tasks</div>
+                <div class="text-4xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_tasks'], 0) }}</div>
+                <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">tasks completed</div>
             </div>
-            <div class="bg-yellow-400 rounded-2xl p-6 border border-yellow-500">
-                <div class="text-lg font-medium text-gray-900 mb-2">Total Revenue</div>
-                <div class="text-4xl font-bold text-gray-900">{{ \App\Helpers\CurrencyHelper::formatCurrency($stats['revenue'], '€', 0) }}</div>
-                <div class="text-base font-light text-gray-800 mt-1">revenue generated</div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
+                <div class="text-lg font-medium text-gray-900 dark:text-white mb-2">Total Revenue</div>
+                <div class="text-4xl font-bold text-gray-900 dark:text-white">{{ \App\Helpers\CurrencyHelper::formatCurrency($stats['revenue'], '€', 0) }}</div>
+                <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">revenue generated</div>
             </div>
         </div>
 
         @if(!empty($marketingInsights))
         <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-8">
-            <h2 class="text-2xl font-medium tracking-tight mb-4 text-gray-900 dark:text-white">Your Numbers</h2>
+            <h2 class="text-2xl font-medium tracking-tight mb-4 text-gray-900 dark:text-white">Numbers</h2>
             <div class="space-y-3">
                 @foreach($marketingInsights as $insight)
                 <div class="flex items-center gap-3 text-base text-gray-900 dark:text-gray-100">
                     <span class="text-yellow-400 font-medium">•</span>
-                    <span class="font-light">{{ $insight }}</span>
+                    <span class="font-medium">{{ $insight }}</span>
                 </div>
                 @endforeach
             </div>
@@ -106,11 +106,11 @@
                     <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div class="flex-1">
                             <div class="text-lg font-medium text-gray-900 dark:text-white">{{ $project['name'] }}</div>
-                            <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ $project['organisation'] }}</div>
+                            <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ $project['organisation'] }}</div>
                         </div>
                         <div class="text-right">
                             <div class="text-base font-bold text-gray-900 dark:text-white">{{ number_format($project['hours'], 1) }}h</div>
-                            <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ $project['percentage'] }}%</div>
+                            <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ $project['percentage'] }}%</div>
                         </div>
                     </div>
                     @endforeach
@@ -126,7 +126,7 @@
                         </div>
                         <div class="text-right">
                             <div class="text-base font-bold text-gray-900 dark:text-white">{{ number_format($org['hours'], 1) }}h</div>
-                            <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ $org['percentage'] }}%</div>
+                            <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ $org['percentage'] }}%</div>
                         </div>
                     </div>
                     @endforeach
@@ -139,24 +139,24 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ $breakdown['service'] }}%</div>
-                    <div class="text-base font-light text-gray-700 dark:text-gray-300 mt-1">Service</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">Service</div>
                 </div>
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ $breakdown['billable'] }}%</div>
-                    <div class="text-base font-light text-gray-700 dark:text-gray-300 mt-1">Billable</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">Billable</div>
                 </div>
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ $breakdown['internal'] }}%</div>
-                    <div class="text-base font-light text-gray-700 dark:text-gray-300 mt-1">Internal</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">Internal</div>
                 </div>
             </div>
         </div>
 
         @if($avgHoursPerWeek > 0)
         <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-8">
-            <div class="p-4 bg-yellow-400 rounded-lg text-center">
-                <div class="text-lg font-medium text-gray-900 mb-1">Average Hours Per Week</div>
-                <div class="text-3xl font-bold text-gray-900">{{ number_format($avgHoursPerWeek, 1) }}h</div>
+            <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg text-center">
+                <div class="text-lg font-medium text-gray-900 dark:text-white mb-1">Average Hours Per Week</div>
+                <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($avgHoursPerWeek, 1) }}h</div>
             </div>
         </div>
         @endif
@@ -168,21 +168,21 @@
                     <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div>
                             <div class="text-lg font-medium text-gray-900 dark:text-white">Weekdays</div>
-                            <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ $weekendStats['weekday_days'] }} days worked</div>
+                            <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ $weekendStats['weekday_days'] }} days worked</div>
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($weekendStats['weekday_hours'], 1) }}h</div>
-                            <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ $weekendStats['weekday_percent'] }}%</div>
+                            <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ $weekendStats['weekday_percent'] }}%</div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div>
                             <div class="text-lg font-medium text-gray-900 dark:text-white">Weekends</div>
-                            <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ $weekendStats['weekend_days'] }} days worked</div>
+                            <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ $weekendStats['weekend_days'] }} days worked</div>
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($weekendStats['weekend_hours'], 1) }}h</div>
-                            <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ $weekendStats['weekend_percent'] }}%</div>
+                            <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ $weekendStats['weekend_percent'] }}%</div>
                         </div>
                     </div>
                 </div>
@@ -197,7 +197,7 @@
                     <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div class="flex-1">
                             <div class="text-lg font-medium text-gray-900 dark:text-white">{{ $dayStat['day'] }}</div>
-                            <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ $dayStat['days_worked'] }} days</div>
+                            <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ $dayStat['days_worked'] }} days</div>
                         </div>
                         <div class="text-right">
                             <div class="text-base font-bold text-gray-900 dark:text-white">{{ number_format($dayStat['hours'], 1) }}h</div>
@@ -205,7 +205,7 @@
                     </div>
                     @endforeach
                 @else
-                    <div class="text-center text-base text-gray-700 dark:text-gray-300 py-4 font-light">No data available</div>
+                    <div class="text-center text-base text-gray-700 dark:text-gray-300 py-4 font-medium">No data available</div>
                 @endif
             </div>
         </div>
@@ -215,40 +215,40 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ $workingDaysStats['days_worked'] }}</div>
-                    <div class="text-base font-light text-gray-700 dark:text-gray-300 mt-1">Days Worked</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">Days Worked</div>
                 </div>
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ $workingDaysStats['days_off'] }}</div>
-                    <div class="text-base font-light text-gray-700 dark:text-gray-300 mt-1">Days Off</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">Days Off</div>
                 </div>
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ $workingDaysStats['work_percent'] }}%</div>
-                    <div class="text-base font-light text-gray-700 dark:text-gray-300 mt-1">Work Rate</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">Work Rate</div>
                 </div>
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($workingDaysStats['avg_hours_per_day'], 1) }}h</div>
-                    <div class="text-base font-light text-gray-700 dark:text-gray-300 mt-1">Avg/Day</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">Avg/Day</div>
                 </div>
             </div>
         </div>
 
         @if($growthTrends['has_prev_year_data'])
-        <div class="bg-yellow-400 rounded-xl p-6 border border-yellow-500 mb-8">
-            <h2 class="text-2xl font-medium tracking-tight mb-4 text-gray-900">Year-over-Year Growth</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-8">
+            <h2 class="text-2xl font-medium tracking-tight mb-4 text-gray-900 dark:text-white">Year-over-Year Growth</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="text-center">
-                    <div class="text-lg font-medium text-gray-800 mb-1">Revenue Growth</div>
-                    <div class="text-4xl font-bold text-gray-900">{{ $growthTrends['revenue_growth'] > 0 ? '+' : '' }}{{ number_format($growthTrends['revenue_growth'], 1) }}%</div>
-                    <div class="text-base font-light text-gray-800 mt-1">{{ \App\Helpers\CurrencyHelper::formatCurrency($growthTrends['current_revenue'], '€', 0) }} vs {{ \App\Helpers\CurrencyHelper::formatCurrency($growthTrends['prev_revenue'], '€', 0) }}</div>
+                <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">Revenue Growth</div>
+                    <div class="text-4xl font-bold text-gray-900 dark:text-white">{{ $growthTrends['revenue_growth'] > 0 ? '+' : '' }}{{ number_format($growthTrends['revenue_growth'], 1) }}%</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">{{ \App\Helpers\CurrencyHelper::formatCurrency($growthTrends['current_revenue'], '€', 0) }} vs {{ \App\Helpers\CurrencyHelper::formatCurrency($growthTrends['prev_revenue'], '€', 0) }}</div>
                 </div>
-                <div class="text-center">
-                    <div class="text-lg font-medium text-gray-800 mb-1">Hours Growth</div>
-                    <div class="text-4xl font-bold text-gray-900">{{ $growthTrends['hours_growth'] > 0 ? '+' : '' }}{{ number_format($growthTrends['hours_growth'], 1) }}%</div>
-                    <div class="text-base font-light text-gray-800 mt-1">{{ number_format($growthTrends['current_hours'], 0) }}h vs {{ number_format($growthTrends['prev_hours'], 0) }}h</div>
+                <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">Hours Growth</div>
+                    <div class="text-4xl font-bold text-gray-900 dark:text-white">{{ $growthTrends['hours_growth'] > 0 ? '+' : '' }}{{ number_format($growthTrends['hours_growth'], 1) }}%</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">{{ number_format($growthTrends['current_hours'], 0) }}h vs {{ number_format($growthTrends['prev_hours'], 0) }}h</div>
                 </div>
-                <div class="text-center">
-                    <div class="text-lg font-medium text-gray-800 mb-1">Tasks Growth</div>
-                    <div class="text-4xl font-bold text-gray-900">{{ $growthTrends['tasks_growth'] > 0 ? '+' : '' }}{{ number_format($growthTrends['tasks_growth'], 1) }}%</div>
+                <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">Tasks Growth</div>
+                    <div class="text-4xl font-bold text-gray-900 dark:text-white">{{ $growthTrends['tasks_growth'] > 0 ? '+' : '' }}{{ number_format($growthTrends['tasks_growth'], 1) }}%</div>
                 </div>
             </div>
         </div>
@@ -259,16 +259,16 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ \App\Helpers\CurrencyHelper::formatCurrency($revenueEfficiency['revenue_per_billable_hour'], '€', 0) }}</div>
-                    <div class="text-base font-light text-gray-700 dark:text-gray-300 mt-1">Revenue per Billable Hour</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">Revenue per Billable Hour</div>
                 </div>
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $revenueEfficiency['utilization_rate'] }}%</div>
-                    <div class="text-base font-light text-gray-700 dark:text-gray-300 mt-1">Utilization Rate</div>
-                    <div class="text-base font-light text-gray-600 dark:text-gray-400 mt-1">{{ number_format($revenueEfficiency['billable_hours'], 1) }}h / {{ number_format($revenueEfficiency['total_hours'], 1) }}h</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">Utilization Rate</div>
+                    <div class="text-base font-medium text-gray-600 dark:text-gray-400 mt-1">{{ number_format($revenueEfficiency['billable_hours'], 1) }}h / {{ number_format($revenueEfficiency['total_hours'], 1) }}h</div>
                 </div>
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ \App\Helpers\CurrencyHelper::formatCurrency($revenueEfficiency['revenue_per_total_hour'], '€', 0) }}</div>
-                    <div class="text-base font-light text-gray-700 dark:text-gray-300 mt-1">Revenue per Total Hour</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">Revenue per Total Hour</div>
                 </div>
             </div>
         </div>
@@ -280,21 +280,21 @@
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ $quarter['label'] }}</div>
                     <div class="text-xl font-bold text-gray-900 dark:text-white">{{ number_format($quarter['hours'], 1) }}h</div>
-                    <div class="text-base font-light text-gray-700 dark:text-gray-300 mt-1">{{ \App\Helpers\CurrencyHelper::formatCurrency($quarter['revenue'], '€', 0) }}</div>
-                    <div class="text-base font-light text-gray-600 dark:text-gray-400 mt-1">{{ $quarter['tasks'] }} tasks</div>
+                    <div class="text-base font-medium text-gray-700 dark:text-gray-300 mt-1">{{ \App\Helpers\CurrencyHelper::formatCurrency($quarter['revenue'], '€', 0) }}</div>
+                    <div class="text-base font-medium text-gray-600 dark:text-gray-400 mt-1">{{ $quarter['tasks'] }} tasks</div>
                 </div>
                 @endforeach
             </div>
         </div>
 
         @if(!empty($businessInsights))
-        <div class="bg-yellow-400 rounded-xl p-6 border border-yellow-500 mb-8">
-            <h2 class="text-2xl font-medium tracking-tight mb-4 text-gray-900">Business Insights & Recommendations</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-8">
+            <h2 class="text-2xl font-medium tracking-tight mb-4 text-gray-900 dark:text-white">Business Insights & Recommendations</h2>
             <div class="space-y-3">
                 @foreach($businessInsights as $insight)
                 <div class="flex items-start gap-3 text-base">
-                    <span class="text-gray-900 font-medium mt-1">•</span>
-                    <span class="font-light text-gray-900">{{ $insight }}</span>
+                    <span class="text-yellow-400 font-medium mt-1">•</span>
+                    <span class="font-medium text-gray-900 dark:text-gray-100">{{ $insight }}</span>
                 </div>
                 @endforeach
             </div>
@@ -310,7 +310,7 @@
                         <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                             <div class="flex-1">
                                 <div class="text-lg font-medium text-gray-900 dark:text-white">{{ $client['name'] }}</div>
-                                <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ $client['project_count'] }} projects • {{ number_format($client['days_active']) }} active days</div>
+                                <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ $client['project_count'] }} projects • {{ number_format($client['days_active']) }} active days</div>
                             </div>
                             <div class="text-right">
                                 <div class="text-base font-bold text-gray-900 dark:text-white">{{ \App\Helpers\CurrencyHelper::formatCurrency($client['revenue'], '€', 0) }}</div>
@@ -323,10 +323,10 @@
                     @endif
                 </div>
                 @if($clientValue['revenue_concentration'] > 0)
-                <div class="mt-4 p-3 bg-yellow-400 rounded-lg">
-                    <div class="text-lg font-medium text-gray-900">Top 3 clients represent</div>
-                    <div class="text-xl font-bold text-gray-900">{{ $clientValue['revenue_concentration'] }}%</div>
-                    <div class="text-lg font-medium text-gray-900">of total revenue</div>
+                <div class="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="text-lg font-medium text-gray-900 dark:text-white">Top 3 clients represent</div>
+                    <div class="text-xl font-bold text-gray-900 dark:text-white">{{ $clientValue['revenue_concentration'] }}%</div>
+                    <div class="text-lg font-medium text-gray-700 dark:text-gray-300">of total revenue</div>
                 </div>
                 @endif
             </div>
@@ -338,7 +338,7 @@
                         <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                             <div class="flex-1">
                                 <div class="text-lg font-medium text-gray-900 dark:text-white">{{ $project['name'] }}</div>
-                                <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ number_format($project['billable_hours'], 1) }}h billable</div>
+                                <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ number_format($project['billable_hours'], 1) }}h billable</div>
                             </div>
                             <div class="text-right">
                                 <div class="text-base font-bold text-gray-900 dark:text-white">{{ \App\Helpers\CurrencyHelper::formatCurrency($project['revenue_per_hour'], '€', 0) }}/h</div>
@@ -351,9 +351,9 @@
                     @endif
                 </div>
                 @if($projectProfitability['avg_hourly_rate'] > 0)
-                <div class="mt-4 p-3 bg-yellow-400 rounded-lg">
-                    <div class="text-lg font-medium text-gray-900">Average hourly rate</div>
-                    <div class="text-xl font-bold text-gray-900">{{ \App\Helpers\CurrencyHelper::formatCurrency($projectProfitability['avg_hourly_rate'], '€', 0) }}</div>
+                <div class="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div class="text-lg font-medium text-gray-900 dark:text-white">Average hourly rate</div>
+                    <div class="text-xl font-bold text-gray-900 dark:text-white">{{ \App\Helpers\CurrencyHelper::formatCurrency($projectProfitability['avg_hourly_rate'], '€', 0) }}</div>
                 </div>
                 @endif
             </div>
@@ -366,7 +366,7 @@
                     <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div>
                             <div class="text-lg font-medium text-gray-900 dark:text-white">Billable Hours</div>
-                            <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ number_format($serviceEfficiency['billable_hours'], 1) }}h</div>
+                            <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ number_format($serviceEfficiency['billable_hours'], 1) }}h</div>
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $serviceEfficiency['efficiency_score'] }}%</div>
@@ -376,7 +376,7 @@
                     <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div>
                             <div class="text-lg font-medium text-gray-900 dark:text-white">Service Hours</div>
-                            <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ number_format($serviceEfficiency['service_hours'], 1) }}h</div>
+                            <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ number_format($serviceEfficiency['service_hours'], 1) }}h</div>
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $serviceEfficiency['service_percentage'] }}%</div>
@@ -397,23 +397,23 @@
                     <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div>
                             <div class="text-lg font-medium text-gray-900 dark:text-white">Fixed Price</div>
-                            <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ $fixedVsHourly['fixed']['project_count'] }} projects</div>
+                            <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ $fixedVsHourly['fixed']['project_count'] }} projects</div>
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($fixedVsHourly['fixed']['total_hours'], 1) }}h</div>
                             <div class="text-lg font-medium text-gray-700 dark:text-gray-300">{{ $fixedVsHourly['fixed']['percentage'] }}%</div>
-                            <div class="text-base font-light text-gray-600 dark:text-gray-400">{{ $fixedVsHourly['fixed']['task_count'] }} tasks</div>
+                            <div class="text-base font-medium text-gray-600 dark:text-gray-400">{{ $fixedVsHourly['fixed']['task_count'] }} tasks</div>
                         </div>
                     </div>
                     <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <div>
                             <div class="text-lg font-medium text-gray-900 dark:text-white">Hourly Rate</div>
-                            <div class="text-base font-light text-gray-700 dark:text-gray-300">{{ $fixedVsHourly['hourly']['project_count'] }} projects</div>
+                            <div class="text-base font-medium text-gray-700 dark:text-gray-300">{{ $fixedVsHourly['hourly']['project_count'] }} projects</div>
                         </div>
                         <div class="text-right">
                             <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($fixedVsHourly['hourly']['total_hours'], 1) }}h</div>
                             <div class="text-lg font-medium text-gray-700 dark:text-gray-300">{{ $fixedVsHourly['hourly']['percentage'] }}%</div>
-                            <div class="text-base font-light text-gray-600 dark:text-gray-400">{{ \App\Helpers\CurrencyHelper::formatCurrency($fixedVsHourly['hourly']['revenue'], '€', 0) }}</div>
+                            <div class="text-base font-medium text-gray-600 dark:text-gray-400">{{ \App\Helpers\CurrencyHelper::formatCurrency($fixedVsHourly['hourly']['revenue'], '€', 0) }}</div>
                         </div>
                     </div>
                 </div>
@@ -426,22 +426,22 @@
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $taskPatterns['quick_percent'] }}%</div>
                     <div class="text-lg font-medium text-gray-700 dark:text-gray-300 mt-1">Quick Tasks</div>
-                    <div class="text-base font-light text-gray-600 dark:text-gray-400 mt-1">≤ 30 min ({{ $taskPatterns['quick_tasks'] }})</div>
+                    <div class="text-base font-medium text-gray-600 dark:text-gray-400 mt-1">≤ 30 min ({{ $taskPatterns['quick_tasks'] }})</div>
                 </div>
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $taskPatterns['medium_percent'] }}%</div>
                     <div class="text-lg font-medium text-gray-700 dark:text-gray-300 mt-1">Medium Tasks</div>
-                    <div class="text-base font-light text-gray-600 dark:text-gray-400 mt-1">30min - 2h ({{ $taskPatterns['medium_tasks'] }})</div>
+                    <div class="text-base font-medium text-gray-600 dark:text-gray-400 mt-1">30min - 2h ({{ $taskPatterns['medium_tasks'] }})</div>
                 </div>
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $taskPatterns['long_percent'] }}%</div>
                     <div class="text-lg font-medium text-gray-700 dark:text-gray-300 mt-1">Long Tasks</div>
-                    <div class="text-base font-light text-gray-600 dark:text-gray-400 mt-1">> 2h ({{ $taskPatterns['long_tasks'] }})</div>
+                    <div class="text-base font-medium text-gray-600 dark:text-gray-400 mt-1">> 2h ({{ $taskPatterns['long_tasks'] }})</div>
                 </div>
                 <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($taskPatterns['avg_duration'], 1) }}h</div>
                     <div class="text-lg font-medium text-gray-700 dark:text-gray-300 mt-1">Avg Duration</div>
-                    <div class="text-base font-light text-gray-600 dark:text-gray-400 mt-1">{{ number_format($taskPatterns['min_duration'], 2) }}h - {{ number_format($taskPatterns['max_duration'], 1) }}h</div>
+                    <div class="text-base font-medium text-gray-600 dark:text-gray-400 mt-1">{{ number_format($taskPatterns['min_duration'], 2) }}h - {{ number_format($taskPatterns['max_duration'], 1) }}h</div>
                 </div>
             </div>
         </div>

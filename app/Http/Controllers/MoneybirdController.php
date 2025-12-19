@@ -57,15 +57,13 @@ class MoneybirdController extends Controller
         }
 
         // Step 3: Update/patch the sales invoice
-        $tasks = $this->getTasksForCurrentMonth($project);
+        $tasks = $this->getTasksToInvoice($project);
 
         // Get diagnostic information about tasks
         $allTasksCount = $project->tasks()->count();
         $notInvoicedCount = $project->tasks()->whereNull('invoiced')->count();
         $notServiceCount = $project->tasks()->where('is_service', 0)->count();
-        $completedBeforeCurrentMonth = $project->tasks()
-            ->whereDate('completed_at', '<', Carbon::now()->startOfMonth()->toDateString())
-            ->count();
+        $completedCount = $project->tasks()->whereNotNull('completed_at')->count();
 
         if ($tasks->isEmpty()) {
             return response()->json([
@@ -75,9 +73,8 @@ class MoneybirdController extends Controller
                     'total_tasks' => $allTasksCount,
                     'not_invoiced' => $notInvoicedCount,
                     'not_service' => $notServiceCount,
-                    'completed_before_current_month' => $completedBeforeCurrentMonth,
-                    'current_month_start' => Carbon::now()->startOfMonth()->toDateString(),
-                    'hint' => 'Tasks must be: not invoiced, not service tasks, and completed before current month',
+                    'completed' => $completedCount,
+                    'hint' => 'Tasks must be: not invoiced, not service tasks, and completed',
                 ],
             ], 200);
         }
@@ -245,14 +242,11 @@ class MoneybirdController extends Controller
         return null;
     }
 
-    protected function getTasksForCurrentMonth(Project $project): \Illuminate\Database\Eloquent\Collection
+    protected function getTasksToInvoice(Project $project): \Illuminate\Database\Eloquent\Collection
     {
-        $now = Carbon::now();
-        $startOfCurrentMonth = $now->copy()->startOfMonth();
-
         return $project->tasks()
-            ->whereNull('invoiced') // Only include tasks that haven't been invoiced yet
-            ->whereDate('completed_at', '<', $startOfCurrentMonth->toDateString()) // Exclude current month
+            ->whereNull('invoiced')
+            ->whereNotNull('completed_at')
             ->where('is_service', 0)
             ->orderBy('completed_at')
             ->get();

@@ -266,15 +266,23 @@ class Insights extends Page
         $insights = [];
 
         if ($stats['total_hours'] > 0) {
-            $insights[] = "You worked {$stats['total_hours']} hours in {$year}";
+            $insights[] = "{$stats['total_hours']} hours worked in {$year}";
         }
 
         if ($stats['total_tasks'] > 0) {
-            $insights[] = "You completed {$stats['total_tasks']} tasks this year";
+            $insights[] = "{$stats['total_tasks']} tasks completed";
         }
 
         if ($stats['revenue'] > 0) {
             $insights[] = 'Total revenue: '.CurrencyHelper::formatCurrency($stats['revenue']);
+
+            // Calculate average revenue per week (52 weeks)
+            $avgRevenuePerWeek = $stats['revenue'] / 52;
+            $insights[] = 'Average revenue per week: '.CurrencyHelper::formatCurrency($avgRevenuePerWeek);
+
+            // Calculate average revenue per month (12 months)
+            $avgRevenuePerMonth = $stats['revenue'] / 12;
+            $insights[] = 'Average revenue per month: '.CurrencyHelper::formatCurrency($avgRevenuePerMonth);
         }
 
         if (! empty($topProject)) {
@@ -283,15 +291,15 @@ class Insights extends Page
         }
 
         if ($busiestMonth) {
-            $insights[] = "Your busiest month was {$busiestMonth['month_name']} with {$busiestMonth['hours']} hours";
+            $insights[] = "Busiest month: {$busiestMonth['month_name']} with {$busiestMonth['hours']} hours";
         }
 
         if ($busiestWeek) {
-            $insights[] = "Your busiest week was Week {$busiestWeek['week']} with {$busiestWeek['hours']} hours";
+            $insights[] = "Busiest week: Week {$busiestWeek['week']} with {$busiestWeek['hours']} hours";
         }
 
         if ($workingDaysStats['days_worked'] > 0) {
-            $insights[] = "You worked {$workingDaysStats['days_worked']} days ({$workingDaysStats['work_percent']}% of the year)";
+            $insights[] = "{$workingDaysStats['days_worked']} days worked ({$workingDaysStats['work_percent']}% of the year)";
         }
 
         if ($workingDaysStats['avg_hours_per_day'] > 0) {
@@ -309,7 +317,7 @@ class Insights extends Page
         }
 
         if ($weekendStats['weekend_hours'] > 0) {
-            $insights[] = "You worked {$weekendStats['weekend_days']} weekends ({$weekendStats['weekend_percent']}% of total hours)";
+            $insights[] = "{$weekendStats['weekend_days']} weekends worked ({$weekendStats['weekend_percent']}% of total hours)";
         }
 
         if ($breakdown['service'] > 0 || $breakdown['billable'] > 0 || $breakdown['internal'] > 0) {
