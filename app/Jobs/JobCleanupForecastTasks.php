@@ -17,11 +17,25 @@ class JobCleanupForecastTasks implements ShouldQueue
 
     public function handle(): void
     {
+        $today = Carbon::now()->startOfDay();
+        $deletedCount = 0;
+
+        // First, clean up all forecast tasks scheduled before today
+        $oldTasksCount = ForecastTask::where('scheduled_at', '<', $today)
+            ->whereNull('deleted_at')
+            ->count();
+
+        if ($oldTasksCount > 0) {
+            ForecastTask::where('scheduled_at', '<', $today)
+                ->whereNull('deleted_at')
+                ->delete();
+            $deletedCount += $oldTasksCount;
+        }
+
+        // Then, clean up forecast tasks that match completed tasks
         $completedTasks = Task::whereNotNull('completed_at')
             ->whereNotNull('icalUID')
             ->get();
-
-        $deletedCount = 0;
 
         foreach ($completedTasks as $completedTask) {
             // Find forecast tasks with matching icalUID that haven't been soft deleted
@@ -42,6 +56,6 @@ class JobCleanupForecastTasks implements ShouldQueue
             }
         }
 
-        \Log::info("Forecast cleanup completed. Soft deleted {$deletedCount} forecast tasks that have been completed.");
+        \Log::info("Forecast cleanup completed. Soft deleted {$deletedCount} forecast tasks ({$oldTasksCount} old tasks + completed tasks).");
     }
 }

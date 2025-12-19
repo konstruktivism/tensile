@@ -19,15 +19,17 @@ class JobForecastImport implements ShouldQueue
 
     public function handle(GoogleCalendarService $googleCalendarService): void
     {
-        // Soft delete past forecasts before importing new ones
-        $currentWeekStart = Carbon::now()->startOfWeek();
-        $deletedCount = ForecastTask::where('scheduled_at', '<', $currentWeekStart)
+        // Soft delete old forecasts before importing new ones (all tasks before today)
+        $today = Carbon::now()->startOfDay();
+        $deletedCount = ForecastTask::where('scheduled_at', '<', $today)
             ->whereNull('deleted_at')
             ->delete();
 
         if ($deletedCount > 0) {
-            Log::info("Soft deleted {$deletedCount} past forecast tasks before import.");
+            Log::info("Soft deleted {$deletedCount} old forecast tasks before import.");
         }
+
+        $currentWeekStart = Carbon::now()->startOfWeek();
 
         // Import from start of current week to catch events for newly added projects
         // This ensures events for projects added later are still imported

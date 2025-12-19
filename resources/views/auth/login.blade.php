@@ -10,7 +10,7 @@
                 @csrf
                 <x-text-input id="email" type="email" name="email" placeholder="{{ __('Email') }}" required autofocus autocomplete="username" />
 
-                <x-button type="submit" class="bg-primary">{{ __('Login via e-mail') }}</x-button>
+                <x-button type="submit">{{ __('Login via e-mail') }}</x-button>
             </form>
 
             <hr />
@@ -53,7 +53,7 @@
                         </a>
                     @endif
 
-                    <x-button class="ms-3 bg-primary">
+                    <x-button class="ms-3">
                         {{ __('Log in') }}
                     </x-button>
                 </div>

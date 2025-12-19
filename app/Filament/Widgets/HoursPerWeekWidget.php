@@ -16,6 +16,8 @@ class HoursPerWeekWidget extends ChartWidget
 
     protected static ?int $sort = 1;
 
+    protected static ?string $maxHeight = '300px';
+
     protected function getData(): array
     {
         $year = $this->filters['year'] ?? now()->year;
@@ -26,20 +28,20 @@ class HoursPerWeekWidget extends ChartWidget
         $data = $response->getData(true);
 
         // Process data for the chart
-        $labels = array_map(fn ($item) => "Week {$item['week']}", $data);
-        $hours = array_map(fn ($item) => $item['total_minutes'] / 60, $data);
-        $totalTasks = array_map(fn ($item) => $item['total_tasks'], $data);
-        $servicePercentage = array_map(fn ($item) => $item['service_percentage'], $data);
+        $labels = array_map(fn($item) => "Week {$item['week']}", $data);
+        $hours = array_map(fn($item) => $item['total_minutes'] / 60, $data);
+        $totalTasks = array_map(fn($item) => $item['total_tasks'], $data);
+        $servicePercentage = array_map(fn($item) => $item['service_percentage'], $data);
 
         return [
             'datasets' => [
                 [
                     'label' => 'Hours per Week',
                     'data' => $hours,
-                    'backgroundColor' => 'rgba(75, 192, 192, 1)',
-                    'borderColor' => 'rgba(75, 192, 192, 1)',
+                    'backgroundColor' => 'rgba(234, 179, 8, 1)',
+                    'borderColor' => 'rgba(202, 138, 4, 1)',
                     'borderWidth' => 0,
-                    'pointHitRadius' => 10, //
+                    'pointHitRadius' => 10,
                 ],
             ],
             'labels' => $labels,
@@ -76,6 +78,8 @@ class RevenueWidget extends ChartWidget
 
     protected static ?int $sort = 0;
 
+    protected static ?string $maxHeight = '300px';
+
     protected function getData(): array
     {
         $year = $this->filters['year'] ?? now()->year;
@@ -85,7 +89,7 @@ class RevenueWidget extends ChartWidget
         $response = $statsController->getRevenuePerWeek($year);
         $data = $response->getData(true);
 
-        $labels = array_map(fn ($week) => "Week {$week}", array_keys($data));
+        $labels = array_map(fn($week) => "Week {$week}", array_keys($data));
         $revenue = array_values($data);
 
         return [
@@ -93,17 +97,17 @@ class RevenueWidget extends ChartWidget
                 [
                     'label' => 'Revenue per Week',
                     'data' => $revenue,
-                    'backgroundColor' => 'rgba(75, 192, 192, 1)',
-                    'borderColor' => 'rgba(75, 192, 192, 1)',
+                    'backgroundColor' => 'rgba(234, 179, 8, 0.3)',
+                    'borderColor' => 'rgba(202, 138, 4, 1)',
                     'cubicInterpolationMode' => 'monotone',
-                    'borderWidth' => 4,
+                    'borderWidth' => 3,
                     'tension' => 0.4,
                     'fill' => true,
                     'pointRadius' => 0,
                     'pointHoverRadius' => 10,
-                    'pointBackgroundColor' => 'rgba(255, 159, 64, 1)',
-                    'pointBorderColor' => 'rgba(255, 159, 64, 1)',
-                    'pointHitRadius' => 10, //
+                    'pointBackgroundColor' => 'rgba(202, 138, 4, 1)',
+                    'pointBorderColor' => 'rgba(202, 138, 4, 1)',
+                    'pointHitRadius' => 10,
                 ],
             ],
             'labels' => $labels,
@@ -153,9 +157,9 @@ class ServicePercentageWidget extends ChartWidget
         $response = $statsController->getHoursPerWeek($year);
         $data = $response->getData(true);
 
-        $labels = array_map(fn ($item) => "Week {$item['week']}", $data);
-        $servicePercentage = array_map(fn ($item) => round($item['service_percentage']), $data);
-        $internalPercentage = array_map(fn ($item) => round($item['internal_tasks']), $data);
+        $labels = array_map(fn($item) => "Week {$item['week']}", $data);
+        $servicePercentage = array_map(fn($item) => round($item['service_percentage']), $data);
+        $internalPercentage = array_map(fn($item) => round($item['internal_tasks']), $data);
 
         return [
             'datasets' => [
@@ -179,7 +183,7 @@ class ServicePercentageWidget extends ChartWidget
                 ],
                 [
                     'label' => 'Paid',
-                    'data' => array_map(fn ($service, $internal) => round(100 - ($service + $internal)), $servicePercentage, $internalPercentage),
+                    'data' => array_map(fn($service, $internal) => round(100 - ($service + $internal)), $servicePercentage, $internalPercentage),
                     'backgroundColor' => 'rgba(54, 162, 235, 1)',
                     'borderColor' => 'rgba(54, 162, 235, 1)',
                     'borderWidth' => 1,

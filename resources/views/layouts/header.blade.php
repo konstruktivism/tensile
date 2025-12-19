@@ -31,7 +31,7 @@
         </div>
 
         @guest
-            <x-link url="{{ route('login') }}" class="bg-white text-neutral-600 font-normal border border-neutral-200 hover:bg-neutral-100 active:bg-neutral-200 ring-0 focus:bg-transparent">Login</x-link>
+            <x-link url="{{ route('login') }}" class="bg-white text-neutral-600 font-normal border border-neutral-200 hover:opacity-90 ring-0 focus:bg-transparent">Login</x-link>
         @endguest
         @auth
             <div class="relative flex items-center§" x-data="{ open: false }">
@@ -46,7 +46,7 @@
                 <div x-show="open" x-cloak @click.away="open = false" x-transition:enter="transition-opacity ease-out duration-200" x-transition:leave="transition-opacity ease-in duration-150" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg p-1 bg-white dark:bg-neutral-800 ring-1 ring-black ring-opacity-5" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" id="user-menu">
                     <form method="POST" action="{{ route('logout') }}" class="flex">
                         @csrf
-                        <button type="submit" class="rounded flex w-full px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-700" role="menuitem">Logout</button>
+                        <button type="submit" class="rounded flex w-full px-4 py-2 text-gray-700 dark:text-gray-200 hover:opacity-90" role="menuitem">Logout</button>
                     </form>
                 </div>
             </div>

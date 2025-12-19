@@ -30,3 +30,61 @@
         color: #000000 !important;
     }
 }
+
+/* All buttons use bg-yellow-400 with opacity hover */
+.fi-btn,
+.fi-btn-color-primary,
+.fi-btn-color-gray,
+.fi-btn-color-danger,
+.fi-btn-color-info,
+.fi-btn-color-success,
+.fi-btn-color-warning {
+    background-color: rgb(250 204 21) !important; /* bg-yellow-400 */
+}
+
+/* Hover only changes opacity, not background color */
+.fi-btn:hover,
+.fi-btn-color-primary:hover,
+.fi-btn-color-gray:hover,
+.fi-btn-color-danger:hover,
+.fi-btn-color-info:hover,
+.fi-btn-color-success:hover,
+.fi-btn-color-warning:hover {
+    opacity: 0.9 !important;
+    background-color: rgb(250 204 21) !important; /* Keep bg-yellow-400 on hover */
+}
+
+/* Override any Filament default hover background colors */
+.fi-btn:hover *,
+.fi-btn-color-primary:hover *,
+.fi-btn-color-gray:hover *,
+.fi-btn-color-danger:hover *,
+.fi-btn-color-info:hover *,
+.fi-btn-color-success:hover *,
+.fi-btn-color-warning:hover * {
+    background-color: transparent !important;
+}
+
+/* Insights navigation item - active state with yellow background */
+.fi-sidebar-nav .fi-sidebar-item a.fi-sidebar-item-button.fi-active {
+    background-color: rgb(250 204 21) !important; /* bg-yellow-400 */
+    color: rgb(17 24 39) !important; /* text-gray-900 */
+}
+
+.fi-sidebar-nav .fi-sidebar-item a.fi-sidebar-item-button.fi-active span {
+    color: rgb(17 24 39) !important; /* text-gray-900 */
+}
+
+/* Dashboard chart widgets - yellow gradient background */
+.fi-wi-chart {
+    background: linear-gradient(to bottom, rgb(250 204 21), rgb(254 240 138)) !important; /* from-yellow-400 to-yellow-200 */
+    border-color: rgb(234 179 8) !important; /* border-yellow-500 */
+}
+
+.fi-wi-chart .fi-wi-chart-header {
+    color: rgb(17 24 39) !important; /* text-gray-900 */
+}
+
+.fi-wi-chart .fi-wi-chart-header h3 {
+    color: rgb(17 24 39) !important; /* text-gray-900 */
+}

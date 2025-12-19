@@ -11,7 +11,7 @@
         @else
             <div class="flex flex-col divide-neutral-200 dark:divide-neutral-700 divide-y *:py-3">
                 @foreach($activeProjects as $project)
-                    <a href="/project/{{ $project->id }}" class="dark:text-white py-6 transition-all hover:bg-gray-100 dark:hover:bg-neutral-800 p-3">
+                    <a href="/project/{{ $project->id }}" class="dark:text-white py-6 transition-all hover:opacity-90 p-3">
                         <div class="flex items-center gap-3">
                             <h2 class="text-xs px-3 py-1 uppercase rounded font-bold {{ $project->organisation->name == 'Konstruktiv' ? 'bg-yellow-400 text-black' : 'bg-blue-600 text-white' }}">
                                 {{ $project->organisation->name }}
@@ -35,7 +35,7 @@
         @else
             <div class="flex flex-col divide-neutral-200 dark:divide-neutral-700 divide-y *:py-3">
                 @foreach($inactiveProjects as $project)
-                    <a href="/project/{{ $project->id }}" class="dark:text-white py-6 transition-all hover:bg-gray-100 dark:hover:bg-neutral-800 p-3">
+                    <a href="/project/{{ $project->id }}" class="dark:text-white py-6 transition-all hover:opacity-90 p-3">
                         <div class="flex items-center gap-3">
                             <h2 class="text-xs px-3 py-1 uppercase rounded font-bold {{ $project->organisation->name == 'Konstruktiv' ? 'bg-yellow-400 text-black' : 'bg-blue-600 text-white' }}">
                                 {{ $project->organisation->name }}

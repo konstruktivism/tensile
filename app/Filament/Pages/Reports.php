@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use App\Helpers\CurrencyHelper;
 use App\Models\Task;
-use Carbon\Carbon;
 use Filament\Pages\Page;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
@@ -118,7 +117,7 @@ class Reports extends Page implements HasTable
             $weeks = [now()->week];
         }
 
-        return array_combine($weeks, array_map(fn($w) => "Week {$w}", $weeks));
+        return array_combine($weeks, array_map(fn ($w) => "Week {$w}", $weeks));
     }
 
     public function getMonthOptions(): array
@@ -152,7 +151,7 @@ class Reports extends Page implements HasTable
             12 => 'December',
         ];
 
-        return array_combine($months, array_map(fn($m) => $monthNames[$m] ?? "Month {$m}", $months));
+        return array_combine($months, array_map(fn ($m) => $monthNames[$m] ?? "Month {$m}", $months));
     }
 
     public function table(Table $table): Table
@@ -196,7 +195,7 @@ class Reports extends Page implements HasTable
             $columns[] = TextColumn::make('week')
                 ->label('Week')
                 ->sortable()
-                ->formatStateUsing(fn($state) => "Week {$state}");
+                ->formatStateUsing(fn ($state) => "Week {$state}");
         }
 
         $columns = array_merge($columns, [
@@ -205,20 +204,20 @@ class Reports extends Page implements HasTable
                 ->numeric(decimalPlaces: 2)
                 ->suffix('h')
                 ->sortable()
-                ->summarize(Sum::make()->label('Total')->formatStateUsing(fn($state) => number_format($state, 2) . 'h')),
+                ->summarize(Sum::make()->label('Total')->formatStateUsing(fn ($state) => number_format($state, 2).'h')),
             TextColumn::make('billable_hours')
                 ->label('Billable Hours')
                 ->numeric(decimalPlaces: 2)
                 ->suffix('h')
                 ->sortable()
-                ->color(fn($state) => $state > 0 ? 'success' : 'gray')
-                ->summarize(Sum::make()->label('Total')->formatStateUsing(fn($state) => number_format($state, 2) . 'h')),
+                ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
+                ->summarize(Sum::make()->label('Total')->formatStateUsing(fn ($state) => number_format($state, 2).'h')),
             TextColumn::make('revenue')
                 ->label('Revenue')
                 ->sortable()
-                ->color(fn($state, $record) => ($state > 0 && $record->is_fixed == 0) ? 'success' : 'gray')
-                ->formatStateUsing(fn($state, $record) => $record->is_fixed == 0 ? CurrencyHelper::formatCurrency($state) : '-')
-                ->summarize(Sum::make()->label('Total')->formatStateUsing(fn($state) => CurrencyHelper::formatCurrency($state))),
+                ->color(fn ($state, $record) => ($state > 0 && $record->is_fixed == 0) ? 'success' : 'gray')
+                ->formatStateUsing(fn ($state, $record) => $record->is_fixed == 0 ? CurrencyHelper::formatCurrency($state) : '-')
+                ->summarize(Sum::make()->label('Total')->formatStateUsing(fn ($state) => CurrencyHelper::formatCurrency($state))),
         ]);
 
         return $table
@@ -244,9 +243,8 @@ class Reports extends Page implements HasTable
         if ($isMonthView && $this->selectedMonth !== null && $this->selectedMonth !== '') {
             $query->whereMonth('tasks.completed_at', (int) $this->selectedMonth);
         } elseif (! $isMonthView && $this->selectedWeek !== null && $this->selectedWeek !== '') {
-            $startOfWeek = Carbon::now()->setISODate($year, $this->selectedWeek)->startOfWeek();
-            $endOfWeek = $startOfWeek->copy()->endOfWeek();
-            $query->whereBetween('tasks.completed_at', [$startOfWeek, $endOfWeek]);
+            $query->whereRaw('WEEK(tasks.completed_at, 3) = ?', [$this->selectedWeek])
+                ->whereYear('tasks.completed_at', $year);
         }
 
         $selectFields = [

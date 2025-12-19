@@ -3,18 +3,15 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TaskResource\Pages;
-use App\Filament\Resources\TaskResource\RelationManagers;
 use App\Models\Task;
+use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Columns\Summarizers\Sum;
-use Carbon\Carbon;
+use Filament\Tables\Table;
 
 class TaskResource extends Resource
 {
@@ -55,9 +52,9 @@ class TaskResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->badge()
-                    ->url(fn ($record) =>  route('filament.admin.resources.projects.edit', $record->project))
-                    ->getStateUsing(fn ($record) => $record->project->is_fixed ?  $record->project->name . ' (Fixed)' : $record->project->name),
-                Tables\Columns\TextColumn::make('completed_at')->date()->sortable(),
+                    ->url(fn ($record) => route('filament.admin.resources.projects.edit', $record->project))
+                    ->getStateUsing(fn ($record) => $record->project->is_fixed ? $record->project->name.' (Fixed)' : $record->project->name),
+                Tables\Columns\TextColumn::make('completed_at')->date('d-m-Y')->sortable(),
                 Tables\Columns\TextColumn::make('week_year')
                     ->label('Week-Year')
                     ->getStateUsing(fn ($record) => Carbon::parse($record->completed_at)->format('W')),
@@ -88,20 +85,21 @@ class TaskResource extends Resource
                             ->label('Select Week')
                             ->displayFormat('W')
                             ->displayFormat('Y-\WW') // Display year and week number
-                            ->format('Y-\WW') // Ensure the value is stored in the correct format
+                            ->format('Y-\WW'), // Ensure the value is stored in the correct format
                     ])
                     ->query(function ($query, array $data) {
                         if (isset($data['week'])) {
                             $startOfWeek = Carbon::parse($data['week'])->startOfWeek();
                             $endOfWeek = Carbon::parse($data['week'])->endOfWeek();
+
                             return $query->whereBetween('completed_at', [$startOfWeek, $endOfWeek]);
                         }
+
                         return $query;
                     })
                     ->label('Week'),
             ])
-            ->actions([
-            ])
+            ->actions([])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

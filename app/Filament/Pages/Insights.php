@@ -260,10 +260,8 @@ class Insights extends Page
         $busiestWeek = $this->getBusiestWeek();
         $breakdown = $this->getServiceBreakdown();
         $weekendStats = $this->getWeekendStats();
-        $eveningStats = $this->getEveningWorkStats();
         $dayOfWeekStats = $this->getDayOfWeekStats();
         $workingDaysStats = $this->getWorkingDaysStats();
-        $hourDistribution = $this->getHourDistribution();
 
         $insights = [];
 
@@ -312,18 +310,6 @@ class Insights extends Page
 
         if ($weekendStats['weekend_hours'] > 0) {
             $insights[] = "You worked {$weekendStats['weekend_days']} weekends ({$weekendStats['weekend_percent']}% of total hours)";
-        }
-
-        if ($eveningStats['evening_hours'] > 0) {
-            $insights[] = "Evening work: {$eveningStats['evening_hours']} hours across {$eveningStats['evening_days']} days";
-        }
-
-        if ($hourDistribution['afternoon_percent'] > 40) {
-            $insights[] = "You're an afternoon person! {$hourDistribution['afternoon_percent']}% of your work happens in the afternoon";
-        } elseif ($hourDistribution['morning_percent'] > 40) {
-            $insights[] = "Early bird! {$hourDistribution['morning_percent']}% of your work happens in the morning";
-        } elseif ($hourDistribution['evening_percent'] > 30) {
-            $insights[] = "Night owl! {$hourDistribution['evening_percent']}% of your work happens in the evening";
         }
 
         if ($breakdown['service'] > 0 || $breakdown['billable'] > 0 || $breakdown['internal'] > 0) {
