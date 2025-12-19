@@ -508,7 +508,13 @@
                         },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        if (value >= 1000) return (value / 1000) + 'K';
+                                        return value;
+                                    }
+                                }
                             }
                         }
                     }
@@ -542,7 +548,13 @@
                         },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        if (value >= 1000) return (value / 1000) + 'K';
+                                        return value;
+                                    }
+                                }
                             }
                         }
                     }
@@ -592,6 +604,12 @@
                                 title: {
                                     display: true,
                                     text: 'Hours'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        if (value >= 1000) return (value / 1000) + 'K';
+                                        return value;
+                                    }
                                 }
                             },
                             y1: {
@@ -604,6 +622,12 @@
                                 },
                                 grid: {
                                     drawOnChartArea: false
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        if (value >= 1000) return (value / 1000) + 'K';
+                                        return value;
+                                    }
                                 }
                             }
                         }

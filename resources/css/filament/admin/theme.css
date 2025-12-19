@@ -75,16 +75,3 @@
     color: rgb(17 24 39) !important; /* text-gray-900 */
 }
 
-/* Dashboard chart widgets - yellow gradient background */
-.fi-wi-chart {
-    background: linear-gradient(to bottom, rgb(250 204 21), rgb(254 240 138)) !important; /* from-yellow-400 to-yellow-200 */
-    border-color: rgb(234 179 8) !important; /* border-yellow-500 */
-}
-
-.fi-wi-chart .fi-wi-chart-header {
-    color: rgb(17 24 39) !important; /* text-gray-900 */
-}
-
-.fi-wi-chart .fi-wi-chart-header h3 {
-    color: rgb(17 24 39) !important; /* text-gray-900 */
-}
