@@ -274,15 +274,15 @@ class Insights extends Page
         }
 
         if ($stats['revenue'] > 0) {
-            $insights[] = 'Total revenue: '.CurrencyHelper::formatCurrency($stats['revenue']);
+            $insights[] = 'Total revenue: ' . CurrencyHelper::formatCurrency($stats['revenue']);
 
             // Calculate average revenue per week (52 weeks)
             $avgRevenuePerWeek = $stats['revenue'] / 52;
-            $insights[] = 'Average revenue per week: '.CurrencyHelper::formatCurrency($avgRevenuePerWeek);
+            $insights[] = 'Average revenue per week: ' . CurrencyHelper::formatCurrency($avgRevenuePerWeek);
 
             // Calculate average revenue per month (12 months)
             $avgRevenuePerMonth = $stats['revenue'] / 12;
-            $insights[] = 'Average revenue per month: '.CurrencyHelper::formatCurrency($avgRevenuePerMonth);
+            $insights[] = 'Average revenue per month: ' . CurrencyHelper::formatCurrency($avgRevenuePerMonth);
         }
 
         if (! empty($topProject)) {
@@ -342,8 +342,8 @@ class Insights extends Page
     public function getProjectDistributionData(): array
     {
         $topProjects = $this->getTopProjects(10);
-        $labels = array_map(fn ($p) => $p['name'], $topProjects);
-        $data = array_map(fn ($p) => $p['hours'], $topProjects);
+        $labels = array_map(fn($p) => $p['name'], $topProjects);
+        $data = array_map(fn($p) => $p['hours'], $topProjects);
 
         return [
             'labels' => $labels,
@@ -513,7 +513,7 @@ class Insights extends Page
             ];
         }
 
-        usort($result, fn ($a, $b) => $b['hours'] <=> $a['hours']);
+        usort($result, fn($a, $b) => $b['hours'] <=> $a['hours']);
 
         return $result;
     }
@@ -535,7 +535,7 @@ class Insights extends Page
         return $hourlyStats->map(function ($stat) {
             return [
                 'hour' => $stat->hour,
-                'hour_label' => $stat->hour.':00',
+                'hour_label' => $stat->hour . ':00',
                 'hours' => round($stat->total_hours, 2),
             ];
         })->toArray();
@@ -597,17 +597,21 @@ class Insights extends Page
         $billableHours = $stats['billable_hours'];
         $revenue = $stats['revenue'];
         $totalHours = $stats['total_hours'];
+        $internalHours = $stats['internal_hours'];
+
+        // Exclude internal hours from calculations
+        $externalHours = $totalHours - $internalHours;
 
         $revenuePerHour = $billableHours > 0 ? round($revenue / $billableHours, 2) : 0;
-        $revenuePerTotalHour = $totalHours > 0 ? round($revenue / $totalHours, 2) : 0;
-        $utilizationRate = $totalHours > 0 ? round(($billableHours / $totalHours) * 100, 1) : 0;
+        $revenuePerTotalHour = $externalHours > 0 ? round($revenue / $externalHours, 2) : 0;
+        $utilizationRate = $externalHours > 0 ? round(($billableHours / $externalHours) * 100, 1) : 0;
 
         return [
             'revenue_per_billable_hour' => $revenuePerHour,
             'revenue_per_total_hour' => $revenuePerTotalHour,
             'utilization_rate' => $utilizationRate,
             'billable_hours' => $billableHours,
-            'total_hours' => $totalHours,
+            'total_hours' => $externalHours,
         ];
     }
 
@@ -917,7 +921,7 @@ class Insights extends Page
         $insights = [];
 
         if ($revenueEfficiency['revenue_per_billable_hour'] > 0) {
-            $insights[] = 'Average revenue per billable hour: '.CurrencyHelper::formatCurrency($revenueEfficiency['revenue_per_billable_hour']);
+            $insights[] = 'Average revenue per billable hour: ' . CurrencyHelper::formatCurrency($revenueEfficiency['revenue_per_billable_hour']);
         }
 
         if ($revenueEfficiency['utilization_rate'] > 0) {
@@ -945,7 +949,7 @@ class Insights extends Page
         }
 
         if ($projectProfitability['avg_hourly_rate'] > 0) {
-            $insights[] = 'Average hourly rate across projects: '.CurrencyHelper::formatCurrency($projectProfitability['avg_hourly_rate']);
+            $insights[] = 'Average hourly rate across projects: ' . CurrencyHelper::formatCurrency($projectProfitability['avg_hourly_rate']);
         }
 
         if ($serviceEfficiency['efficiency_score'] < 60) {
