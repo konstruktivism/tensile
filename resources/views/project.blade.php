@@ -71,7 +71,7 @@
             {{ count($data['tasks']) }} {{ count($data['tasks']) == 1 ? 'task' : 'tasks' }}
         </div>
 
-        <div class="w-1/4 lg:w-1/4 text-right">{{ round($data['total_minutes']/60, 2) }} {{ $data['total_minutes'] == 1
+        <div class="w-1/4 lg:w-1/4 text-right">{{ round($data['total_minutes_without_service']/60, 2) }} {{ $data['total_minutes_without_service'] == 1
             ? 'hour' : 'hours' }}</div>
 
         @if ($project->is_fixed == 0)
@@ -96,8 +96,8 @@
             @endif
         </div>
 
-        <div class="w-1/5 lg:w-1/4 text-right font-bold">{{ round($weeks->sum('total_minutes')/60, 2) }} {{
-            $weeks->sum('total_minutes') == 1 ? 'hour' : 'hours' }}</div>
+        <div class="w-1/5 lg:w-1/4 text-right font-bold">{{ round($weeks->sum('total_minutes_without_service')/60, 2) }} {{
+            $weeks->sum('total_minutes_without_service') == 1 ? 'hour' : 'hours' }}</div>
 
         @if ($project->is_fixed == 0)
         <div class="w-1/4 text-right font-bold">{{ \App\Helpers\CurrencyHelper::formatCurrency($weeks->sum(fn($week) =>
@@ -120,13 +120,12 @@
         <h2 class="w-1/2 lg:w-1/2"></h2>
 
         <div class="w-1/4 lg:w-1/4 text-right">{{
-            round($tasksByMonthAndWeekWithMinutes->flatten(1)->sum('total_minutes')/60, 2) }} {{
-            $tasksByMonthAndWeekWithMinutes->flatten(1)->sum('total_minutes') == 1 ? 'hour' : 'hours' }}</div>
+            round($tasksByMonthAndWeekWithMinutes->flatten(1)->sum('total_minutes_without_service')/60, 2) }} {{
+            $tasksByMonthAndWeekWithMinutes->flatten(1)->sum('total_minutes_without_service') == 1 ? 'hour' : 'hours' }}</div>
 
         @if ($project->is_fixed == 0)
         <div class="w-1/4 text-right">{{
-            \App\Helpers\CurrencyHelper::formatCurrency($tasksByMonthAndWeekWithMinutes->flatten(1)->filter(fn($week) =>
-            !$week['tasks']->contains('is_service', 1))->sum('total_minutes')/60 * $project->hour_tariff) }}</div>
+            \App\Helpers\CurrencyHelper::formatCurrency($tasksByMonthAndWeekWithMinutes->flatten(1)->sum('total_minutes_without_service')/60 * $project->hour_tariff) }}</div>
         @endif
     </div>
 </div>

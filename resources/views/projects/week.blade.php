@@ -58,10 +58,12 @@
 
             <div class="w-1/2">Deliverables</div>
 
-            <div class="w-1/5 text-right">Minutes</div>
+            <div class="w-1/6 text-right">Minutes</div>
+
+            <div class="w-1/6 text-right">Hours</div>
 
             @if ($project->is_fixed == 0)
-                <div class="w-1/5 text-right">Price</div>
+                <div class="w-1/6 text-right">Price</div>
             @endif
         </div>
 
@@ -77,11 +79,13 @@
                     @endif
                 </div>
 
-                <div class="w-1/5 text-right">{{ $day['minutes'] }}</div>
+                <div class="w-1/6 text-right">{{ $day['minutes'] }}</div>
+
+                <div class="w-1/6 text-right">{{ number_format($day['minutes'] / 60, 2) }}</div>
 
                 @if ($project->is_fixed == 0)
-                    <div class="w-1/5 text-right">
-                        {{ \App\Helpers\CurrencyHelper::formatCurrency($day['minutes']/60 * 65) }}
+                    <div class="w-1/6 text-right">
+                        {{ \App\Helpers\CurrencyHelper::formatCurrency($day['minutes']/60 * $project->hour_tariff) }}
                     </div>
                 @endif
             </div>
@@ -100,10 +104,12 @@
                 @endif
             </div>
 
-            <div class="w-1/5 text-right font-bold">{{ $tasks->sum('minutes') }}</div>
+            <div class="w-1/6 text-right font-bold">{{ $tasks->sum('minutes') }}</div>
+
+            <div class="w-1/6 text-right font-bold">{{ number_format($tasks->sum('minutes') / 60, 2) }}</div>
 
             @if ($project->is_fixed == 0)
-                <div class="w-1/5 text-right font-bold">{{ \App\Helpers\CurrencyHelper::formatCurrency($tasks->where('is_service', 0)->sum('minutes') / 60 * $project->hour_tariff) }}</div>
+                <div class="w-1/6 text-right font-bold">{{ \App\Helpers\CurrencyHelper::formatCurrency($tasks->where('is_service', 0)->sum('minutes') / 60 * $project->hour_tariff) }}</div>
             @endif
         </div>
 
