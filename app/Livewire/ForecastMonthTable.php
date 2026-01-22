@@ -43,7 +43,7 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
                 TextColumn::make('week')
                     ->label('Week')
                     ->sortable()
-                    ->formatStateUsing(fn($state) => "Week {$state}"),
+                    ->formatStateUsing(fn ($state) => "Week {$state}"),
                 TextColumn::make('project_name')
                     ->label('Project')
                     ->searchable()
@@ -59,7 +59,9 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
                     ->alignRight()
                     ->sortable()
                     ->summarize([
-                        Sum::make()->label('')->formatStateUsing(fn($state) => number_format($state, 2) . 'h'),
+                        Sum::make()
+                            ->label('')
+                            ->formatStateUsing(fn ($state) => number_format($state, 2).'h'),
                     ]),
                 TextColumn::make('billable_hours')
                     ->label('Billable Hours')
@@ -67,9 +69,11 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
                     ->suffix('h')
                     ->alignRight()
                     ->sortable()
-                    ->color(fn($state) => $state > 0 ? 'success' : 'gray')
+                    ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
                     ->summarize([
-                        Sum::make()->label('')->formatStateUsing(fn($state) => number_format($state, 2) . 'h'),
+                        Sum::make()
+                            ->label('')
+                            ->formatStateUsing(fn ($state) => number_format($state, 2).'h'),
                     ]),
                 TextColumn::make('revenue')
                     ->label('Revenue')
@@ -77,7 +81,9 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
                     ->alignRight()
                     ->sortable()
                     ->summarize([
-                        Sum::make()->label('')->money('EUR'),
+                        Sum::make()
+                            ->label('')
+                            ->money('EUR'),
                     ]),
             ])
             ->defaultSort('week', 'asc')
@@ -85,7 +91,8 @@ class ForecastMonthTable extends Component implements HasForms, HasTable
             ->groups([
                 \Filament\Tables\Grouping\Group::make('week')
                     ->label('Week')
-                    ->collapsible(),
+                    ->collapsible()
+                    ->scopeQueryByKeyUsing(fn (Builder $query, string $key) => $query->whereRaw('WEEK(forecast_tasks.scheduled_at, 3) = ?', [$key])),
             ])
             ->paginated(false)
             ->deferLoading();
