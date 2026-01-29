@@ -7,15 +7,15 @@ use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 
-class HoursPerWeekWidget extends ChartWidget
+class RevenueWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Hours Per Week';
+    protected static ?string $heading = 'Revenue per week';
 
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 0;
 
     protected static ?string $maxHeight = '300px';
 
@@ -25,21 +25,27 @@ class HoursPerWeekWidget extends ChartWidget
 
         // Call the controller method directly instead of making HTTP requests
         $statsController = new StatsController;
-        $response = $statsController->getHoursPerWeek($year);
+        $response = $statsController->getRevenuePerWeek($year);
         $data = $response->getData(true);
 
-        // Process data for the chart
-        $labels = array_map(fn($item) => $item['week'], $data);
-        $hours = array_map(fn($item) => $item['total_minutes'] / 60, $data);
+        $labels = array_keys($data);
+        $revenue = array_values($data);
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Hours per Week',
-                    'data' => $hours,
-                    'backgroundColor' => 'rgba(234, 179, 8, 1)',
-                    'borderColor' => 'rgba(202, 138, 4, 1)',
-                    'borderWidth' => 0,
+                    'label' => 'Revenue per Week',
+                    'data' => $revenue,
+                    'backgroundColor' => 'rgba(250, 204, 21, 0.3)',
+                    'borderColor' => 'rgba(250, 204, 21, 1)',
+                    'cubicInterpolationMode' => 'monotone',
+                    'borderWidth' => 3,
+                    'tension' => 0.4,
+                    'fill' => true,
+                    'pointRadius' => 0,
+                    'pointHoverRadius' => 10,
+                    'pointBackgroundColor' => 'rgba(250, 204, 21, 1)',
+                    'pointBorderColor' => 'rgba(250, 204, 21, 1)',
                     'pointHitRadius' => 10,
                 ],
             ],
@@ -49,7 +55,7 @@ class HoursPerWeekWidget extends ChartWidget
 
     protected function getType(): string
     {
-        return 'bar';
+        return 'line';
     }
 
     protected function getOptions(): RawJs
@@ -61,6 +67,10 @@ class HoursPerWeekWidget extends ChartWidget
                     display: true,
                     align: 'start',
                 },
+            },
+            interaction: {
+                mode: 'nearest',
+                intersect: false,
             },
             scales: {
                 y: {
