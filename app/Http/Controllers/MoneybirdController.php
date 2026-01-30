@@ -15,11 +15,14 @@ class MoneybirdController extends Controller
 
     protected $accessToken;
 
+    protected $log;
+
     public function __construct()
     {
         $this->client = new Client;
         $this->apiUrl = 'https://moneybird.com/api/v2/';
-        $this->accessToken = env('MONEYBIRD_TOKEN');
+        $this->accessToken = config('services.moneybird.token');
+        $this->log = Log::channel('moneybird');
     }
 
     /**
@@ -31,23 +34,61 @@ class MoneybirdController extends Controller
     public function updateInvoice($projectId)
     {
         $project = Project::findOrFail($projectId);
-
         $organisationName = $project->organisation->name;
+
+        $this->log->info('Starting invoice update', [
+            'project_id' => $projectId,
+            'project_name' => $project->name,
+            'organisation_name' => $organisationName,
+        ]);
+
+        if (! $this->accessToken) {
+            $this->log->error('Moneybird token not configured');
+
+            return response()->json([
+                'message' => 'Moneybird token not configured',
+                'hint' => 'Set MONEYBIRD_TOKEN in services config',
+            ], 500);
+        }
+
+        $administrationId = config('services.moneybird.administration_id');
+        if (! $administrationId) {
+            $this->log->error('Moneybird administration ID not configured');
+
+            return response()->json([
+                'message' => 'Moneybird administration ID not configured',
+                'hint' => 'Set MONEYBIRD_ADMINISTRATION_ID in services config',
+            ], 500);
+        }
 
         // Step 1: Find contact based on the Organisation name
         $contactId = $this->getContactIdByOrganisationName($organisationName);
 
         if (! $contactId) {
+            $this->log->warning('Contact not found in Moneybird', [
+                'organisation_name' => $organisationName,
+            ]);
+
             return response()->json([
                 'message' => 'Contact not found in Moneybird',
                 'organisation_name' => $organisationName,
             ], 404);
         }
 
+        $this->log->info('Found Moneybird contact', [
+            'contact_id' => $contactId,
+            'organisation_name' => $organisationName,
+        ]);
+
         // Step 2: Get draft sales invoice of contact_id
         $invoiceId = $this->getDraftInvoiceIdByContactId($contactId);
 
         if (! $invoiceId) {
+            $this->log->warning('Draft invoice not found', [
+                'contact_id' => $contactId,
+                'organisation_name' => $organisationName,
+            ]);
+
             return response()->json([
                 'message' => 'Draft invoice not found in Moneybird',
                 'contact_id' => $contactId,
@@ -55,6 +96,11 @@ class MoneybirdController extends Controller
                 'hint' => 'Please create a draft invoice in Moneybird for this contact first',
             ], 404);
         }
+
+        $this->log->info('Found draft invoice', [
+            'invoice_id' => $invoiceId,
+            'contact_id' => $contactId,
+        ]);
 
         // Step 3: Update/patch the sales invoice
         $tasks = $this->getTasksToInvoice($project);
@@ -65,7 +111,20 @@ class MoneybirdController extends Controller
         $notServiceCount = $project->tasks()->where('is_service', 0)->count();
         $completedCount = $project->tasks()->whereNotNull('completed_at')->count();
 
+        $this->log->info('Tasks analysis', [
+            'project_id' => $projectId,
+            'total_tasks' => $allTasksCount,
+            'not_invoiced' => $notInvoicedCount,
+            'not_service' => $notServiceCount,
+            'completed' => $completedCount,
+            'invoiceable' => $tasks->count(),
+        ]);
+
         if ($tasks->isEmpty()) {
+            $this->log->info('No tasks to invoice', [
+                'project_id' => $projectId,
+            ]);
+
             return response()->json([
                 'message' => 'No tasks found to invoice',
                 'tasks_count' => 0,
@@ -92,31 +151,40 @@ class MoneybirdController extends Controller
             ], 200);
         }
 
+        $ledgerAccountId = config('services.moneybird.ledger_account_id');
+        if (! $ledgerAccountId) {
+            $this->log->error('Moneybird ledger account ID not configured');
+
+            return response()->json([
+                'message' => 'Moneybird ledger account ID not configured',
+                'hint' => 'Set MONEYBIRD_LEDGER_ACCOUNT_ID in services config',
+            ], 500);
+        }
+
         $invoiceData = [
             'sales_invoice' => [
-                'details_attributes' => $tasksToInvoice->map(function ($task) {
+                'details_attributes' => $tasksToInvoice->map(function ($task) use ($ledgerAccountId) {
                     return [
-                        'description' => $task->name . ' [' . $task->completed_at->format('d-m-Y') . ']',
+                        'description' => $task->name.' ['.$task->completed_at->format('d-m-Y').']',
                         'price' => (float) $task->project->hour_tariff,
-                        'amount' => (float) round($task->minutes / 60, 2), // Moneybird expects numeric
-                        'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
+                        'amount' => (float) round($task->minutes / 60, 2),
+                        'ledger_account_id' => $ledgerAccountId,
                     ];
                 })->toArray(),
             ],
         ];
 
         try {
-            // Log the request for debugging
-            \Log::info('Moneybird invoice update request', [
+            $this->log->info('Sending invoice update to Moneybird', [
                 'invoice_id' => $invoiceId,
                 'tasks_count' => $tasksToInvoice->count(),
                 'details_count' => count($invoiceData['sales_invoice']['details_attributes']),
                 'sample_detail' => ($invoiceData['sales_invoice']['details_attributes'][0] ?? null),
             ]);
 
-            $response = $this->client->patch($this->apiUrl . env('MONEYBIRD_ADMINISTRATION_ID') . '/sales_invoices/' . $invoiceId, [
+            $response = $this->client->patch($this->apiUrl.$administrationId.'/sales_invoices/'.$invoiceId, [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
+                    'Authorization' => 'Bearer '.$this->accessToken,
                     'Content-Type' => 'application/json',
                 ],
                 'json' => $invoiceData,
@@ -124,17 +192,14 @@ class MoneybirdController extends Controller
 
             $responseBody = json_decode($response->getBody()->getContents(), true);
 
-            // Log the response for debugging
-            \Log::info('Moneybird invoice update response', [
+            $this->log->info('Moneybird response received', [
                 'status_code' => $response->getStatusCode(),
-                'response_keys' => array_keys($responseBody ?? []),
                 'has_details' => isset($responseBody['sales_invoice']['details']),
                 'details_count' => count($responseBody['sales_invoice']['details'] ?? []),
             ]);
 
-            // Check for API errors in response
             if (isset($responseBody['error']) || isset($responseBody['errors'])) {
-                \Log::error('Moneybird API error', [
+                $this->log->error('Moneybird API returned errors', [
                     'response' => $responseBody,
                     'invoice_data' => $invoiceData,
                 ]);
@@ -146,9 +211,14 @@ class MoneybirdController extends Controller
                 ], 400);
             }
 
-            // Only mark as invoiced if the API call was successful
             if ($response->getStatusCode() === 200) {
                 $tasksToInvoice->each->update(['invoiced' => Carbon::now()]);
+
+                $this->log->info('Invoice updated successfully', [
+                    'invoice_id' => $invoiceId,
+                    'tasks_invoiced' => $tasksToInvoice->count(),
+                    'task_ids' => $tasksToInvoice->pluck('id')->toArray(),
+                ]);
             }
 
             return response()->json([
@@ -158,10 +228,10 @@ class MoneybirdController extends Controller
                 'data' => $responseBody,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Moneybird invoice update failed', [
+            $this->log->error('Moneybird invoice update failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'invoice_data' => $invoiceData,
+                'invoice_id' => $invoiceId,
+                'tasks_count' => $tasksToInvoice->count(),
             ]);
 
             return response()->json([
@@ -174,10 +244,16 @@ class MoneybirdController extends Controller
 
     protected function getContactIdByOrganisationName($organisationName)
     {
+        $administrationId = config('services.moneybird.administration_id');
+
         try {
-            $response = $this->client->get($this->apiUrl . env('MONEYBIRD_ADMINISTRATION_ID') . '/contacts', [
+            $this->log->debug('Searching for contact', [
+                'organisation_name' => $organisationName,
+            ]);
+
+            $response = $this->client->get($this->apiUrl.$administrationId.'/contacts', [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
+                    'Authorization' => 'Bearer '.$this->accessToken,
                     'Content-Type' => 'application/json',
                 ],
                 'query' => ['query' => $organisationName],
@@ -185,9 +261,17 @@ class MoneybirdController extends Controller
 
             $contacts = json_decode($response->getBody()->getContents(), true);
 
+            $this->log->debug('Moneybird contacts found', [
+                'search_term' => $organisationName,
+                'contacts_count' => count($contacts),
+                'contact_names' => array_column($contacts, 'company_name'),
+            ]);
+
             // Try exact match first
             foreach ($contacts as $contact) {
                 if (isset($contact['company_name']) && $contact['company_name'] === $organisationName) {
+                    $this->log->debug('Exact match found', ['contact_id' => $contact['id']]);
+
                     return $contact['id'];
                 }
             }
@@ -195,6 +279,8 @@ class MoneybirdController extends Controller
             // Try case-insensitive match
             foreach ($contacts as $contact) {
                 if (isset($contact['company_name']) && strcasecmp($contact['company_name'], $organisationName) === 0) {
+                    $this->log->debug('Case-insensitive match found', ['contact_id' => $contact['id']]);
+
                     return $contact['id'];
                 }
             }
@@ -208,11 +294,23 @@ class MoneybirdController extends Controller
                         strpos($contactNameLower, $organisationNameLower) !== false ||
                         strpos($organisationNameLower, $contactNameLower) !== false
                     ) {
+                        $this->log->debug('Partial match found', [
+                            'contact_id' => $contact['id'],
+                            'contact_name' => $contact['company_name'],
+                        ]);
+
                         return $contact['id'];
                     }
                 }
             }
+
+            $this->log->debug('No matching contact found');
         } catch (\Exception $e) {
+            $this->log->error('Failed to search contacts', [
+                'error' => $e->getMessage(),
+                'organisation_name' => $organisationName,
+            ]);
+
             return null;
         }
 
@@ -221,21 +319,37 @@ class MoneybirdController extends Controller
 
     protected function getDraftInvoiceIdByContactId($contactId)
     {
+        $administrationId = config('services.moneybird.administration_id');
+
         try {
-            $response = $this->client->get($this->apiUrl . env('MONEYBIRD_ADMINISTRATION_ID') . '/sales_invoices', [
+            $this->log->debug('Searching for draft invoice', [
+                'contact_id' => $contactId,
+            ]);
+
+            $response = $this->client->get($this->apiUrl.$administrationId.'/sales_invoices', [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->accessToken,
+                    'Authorization' => 'Bearer '.$this->accessToken,
                     'Content-Type' => 'application/json',
                 ],
-                'query' => ['filter' => 'state:draft,contact_id:' . $contactId],
+                'query' => ['filter' => 'state:draft,contact_id:'.$contactId],
             ]);
 
             $invoices = json_decode($response->getBody()->getContents(), true);
+
+            $this->log->debug('Draft invoices found', [
+                'contact_id' => $contactId,
+                'invoices_count' => count($invoices),
+            ]);
 
             if (! empty($invoices)) {
                 return $invoices[0]['id'];
             }
         } catch (\Exception $e) {
+            $this->log->error('Failed to search invoices', [
+                'error' => $e->getMessage(),
+                'contact_id' => $contactId,
+            ]);
+
             return null;
         }
 

@@ -40,4 +40,10 @@ return [
         'calendar_id' => env('GOOGLE_CALENDAR_ID', 'null'),
     ],
 
+    'moneybird' => [
+        'token' => env('MONEYBIRD_TOKEN'),
+        'administration_id' => env('MONEYBIRD_ADMINISTRATION_ID'),
+        'ledger_account_id' => env('MONEYBIRD_LEDGER_ACCOUNT_ID'),
+    ],
+
 ];
