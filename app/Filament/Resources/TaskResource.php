@@ -58,15 +58,19 @@ class TaskResource extends Resource
                 Tables\Columns\TextColumn::make('week_year')
                     ->label('Week-Year')
                     ->getStateUsing(fn ($record) => Carbon::parse($record->completed_at)->format('W')),
-                Tables\Columns\TextColumn::make('minutes')->sortable(),
+                Tables\Columns\TextColumn::make('minutes')
+                    ->sortable()
+                    ->summarize(
+                        Tables\Columns\Summarizers\Sum::make()
+                            ->label('Total')
+                            ->formatStateUsing(fn ($state) => number_format($state / 60, 1).' hours')
+                    ),
                 Tables\Columns\TextColumn::make('is_service')->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('project_id')
                     ->relationship('project', 'name')
-                    ->label('Project'),
-                Tables\Filters\SelectFilter::make('project_id')
-                    ->relationship('project', 'name')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->name.' ('.$record->organisation->name.')')
                     ->label('Project'),
                 Filter::make('completed_at')
                     ->form([
