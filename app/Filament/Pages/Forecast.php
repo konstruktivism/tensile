@@ -46,7 +46,7 @@ class Forecast extends Page implements HasTable
             ->whereNull('deleted_at')
             ->whereNotNull('scheduled_at')
             ->get()
-            ->map(fn ($task) => Carbon::parse($task->scheduled_at)->year)
+            ->map(fn($task) => Carbon::parse($task->scheduled_at)->year)
             ->unique()
             ->sort()
             ->values()
@@ -76,13 +76,15 @@ class Forecast extends Page implements HasTable
     public function getMonthOptions(): array
     {
         $year = $this->selectedYear ?? now()->year;
+        $currentYear = now()->year;
+        $currentMonth = now()->month;
 
         $months = ForecastTask::query()
             ->whereNull('deleted_at')
             ->whereNotNull('scheduled_at')
             ->whereYear('scheduled_at', $year)
             ->get()
-            ->map(fn ($task) => Carbon::parse($task->scheduled_at)->month)
+            ->map(fn($task) => Carbon::parse($task->scheduled_at)->month)
             ->unique()
             ->sort()
             ->values()
@@ -90,7 +92,6 @@ class Forecast extends Page implements HasTable
 
         if (empty($months)) {
             // Show current month and next 2 months if no data
-            $currentMonth = now()->month;
             $months = [];
             for ($i = 0; $i < 3; $i++) {
                 $month = $currentMonth + $i;
@@ -101,7 +102,21 @@ class Forecast extends Page implements HasTable
             }
         }
 
-        return array_combine($months, array_map(fn ($m) => Carbon::create()->month($m)->format('F'), $months));
+        // Hide past months when viewing current year
+        if ($year == $currentYear) {
+            $months = array_filter($months, fn($m) => $m >= $currentMonth);
+        }
+
+        // Hide all months for past years
+        if ($year < $currentYear) {
+            $months = [];
+        }
+
+        if (empty($months)) {
+            return [];
+        }
+
+        return array_combine($months, array_map(fn($m) => Carbon::create()->month($m)->format('F'), $months));
     }
 
     public function getMonthlyTable(int $month): Table
@@ -122,7 +137,7 @@ class Forecast extends Page implements HasTable
                 TextColumn::make('week')
                     ->label('Week')
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => "Week {$state}"),
+                    ->formatStateUsing(fn($state) => "Week {$state}"),
                 TextColumn::make('project_name')
                     ->label('Project')
                     ->searchable()
@@ -136,14 +151,14 @@ class Forecast extends Page implements HasTable
                     ->numeric(decimalPlaces: 2)
                     ->suffix('h')
                     ->sortable()
-                    ->summarize(Sum::make()->label('Month Total')->formatStateUsing(fn ($state) => number_format($state, 2).'h')),
+                    ->summarize(Sum::make()->label('Month Total')->formatStateUsing(fn($state) => number_format($state, 2) . 'h')),
                 TextColumn::make('billable_hours')
                     ->label('Billable Hours')
                     ->numeric(decimalPlaces: 2)
                     ->suffix('h')
                     ->sortable()
-                    ->color(fn ($state) => $state > 0 ? 'success' : 'gray')
-                    ->summarize(Sum::make()->label('Month Total')->formatStateUsing(fn ($state) => number_format($state, 2).'h')),
+                    ->color(fn($state) => $state > 0 ? 'success' : 'gray')
+                    ->summarize(Sum::make()->label('Month Total')->formatStateUsing(fn($state) => number_format($state, 2) . 'h')),
                 TextColumn::make('revenue')
                     ->label('Revenue')
                     ->money('EUR')
