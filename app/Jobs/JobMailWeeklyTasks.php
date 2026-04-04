@@ -35,12 +35,13 @@ class JobMailWeeklyTasks implements ShouldQueue
     {
         foreach ($this->weekNumbers as $weekNumber) {
             $startOfWeek = Carbon::now()->setISODate(Carbon::now()->year, (int) $weekNumber)->startOfWeek();
-            $endOfWeek = $startOfWeek->copy()->endOfWeek();
+            $start = $startOfWeek->copy()->subDays(2)->setTime(9, 0);
+            $end = $startOfWeek->copy()->addDays(5)->setTime(9, 0);
 
             $projects = Project::where('notifications', true)->get();
 
             foreach ($projects as $project) {
-                $tasks = $project->tasks()->whereBetween('completed_at', [$startOfWeek, $endOfWeek])->orderBy('completed_at')->get();
+                $tasks = $project->tasks()->whereBetween('completed_at', [$start, $end])->orderBy('completed_at')->get();
 
                 // Only send notifications if there are tasks with actual hours logged
                 if ($tasks->count() === 0 || $tasks->sum('minutes') === 0) {

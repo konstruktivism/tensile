@@ -77,6 +77,37 @@ it('includes tasks completed late on friday in the weekly summary email', functi
     });
 });
 
+it('includes tasks completed on saturday afternoon in the next weekly summary', function () {
+    Mail::fake();
+
+    $user = User::factory()->create();
+    $organisation = Organisation::factory()->create();
+    $project = Project::factory()->create([
+        'organisation_id' => $organisation->id,
+        'notifications' => true,
+    ]);
+
+    $project->users()->attach($user);
+
+    // Saturday afternoon at 14:00 - previous week's Saturday
+    $saturdayAfternoon = Carbon::now()->startOfWeek()->subDays(2)->setHour(14)->setMinute(0);
+
+    $saturdayTask = Task::factory()->create([
+        'project_id' => $project->id,
+        'completed_at' => $saturdayAfternoon,
+        'minutes' => 120,
+        'name' => 'Saturday afternoon work',
+    ]);
+
+    $job = new JobMailWeeklyTasks([now()->weekOfYear]);
+    $job->handle();
+
+    Mail::assertSent(\App\Mail\WeeklyTasksMail::class, function ($mail) use ($user, $saturdayTask) {
+        return $mail->hasTo($user->email)
+            && $mail->tasks->contains(fn ($task) => $task->id === $saturdayTask->id);
+    });
+});
+
 it('does not send email for projects without notifications', function () {
     Mail::fake();
 
@@ -113,10 +144,10 @@ it('does not send email for projects with no tasks in the week', function () {
 
     $project->users()->attach($user);
 
-    // Create task for different week
+    // Create task for different week (well outside the Saturday-to-Saturday range)
     Task::factory()->create([
         'project_id' => $project->id,
-        'completed_at' => Carbon::now()->subWeek(),
+        'completed_at' => Carbon::now()->subWeeks(2),
         'minutes' => 120,
     ]);
 
